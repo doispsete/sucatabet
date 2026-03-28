@@ -23,6 +23,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function initAuth() {
       try {
+        // Verifica se o cookie de token existe antes de tentar buscar o usuário
+        const hasToken = typeof document !== 'undefined' && document.cookie.includes('token=');
+        if (!hasToken) {
+          setIsLoading(false);
+          return;
+        }
+
         const me = await authService.me();
         setUser(me);
       } catch (error) {
@@ -42,9 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await authService.login({ email, password }) as any;
       
-      // Armazena o token para o Authorization header nas requisições subsequentes
+      // Armazena o token via cookie para persistência e uso pelo middleware
       if (response.access_token) {
-        localStorage.setItem('access_token', response.access_token);
+        document.cookie = `token=${response.access_token}; path=/; max-age=28800; SameSite=Lax`;
       }
       
       setUser(response.user);
@@ -62,11 +69,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await authService.logout().catch(() => {}); // Final logout attempt
     } finally {
       setUser(null);
-      // Remove o token do localStorage e o cookie residual
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('access_token');
-      }
-      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      // Remove o token do cookie
+      document.cookie = `token=; path=/; max-age=0`;
       router.push('/login');
     }
   };
