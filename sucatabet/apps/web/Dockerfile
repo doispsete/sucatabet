@@ -7,8 +7,8 @@ WORKDIR /app
 COPY package.json ./
 COPY apps/web/package.json ./apps/web/
 
-# Instala todas as dependências
-RUN npm install
+# Instala todas as dependências usando legacy-peer-deps conforme lição de deploy
+RUN npm install --legacy-peer-deps
 
 # Copia o código fonte do frontend e as configurações
 COPY apps/web/src ./apps/web/src

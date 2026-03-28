@@ -10,11 +10,12 @@ RUN apk add --no-cache openssl libc6-compat
 COPY package.json ./
 COPY apps/api/package.json ./apps/api/
 
-# Instala todas as dependências (incluindo dev)
-RUN npm install
+# Instala todas as dependências (incluindo dev) usando legacy-peer-deps conforme lição de deploy
+RUN npm install --legacy-peer-deps
 
-# Copia o schema do Prisma e o código fonte da API
+# Copia o schema do Prisma, config e o código fonte da API
 COPY apps/api/prisma ./apps/api/prisma
+COPY apps/api/prisma.config.ts ./apps/api/
 COPY apps/api/src ./apps/api/src
 COPY apps/api/tsconfig.json ./apps/api/
 COPY apps/api/tsconfig.build.json ./apps/api/
@@ -36,13 +37,19 @@ RUN apk add --no-cache openssl curl
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nestjs
 
-# Copia as dependências de produção do monorepo
+# Ordem exata de COPY conforme instrução do usuário:
+# 1. node_modules (raiz)
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
-
-# Copia o build e o cliente Prisma gerado
+# 2. @prisma/client (da raiz)
+COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
+# 3. apps/api/dist
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/apps/api/node_modules/@prisma/client ./node_modules/@prisma/client
+# 4. apps/api/prisma (pasta completa com migrations e schema)
+COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
+# 5. apps/api/prisma.config.ts
+COPY --from=builder /app/apps/api/prisma.config.ts ./apps/api/prisma.config.ts
+# 6. apps/api/package.json
+COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
 
 # Define permissões
 USER nestjs
@@ -50,9 +57,9 @@ USER nestjs
 # Exposição da porta (conforme configurado no .env)
 EXPOSE 3006
 
-# Healthcheck obrigatório
+# Healthcheck apontando para a raiz conforme lição de deploy
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:3006/api/health || exit 1
+  CMD curl -f http://localhost:3006/ || exit 1
 
-# Comando para iniciar a aplicação
-CMD ["node", "apps/api/dist/main"]
+# Comando para iniciar a aplicação (dist/src/main conforme lição de deploy)
+CMD ["node", "apps/api/dist/src/main"]
