@@ -1,0 +1,149 @@
+# ============================================================
+# SUCATABET — .gitignore
+# Stack: Next.js 16 | NestJS 11 | Prisma 7.5 | PostgreSQL
+#        Docker | NPM Workspaces | TypeScript | Tailwind 4
+#        Windows (PowerShell/Batch)
+# ============================================================
+
+# ─── Dependências ───────────────────────────────────────────
+node_modules/
+.npm
+.pnp
+.pnp.js
+
+# ─── Variáveis de Ambiente ──────────────────────────────────
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
+
+# ─── Next.js (apps/web) ─────────────────────────────────────
+apps/web/.next/
+apps/web/out/
+apps/web/build/
+apps/web/.turbo/
+
+# Cache do Next.js
+apps/web/.next/cache/
+
+# Standalone output (gerado no build de produção)
+apps/web/.next/standalone/
+apps/web/.next/static/
+
+# ─── NestJS (apps/api) ──────────────────────────────────────
+apps/api/dist/
+apps/api/build/
+apps/api/.turbo/
+
+# ─── Prisma ─────────────────────────────────────────────────
+# Manter: schema.prisma, migrations/, seed.ts
+# Ignorar: banco local e cliente gerado
+apps/api/prisma/*.db
+apps/api/prisma/*.db-journal
+apps/api/prisma/dev.db
+apps/api/prisma/test.db
+
+# Cliente gerado (regenerado via prisma generate)
+apps/api/node_modules/.prisma/
+
+# ─── Docker ─────────────────────────────────────────────────
+# Manter: docker-compose.yml, Dockerfile
+# Ignorar: dados persistidos localmente
+docker/data/
+docker/volumes/
+postgres-data/
+redis-data/
+
+# ─── TypeScript ─────────────────────────────────────────────
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+apps/web/tsconfig.tsbuildinfo
+apps/api/tsconfig.tsbuildinfo
+
+# ─── Logs ───────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ─── Testes ─────────────────────────────────────────────────
+coverage/
+apps/web/coverage/
+apps/api/coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# ─── Cache de ferramentas ───────────────────────────────────
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.prettiercache
+
+# ─── Windows ────────────────────────────────────────────────
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Scripts de ambiente local (contêm caminhos locais/senhas)
+*.local.bat
+*.local.ps1
+dev-local.bat
+dev-local.ps1
+
+# ─── macOS (caso alguém do time use) ────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ─── IDEs e Editores ────────────────────────────────────────
+# VSCode — manter settings.json compartilhado se quiser
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ─── Uploads e arquivos gerados pelo usuário ────────────────
+uploads/
+public/uploads/
+apps/web/public/uploads/
+
+# ─── Misc ───────────────────────────────────────────────────
+*.pem
+*.key
+*.cert
+*.p12
+
+# Relatórios de bundle
+apps/web/.next/analyze/
+bundle-analyzer-report.html
+
+# Backups locais
+*.backup
+*.bak
+*.sql.gz
+backups/

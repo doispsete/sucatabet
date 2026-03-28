@@ -1,0 +1,43 @@
+name: Deploy SucataBet
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-node: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Project
+        run: npm run build:prod
+
+      - name: Copy files to VPS via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          source: "docker-compose.prod.yml,nginx/nginx.conf,scripts/deploy.sh"
+          target: "~/app/sucatabet"
+
+      - name: Execute Deploy Script on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          script: |
+             chmod +x ~/app/sucatabet/scripts/deploy.sh
+             ~/app/sucatabet/scripts/deploy.sh
