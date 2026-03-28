@@ -15,8 +15,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3006';
 
 function getTokenFromCookie(): string | null {
   if (typeof document === 'undefined') return null;
-  const match = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, ...rest] = cookie.trim().split('=');
+    if (name === 'access_token') {
+      return decodeURIComponent(rest.join('='));
+    }
+  }
+  return null;
 }
 
 async function request<T>(path: string, options: RequestInit & { retries?: number; _retryCount?: number } = {}): Promise<T> {
@@ -24,15 +30,18 @@ async function request<T>(path: string, options: RequestInit & { retries?: numbe
   const url = `${API_URL}${path}`;
 
   const token = getTokenFromCookie();
-  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...fetchOptions.headers as Record<string, string>,
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const defaultOptions: RequestInit = {
     ...fetchOptions,
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-      ...fetchOptions.headers,
-    },
+    headers,
   };
 
   try {
