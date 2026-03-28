@@ -1,0 +1,132 @@
+
+> web@0.1.0 lint
+> eslint
+
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\app\admin\page.tsx
+    5:3   warning  'ShieldCheck' is defined but never used              @typescript-eslint/no-unused-vars
+   13:3   warning  'AlertCircle' is defined but never used              @typescript-eslint/no-unused-vars
+   21:35  warning  'refetch' is assigned a value but never used         @typescript-eslint/no-unused-vars
+   22:10  warning  'searchQuery' is assigned a value but never used     @typescript-eslint/no-unused-vars
+   22:23  warning  'setSearchQuery' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  298:59  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  352:60  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\app\alertas\page.tsx
+  4:3  warning  'Timer' is defined but never used  @typescript-eslint/no-unused-vars
+  7:3  warning  'Clock' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\app\calculadora\page.tsx
+    5:10  warning  'toast' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  116:11  warning  'lockedComm' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  121:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\app\calculadora\page.tsx:121:5
+  119 |     // If scenario j wins: Profit = (Odd_j - 1) * Stake_j * (1 - Comm_j) - Sum(Stake_other)
+  120 |     // Simplified approximation for standard balancer:
+> 121 |     setBets(prev => prev.map((bet, i) => {
+      |     ^^^^^^^ Avoid calling setState() directly within an effect
+  122 |       if (i === lockedIndex) return bet;
+  123 |       const targetOdd = parseFloat(bet.odd) || 1;
+  124 |       const targetComm = (parseFloat(bet.commission) || 0) / 100;  react-hooks/set-state-in-effect
+  124:13  warning  'targetComm' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  132:6   warning  React Hook useEffect has a missing dependency: 'bets'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  132:7   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+  132:39  warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+  132:78  warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\app\contas\page.tsx
+   13:3   warning  'Lock' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   14:3   warning  'Unlock' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   18:24  warning  'SkeletonRow' is defined but never used                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  141:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  163:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\app\layout.tsx
+  16:5  warning  Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+  17:5  warning  Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\app\operacoes\page.tsx
+   2:27  warning  'useEffect' is defined but never used     @typescript-eslint/no-unused-vars
+   2:38  warning  'useMemo' is defined but never used       @typescript-eslint/no-unused-vars
+   5:3   warning  'Trash2' is defined but never used        @typescript-eslint/no-unused-vars
+   6:3   warning  'ChevronDown' is defined but never used   @typescript-eslint/no-unused-vars
+   9:3   warning  'Search' is defined but never used        @typescript-eslint/no-unused-vars
+  10:3   warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+  11:3   warning  'ArrowUpRight' is defined but never used  @typescript-eslint/no-unused-vars
+  12:3   warning  'Database' is defined but never used      @typescript-eslint/no-unused-vars
+  13:3   warning  'FileText' is defined but never used      @typescript-eslint/no-unused-vars
+  82:47  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\app\page.tsx
+    2:17  warning  'useEffect' is defined but never used           @typescript-eslint/no-unused-vars
+    2:28  warning  'useState' is defined but never used            @typescript-eslint/no-unused-vars
+    9:3   warning  'Plus' is defined but never used                @typescript-eslint/no-unused-vars
+   10:3   warning  'Timer' is defined but never used               @typescript-eslint/no-unused-vars
+   11:3   warning  'ExternalLink' is defined but never used        @typescript-eslint/no-unused-vars
+   13:3   warning  'PieChart' is defined but never used            @typescript-eslint/no-unused-vars
+   18:24  warning  'SkeletonRow' is defined but never used         @typescript-eslint/no-unused-vars
+   24:44  warning  'glowColor' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  174:32  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  203:37  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\components\AccountCard.tsx
+  13:40  warning  'profileName' is defined but never used                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  34:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\components\FreebetCard.tsx
+  6:3  warning  'Zap' is defined but never used       @typescript-eslint/no-unused-vars
+  7:3  warning  'Gamepad2' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\components\Sidebar.tsx
+  106:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\components\StatCard.tsx
+  13:70  warning  'color' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\components\Topbar.tsx
+   7:3   warning  'Settings' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  92:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\components\modals\NewOperationModal.tsx
+   54:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\components\modals\NewOperationModal.tsx:54:9
+  52 |       } else {
+  53 |         // Reset to defaults
+> 54 |         setType(OperationType.EXTRACAO);
+     |         ^^^^^^^ Avoid calling setState() directly within an effect
+  55 |         setNotes("");
+  56 |         setBets([{ id: '1', accountId: '', stake: '', odds: '' }]);
+  57 |       }  react-hooks/set-state-in-effect
+  101:19  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  119:56  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\components\ui\components.tsx
+  3:38  warning  'useCallback' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\lib\context\auth-context.tsx
+  28:16  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\lib\hooks\use-fetch.ts
+   2:10  warning  'ApiError' is defined but never used                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  26:6   warning  React Hook useCallback was passed a dependency list that is not an array literal. This means we can't statically verify whether you've passed the correct dependencies                                                           react-hooks/exhaustive-deps
+  26:6   warning  React Hook useCallback has a missing dependency: 'fetcher'. Either include it or remove the dependency array. If 'fetcher' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\web\src\lib\hooks\use-mutation.ts
+  2:10  warning  'ApiError' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 61 problems (9 errors, 52 warnings)
+

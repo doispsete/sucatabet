@@ -1,0 +1,23 @@
+$outDir = 'c:\Users\2p7\Desktop\Nova pasta\sucatabet\stitch_snapshots'
+if (!(Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir }
+
+$downloads = @(
+  @{ Name='dashboard'; Img='https://lh3.googleusercontent.com/aida/ADBb0ujae4qdMn8XJDdq0wodVpclBCJBndZ1t2QBR1upw2_hmy3xouGezfJ39p5xWbPvUVSloGIAwW_HKYqVxxeUNOL-x_QSczYMEnQM_908QPJgJeldtF9AhAy2-afRozn7973tTOKR-OXTsu9wHW9GvcVCQCNO9cs7v8VlWLMouN4ijKeHmbjnSZtCJe6zFHYCRRms9nsyIh8EB6DCowGZugOODEsjR4Y8XLlrDtLAfBMmC-s5cOIWt09MRck'; Code='https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzMzYTFjZmFjN2UzYTRjMmQ5OGQ5NjA0ZWMwZDFkNTFmEgsSBxCTiq3Gxh8YAZIBIwoKcHJvamVjdF9pZBIVQhM0MTc1NTEwNzI0NzExODYyNTAy&filename=&opi=89354086' },
+  @{ Name='operacoes'; Img='https://lh3.googleusercontent.com/aida/ADBb0ui1qjOn1YzlHMmCtWM6ThBj3cA6M9GzrtIwFuyk0VkhE5Zv6uz-S2fHWPSDsoic7WLe33MDqo9uqmj9RKMlCZWnXDRVFvC956sXhno9a7OEC9SB_yyV6MCvJjtXuzIuie4zO7bL2XSFh80_VcRdqFT37cp_OeoYXNSn3T_3q_mDgrEAvrlPvok9fOshJ40IoHKfJU4_V2XQBUt7Vw_hNDK8W2-oOcngJwISh95D3j0Ww6HqblTPu9SI0T8'; Code='https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzVmMTE4MDMyOWZkYzQ2ZjJiMDA5MDFlMTZmYjVhNWQwEgsSBxCTiq3Gxh8YAZIBIwoKcHJvamVjdF9pZBIVQhM0MTc1NTEwNzI0NzExODYyNTAy&filename=&opi=89354086' },
+  @{ Name='calculadora'; Img='https://lh3.googleusercontent.com/aida/ADBb0ugKdeP7wt0LfKaF2UwmosCKYpLjt6oVDGVT53K7LuFqqtscrxHpAIjqnT7UEpWrbnAikzOpsu5cWbi8bRCuOmPm5ZCYDnk5WR7r6k910Jiu9mWMUHYXAB9t7agRzZhAoUMqwhjiKMlv19LDo6J5mCzZlGTYjTyDDT9c_sTap33DwT9VFjsijF-8_IaNONZGnRx-pbnE1E6xreYONY4rACwPp3gcFGSBSYcXAsG8GVxbihMCAb3dVDHqv7Y'; Code='https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzBkNGU1Yjc1NDQ5NjQyNTg5N2FmZjdlOTE1NWUzNDhjEgsSBxCTiq3Gxh8YAZIBIwoKcHJvamVjdF9pZBIVQhM0MTc1NTEwNzI0NzExODYyNTAy&filename=&opi=89354086' },
+  @{ Name='contas'; Img='https://lh3.googleusercontent.com/aida/ADBb0ugMFbcIiaAG4g7WaZRDcvvBH6tFYNQKCPjAYJ2n0emkZ3bjYLb5IDfNYuHH3brg1waFmp5OMuzhoRV1JIwAOKNjS8subPNaLjNuORhGctlbaJZwSGfVNK31W5ABftxbH9tWbPMxpdVPKbvjq7-g20DKBV5odpIR3q8DeGu7JXq02CHUd1RJZm6JrDOvJ4T1J6ATseST-IMiweVoXGCy7aLbipRsrcu616oNPwAxK0dBTbHbJ-6ds3G0cg'; Code='https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzY4NzJiYTQ5ODBmOTRmZWNiN2FjYzBiNzc1ZTM1MjM3EgsSBxCTiq3Gxh8YAZIBIwoKcHJvamVjdF9pZBIVQhM0MTc1NTEwNzI0NzExODYyNTAy&filename=&opi=89354086' },
+  @{ Name='alertas'; Img='https://lh3.googleusercontent.com/aida/ADBb0ujwI1i4e9lGjyqVvGzoov0hzF5DEkKERXIfWZi_PeYDI-32gYMdO4ZVwr-ioFc3SMzVhPEa8vbQ28qIQwnyRWSUaVkz29AOOq0RqDx_05csaY1p321_97anJnL0RrU2xmXrErKWzLq9yPn8ymncp2lDBqWQQIyAXef5EKN-qmQGeQN3qjXRNZOnac5eZ1i_3EKvfzbgEVyqFPPxOyZWZdmWgcN0JGgD8ntBaTkmy1hBai0HNK0aKOiXJg'; Code='https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2JhMDJhNGFlMDUxNTQ5ZTI5YWMzY2UxZjNjNWZkNGJkEgsSBxCTiq3Gxh8YAZIBIwoKcHJvamVjdF9pZBIVQhM0MTc1NTEwNzI0NzExODYyNTAy&filename=&opi=89354086' },
+  @{ Name='freebets'; Img='https://lh3.googleusercontent.com/aida/ADBb0uiM0ZWbEB6S2YkIzTVNI9fTuMau6aoDitkYDiGkfMaCZggELOM6Izn4mXamVk72jv5tLP9SEWzvTcTuw1msm8e4NoeGTWSrgfwJ86PcnS526i0qZ1KiN4GFo95HLjpcN292CHprkONbtdybxanwiQ7Vc_sMvZ3Z-Ge-FIAdE4DiIYcOvYwT3r4MfOD9q8cDk7OaMwfnPi24kfv3VmYBarxlNQv08XcbIee3IsbkQIk3CjQlYzBC9zaB9QY'; Code='https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2I4ODA5MTg5MzBjMzQ1NTJhMGJlOTBiNjYxMGUxMWM5EgsSBxCTiq3Gxh8YAZIBIwoKcHJvamVjdF9pZBIVQhM0MTc1NTEwNzI0NzExODYyNTAy&filename=&opi=89354086' },
+  @{ Name='admin'; Img='https://lh3.googleusercontent.com/aida/ADBb0uglyMn5fLb79kfYAKdlwVVXc_mafiflkSl0EeAASrlxAsTZvKvFvEbDitIC7W1u_wyo4Z4wnxjxTlIT6lkckKs7kKJLZWWQmx5bWmCOSM8KaB5hE0YDNcvgyopjMy25IFz4iIYj2Aeat8yYekaIwr67yPlmFe1iFsGDSxnQgKoCdl09XAbUv3Y1Cag-WIfbzSRENKqtsyMD2-oyjYNuQXR-1TC-yOdn6S1kxjzeV1kiy44iYuRCryH-uOE'; Code='https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzUxZTQ2MTQ0NjMxNTRhNGNiNDUxNTUzMzAyMzc2YzI2EgsSBxCTiq3Gxh8YAZIBIwoKcHJvamVjdF9pZBIVQhM0MTc1NTEwNzI0NzExODYyNTAy&filename=&opi=89354086' }
+)
+
+foreach ($dl in $downloads) {
+  $imgFile = Join-Path $outDir ($dl.Name + '.png')
+  $htmFile = Join-Path $outDir ($dl.Name + '.html')
+  
+  Write-Host "Baixando $($dl.Name)..."
+  curl.exe -s -L $dl.Img -o $imgFile
+  curl.exe -s -L $dl.Code -o $htmFile
+}
+
+Write-Host "=== DOWNLOAD CONCLUIDO ==="

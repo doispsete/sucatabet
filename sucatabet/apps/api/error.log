@@ -1,0 +1,749 @@
+[2026-03-27T00:54:49.701Z] POST /freebets
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.create()` invocation:
+
+
+Foreign key constraint violated on the constraint: `Freebet_userId_fkey`
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async FreebetsService.create (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\freebets\freebets.service.ts:72:21)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-27T00:55:42.099Z] POST /operations
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.create()` invocation:
+
+
+Foreign key constraint violated on the constraint: `Operation_userId_fkey`
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async <anonymous> (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\operations\operations.service.ts:112:25)
+    at async Proxy._transactionWithCallback (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:785:18)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-27T03:57:10.231Z] DELETE /accounts/14671663-af78-4a07-bc6e-effb268866f1
+DriverAdapterError: update or delete on table "Account" violates RESTRICT setting of foreign key constraint "Bet_accountId_fkey" on table "Bet"
+    at PrismaPgAdapter.onError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:687:11)
+    at PrismaPgAdapter.performIO (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:682:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PrismaPgAdapter.queryRaw (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:602:30)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:128:29)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+    at async e.run (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+    at async e.execute (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+
+[2026-03-27T09:37:10.736Z] PATCH /operations/0c880745-e40e-4dce-8a9a-35774d6ec042/close
+DriverAdapterError: não foi possível estender o arquivo "base/16388/17912": No space left on device
+    at PgTransaction.onError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:687:11)
+    at PgTransaction.performIO (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:682:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PgTransaction.queryRaw (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:602:30)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+    at async e.run (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+    at async e.execute (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+    at async jt.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:492:22)
+
+[2026-03-27T09:37:25.906Z] GET /dashboard/summary
+DriverAdapterError: o sistema de banco de dados est� em modo de recupera��o
+    at PrismaPgAdapter.onError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:687:11)
+    at PrismaPgAdapter.performIO (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:682:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PrismaPgAdapter.queryRaw (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:602:30)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+    at async e.run (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+    at async e.execute (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+    at async jt.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:492:22)
+
+[2026-03-27T09:37:25.967Z] GET /dashboard/summary
+DriverAdapterError: o sistema de banco de dados est� em modo de recupera��o
+    at PrismaPgAdapter.onError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:687:11)
+    at PrismaPgAdapter.performIO (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:682:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PrismaPgAdapter.queryRaw (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:602:30)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+    at async e.run (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+    at async e.execute (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+    at async jt.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:492:22)
+
+[2026-03-27T09:37:26.021Z] GET /dashboard/summary
+DriverAdapterError: o sistema de banco de dados est� em modo de recupera��o
+    at PrismaPgAdapter.onError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:687:11)
+    at PrismaPgAdapter.performIO (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:682:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PrismaPgAdapter.queryRaw (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:602:30)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+    at async e.run (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+    at async e.execute (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+    at async jt.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:492:22)
+
+[2026-03-27T09:37:26.307Z] GET /dashboard/summary
+DriverAdapterError: o sistema de banco de dados est� em modo de recupera��o
+    at PrismaPgAdapter.onError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:687:11)
+    at PrismaPgAdapter.performIO (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:682:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PrismaPgAdapter.queryRaw (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:602:30)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+    at async e.run (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+    at async e.execute (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+    at async jt.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:492:22)
+
+[2026-03-27T09:37:28.103Z] GET /dashboard/summary
+DriverAdapterError: o sistema de banco de dados est� em modo de recupera��o
+    at PrismaPgAdapter.onError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:687:11)
+    at PrismaPgAdapter.performIO (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:682:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PrismaPgAdapter.queryRaw (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:602:30)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+    at async e.run (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+    at async e.execute (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+    at async jt.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:492:22)
+
+[2026-03-27T09:37:28.142Z] GET /dashboard/summary
+DriverAdapterError: o sistema de banco de dados est� em modo de recupera��o
+    at PrismaPgAdapter.onError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:687:11)
+    at PrismaPgAdapter.performIO (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:682:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PrismaPgAdapter.queryRaw (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:602:30)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+    at async e.run (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+    at async e.execute (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+    at async jt.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:492:22)
+
+[2026-03-28T00:49:42.044Z] GET /dashboard/summary?startDate=2026-03-26T03%3A00%3A00.000Z&endDate=2026-03-28T03%3A00%3A00.000Z
+PrismaClientValidationError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+{
+  where: {
+    status: "FINISHED",
+    createdAt: {
+      gte: new Date("Invalid Date"),
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+      lte: new Date("Invalid Date")
+    }
+  },
+  select: {
+    realProfit: true,
+    createdAt: true,
+    bets: {
+      select: {
+        stake: true
+      }
+    }
+  },
+  orderBy: {
+    createdAt: "asc"
+  }
+}
+
+Invalid value for argument `gte`: Provided Date object is invalid. Expected Date.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at e.throwValidationError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:458:5)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:288:15)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeFieldSelection (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:127:16)
+    at pr (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:116:12)
+
+[2026-03-28T00:49:45.649Z] GET /dashboard/summary?startDate=2026-03-26T03%3A00%3A00.000Z&endDate=2026-03-28T03%3A00%3A00.000Z
+PrismaClientValidationError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+{
+  where: {
+    status: "FINISHED",
+    createdAt: {
+      gte: new Date("Invalid Date"),
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+      lte: new Date("Invalid Date")
+    }
+  },
+  select: {
+    realProfit: true,
+    createdAt: true,
+    bets: {
+      select: {
+        stake: true
+      }
+    }
+  },
+  orderBy: {
+    createdAt: "asc"
+  }
+}
+
+Invalid value for argument `gte`: Provided Date object is invalid. Expected Date.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at e.throwValidationError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:458:5)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:288:15)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeFieldSelection (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:127:16)
+    at pr (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:116:12)
+
+[2026-03-28T00:49:50.254Z] GET /dashboard/summary?startDate=2026-03-26T03%3A00%3A00.000Z&endDate=2026-03-28T03%3A00%3A00.000Z
+PrismaClientValidationError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+{
+  where: {
+    status: "FINISHED",
+    createdAt: {
+      gte: new Date("Invalid Date"),
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+      lte: new Date("Invalid Date")
+    }
+  },
+  select: {
+    realProfit: true,
+    createdAt: true,
+    bets: {
+      select: {
+        stake: true
+      }
+    }
+  },
+  orderBy: {
+    createdAt: "asc"
+  }
+}
+
+Invalid value for argument `gte`: Provided Date object is invalid. Expected Date.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at e.throwValidationError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:458:5)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:288:15)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeFieldSelection (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:127:16)
+    at pr (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:116:12)
+
+[2026-03-28T00:49:50.841Z] GET /dashboard/summary?startDate=2026-03-26T03%3A00%3A00.000Z&endDate=2026-03-28T03%3A00%3A00.000Z
+PrismaClientValidationError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+{
+  where: {
+    status: "FINISHED",
+    createdAt: {
+      gte: new Date("Invalid Date"),
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+      lte: new Date("Invalid Date")
+    }
+  },
+  select: {
+    realProfit: true,
+    createdAt: true,
+    bets: {
+      select: {
+        stake: true
+      }
+    }
+  },
+  orderBy: {
+    createdAt: "asc"
+  }
+}
+
+Invalid value for argument `gte`: Provided Date object is invalid. Expected Date.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at e.throwValidationError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:458:5)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:288:15)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeFieldSelection (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:127:16)
+    at pr (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:116:12)
+
+[2026-03-28T00:50:09.754Z] GET /dashboard/summary?startDate=2026-03-26T03%3A00%3A00.000Z&endDate=2026-03-28T03%3A00%3A00.000Z
+PrismaClientValidationError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+{
+  where: {
+    status: "FINISHED",
+    createdAt: {
+      gte: new Date("Invalid Date"),
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+      lte: new Date("Invalid Date")
+    }
+  },
+  select: {
+    realProfit: true,
+    createdAt: true,
+    bets: {
+      select: {
+        stake: true
+      }
+    }
+  },
+  orderBy: {
+    createdAt: "asc"
+  }
+}
+
+Invalid value for argument `gte`: Provided Date object is invalid. Expected Date.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at e.throwValidationError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:458:5)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:288:15)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeFieldSelection (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:127:16)
+    at pr (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:116:12)
+
+[2026-03-28T00:50:11.641Z] GET /dashboard/summary?startDate=2026-03-01T03%3A00%3A00.000Z&endDate=2026-03-28T00%3A50%3A11.606Z
+PrismaClientValidationError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+{
+  where: {
+    status: "FINISHED",
+    createdAt: {
+      gte: new Date("Invalid Date"),
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+      lte: new Date("Invalid Date")
+    }
+  },
+  select: {
+    realProfit: true,
+    createdAt: true,
+    bets: {
+      select: {
+        stake: true
+      }
+    }
+  },
+  orderBy: {
+    createdAt: "asc"
+  }
+}
+
+Invalid value for argument `gte`: Provided Date object is invalid. Expected Date.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at e.throwValidationError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:458:5)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:288:15)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeArgumentsValue (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:340:12)
+    at serializeArgumentsObject (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:374:21)
+    at serializeFieldSelection (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:127:16)
+    at pr (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\jsonProtocol\serializeJsonQuery.ts:116:12)
+
+[2026-03-28T07:45:10.162Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:10.166Z] GET /freebets
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async FreebetsService.findAll (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\freebets\freebets.service.ts:28:22)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:10.227Z] GET /dashboard/summary?startDate=2026-03-01T03%3A00%3A00.000Z&endDate=2026-03-28T07%3A45%3A10.011Z
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:10.282Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:10.346Z] GET /freebets
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async FreebetsService.findAll (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\freebets\freebets.service.ts:28:22)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:10.348Z] GET /dashboard/club
+PrismaClientKnownRequestError: 
+Invalid `prisma.account.findMany()` invocation:
+
+
+The table `public.BettingHouse` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async DashboardService.getClubProgress (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:224:22)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:10.412Z] GET /dashboard/summary?startDate=2026-03-01T03%3A00%3A00.000Z&endDate=2026-03-28T07%3A45%3A10.011Z
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:10.414Z] GET /dashboard/club
+PrismaClientKnownRequestError: 
+Invalid `prisma.account.findMany()` invocation:
+
+
+The table `public.BettingHouse` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async DashboardService.getClubProgress (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:224:22)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:11.796Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:15.324Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:15.329Z] GET /dashboard/summary?startDate=2026-03-01T03%3A00%3A00.000Z&endDate=2026-03-28T07%3A45%3A10.011Z
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:17.266Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+
+Invalid input value: valor de entrada é inválido para enum "OperationStatus": "FINISHED"
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 1)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:20.317Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:20.323Z] GET /dashboard/summary?startDate=2026-03-01T03%3A00%3A00.000Z&endDate=2026-03-28T07%3A45%3A10.011Z
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:22.262Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+
+Invalid input value: valor de entrada é inválido para enum "OperationStatus": "FINISHED"
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 1)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:28.130Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+
+Invalid input value: valor de entrada é inválido para enum "OperationStatus": "FINISHED"
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 1)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:28.139Z] GET /dashboard/summary?startDate=2026-03-01T03%3A00%3A00.000Z&endDate=2026-03-28T07%3A45%3A10.011Z
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:28.148Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+
+Invalid input value: valor de entrada é inválido para enum "OperationStatus": "FINISHED"
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 1)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:30.322Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+
+Invalid input value: valor de entrada é inválido para enum "OperationStatus": "FINISHED"
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 1)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:30.326Z] GET /dashboard/summary?startDate=2026-03-01T03%3A00%3A00.000Z&endDate=2026-03-28T07%3A45%3A10.011Z
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+
+Invalid input value: valor de entrada é inválido para enum "OperationStatus": "FINISHED"
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 1)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:32.273Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+
+Invalid input value: valor de entrada é inválido para enum "OperationStatus": "FINISHED"
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 1)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:35.327Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+
+Invalid input value: valor de entrada é inválido para enum "OperationStatus": "FINISHED"
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 1)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:35.352Z] GET /dashboard/summary?startDate=2026-03-01T03%3A00%3A00.000Z&endDate=2026-03-28T07%3A45%3A10.011Z
+PrismaClientKnownRequestError: 
+Invalid `prisma.freebet.findMany()` invocation:
+
+
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 2)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-28T07:45:37.265Z] GET /dashboard/summary
+PrismaClientKnownRequestError: 
+Invalid `prisma.operation.findMany()` invocation:
+
+
+Invalid input value: valor de entrada é inválido para enum "OperationStatus": "FINISHED"
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async Promise.all (index 1)
+    at async DashboardService.getSummary (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\src\modules\dashboard\dashboard.service.ts:35:59)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+

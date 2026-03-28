@@ -1,0 +1,9 @@
+SELECT 'User' as table, count(*) FROM "User"
+UNION ALL SELECT 'BettingHouse', count(*) FROM "BettingHouse"
+UNION ALL SELECT 'CpfProfile', count(*) FROM "CpfProfile"
+UNION ALL SELECT 'Account', count(*) FROM "Account"
+UNION ALL SELECT 'Operation', count(*) FROM "Operation"
+UNION ALL SELECT 'Bet', count(*) FROM "Bet"
+UNION ALL SELECT 'Freebet', count(*) FROM "Freebet"
+UNION ALL SELECT 'WeeklyClub', count(*) FROM "WeeklyClub"
+UNION ALL SELECT 'AuditLog', count(*) FROM "AuditLog";

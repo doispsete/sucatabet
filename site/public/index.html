@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Sucata Bet</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00FF9D",
+            "secondary": "#00D1FF",
+            "surface": "#000000",
+            "surface-variant": "#0D0D0D",
+            "surface-card": "#0A0A0A",
+            "surface-border": "#1A1A1A",
+            "on-surface": "#FFFFFF",
+            "on-surface-variant": "#808080"
+          },
+          fontFamily: {
+            "headline": ["Manrope", "sans-serif"],
+            "body": ["Manrope", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      background-color: #000000;
+      color: white;
+      font-family: 'Manrope', sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .glass-card {
+      background: #0A0A0A;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card:hover {
+      box-shadow: 0 0 20px rgba(0, 255, 157, 0.04);
+      border-color: rgba(0, 255, 157, 0.12);
+    }
+
+    .tilt-card {
+      transform-style: preserve-3d;
+      perspective: 1200px;
+    }
+
+    .sidebar-item {
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-item:hover {
+      background: rgba(0, 255, 157, 0.05);
+      color: #00FF9D;
+    }
+
+    .sidebar-item.active {
+      background: rgba(0, 255, 157, 0.1);
+      color: #00FF9D;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #000000;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #1A1A1A;
+      border-radius: 10px;
+    }
+
+    .interactive-card {
+      transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    }
+  </style>
+</head>
+
+<body class="overflow-hidden flex">
+  <!-- Sidebar -->
+  <aside class="w-64 h-screen border-r border-white/5 flex flex-col bg-black z-50">
+    <div class="p-8 mb-4">
+      <h1 class="text-xl font-extrabold tracking-tighter text-white font-headline">
+        <span class="bg-primary text-black px-1 mr-1 rounded-sm"><span
+            class="material-symbols-outlined align-middle text-sm">database</span></span>
+        SUCATA BET
+      </h1>
+      <p class="text-[9px] text-gray-500 uppercase tracking-widest mt-1">SISTEMMA DE SUREBET</p>
+    </div>
+    <nav class="flex-1 px-4 space-y-2">
+      <a class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 tracking-tight"
+        href="index.html">
+        <span class="material-symbols-outlined text-xl">grid_view</span>
+        DASHBOARD
+      </a>
+      <a class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 tracking-tight"
+        href="index.html">
+        <span class="material-symbols-outlined text-xl">swap_horiz</span>
+        OPERAÇÕES
+      </a>
+      <a class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 tracking-tight"
+        href="index.html">
+        <span class="material-symbols-outlined text-xl">redeem</span>
+        FREEBETS
+      </a>
+      <a class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 tracking-tight"
+        href="contas.html">
+        <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+        CONTAS
+      </a>
+      <a class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 tracking-tight"
+        href="index.html">
+        <span class="material-symbols-outlined text-xl">admin_panel_settings</span>
+        ADMIN
+      </a>
+    </nav>
+    <div class="p-4 mt-auto space-y-6">
+      <button
+        class="w-full py-4 bg-primary text-black font-extrabold rounded-full flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_20px_rgba(0,255,157,0.2)]">
+        <span class="material-symbols-outlined font-bold">add</span>
+        Nova Operação
+      </button>
+      <div class="space-y-1">
+        <a class="flex items-center gap-3 px-4 py-2 text-xs font-bold text-gray-500 hover:text-white transition-colors"
+          href="index.html">
+          <span class="material-symbols-outlined text-lg">settings</span> Ajustes
+        </a>
+        <a class="flex items-center gap-3 px-4 py-2 text-xs font-bold text-gray-500 hover:text-white transition-colors"
+          href="index.html">
+          <span class="material-symbols-outlined text-lg">help_outline</span> Suporte
+        </a>
+      </div>
+      <div class="flex items-center gap-3 px-2 py-4 border-t border-white/5">
+        <div class="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+          <img alt="User" class="w-full h-full object-cover"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD8G2hpNSOxAAnAUmEhamHXkyv6Wm-myYOpobaaoz7Ds3SSbXtDxeQ_TXus_FPI3vn21RMDniEnGwnAKjvMXl-yKW-Mbr8sfdnLHkolVOn4Ctnq0LHFfgvTm5qgZzOzgc6XC-wFTLboQ26P68ahPCH40gXLMyc3hDIHN0hMmqLhTledRIKvd56-cbnn8bYKFON_qUWuuGQnJm2RAR0d_voMEA33PI04XcdWRJCW70Dbb47i0ojMrsZruiffeW6v755YaL5V7kkEKw" />
+        </div>
+        <div>
+          <p class="text-xs font-bold">Tarata Tita</p>
+          <p class="text-[10px] text-gray-500">Tarata Tata</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <!-- Main Content -->
+  <main class="flex-1 h-screen overflow-y-auto bg-black p-8">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-10">
+      <div class="flex items-center gap-10">
+        <h2 id="page-title" class="text-2xl font-extrabold font-headline">Dashboard</h2>
+        <nav class="flex gap-8">
+          <a class="text-primary font-bold text-xs uppercase tracking-widest border-b-2 border-primary pb-1"
+            href="index.html">Principal</a>
+          <a class="text-gray-500 hover:text-white font-bold text-xs uppercase tracking-widest transition-colors"
+            href="calculadora.html">Calculadora</a>
+          <a class="text-gray-500 hover:text-white font-bold text-xs uppercase tracking-widest transition-colors"
+            href="alertas.html">Alertas</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">search</span>
+          <input
+            class="bg-[#111] border-none rounded-xl pl-10 pr-4 py-2 text-xs w-64 focus:ring-1 focus:ring-primary/50 text-white placeholder:text-gray-600"
+            placeholder="Pesquisar Operações..." type="text" />
+        </div>
+        <button
+          class="w-10 h-10 flex items-center justify-center bg-[#111] rounded-xl text-gray-400 hover:text-white transition-colors relative">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-primary rounded-full"></span>
+        </button>
+        <button
+          class="bg-primary/10 border border-primary/20 text-primary px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary/20 transition-all">
+          Banca
+        </button>
+      </div>
+    </header>
+    <!-- Top Grid Cards -->
+    <div class="grid grid-cols-12 gap-6 mb-8">
+      <!-- Banca Total -->
+      <div
+        class="col-span-3 glass-card p-6 rounded-3xl bg-gradient-to-br from-secondary/20 to-transparent tilt-card interactive-card">
+        <div class="flex justify-between items-start mb-6">
+          <div>
+            <p class="text-[9px] font-bold text-white/60 uppercase tracking-widest mb-1">Banca Total</p>
+            <h3 class="text-3xl font-extrabold text-white">R$ 82.850,00</h3>
+          </div>
+          <div class="flex gap-2">
+            <span class="material-symbols-outlined text-white/40 text-lg">view_carousel</span>
+            <button
+              class="material-symbols-outlined text-white/40 text-lg hover:text-primary transition-colors">north_east</button>
+          </div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md rounded-lg px-2 py-1 inline-flex items-center gap-1">
+          <span class="text-[10px] font-bold text-primary">+12.4%</span>
+          <span class="text-[9px] text-white/40 uppercase">este mês</span>
+        </div>
+        <span
+          class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-white opacity-5 pointer-events-none">payments</span>
+      </div>
+      <!-- Disponível -->
+      <div class="col-span-2 glass-card p-6 rounded-3xl tilt-card interactive-card">
+        <div class="flex justify-between items-start mb-6">
+          <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Disponível</p>
+          <div class="flex gap-2 text-primary">
+            <span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+            <button
+              class="material-symbols-outlined text-white/40 text-lg hover:text-primary transition-colors">north_east</button>
+          </div>
+        </div>
+        <h3 class="text-2xl font-extrabold text-primary mb-1">R$ 12.140,50</h3>
+        <p class="text-[10px] text-gray-500">Pronto para operar</p>
+      </div>
+      <!-- Em Operação -->
+      <div class="col-span-3 glass-card p-6 rounded-3xl tilt-card interactive-card">
+        <div class="flex justify-between items-start mb-6">
+          <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Em Operação</p>
+          <div class="flex gap-2 text-primary">
+            <span class="material-symbols-outlined text-lg">sync</span>
+            <button
+              class="material-symbols-outlined text-white/40 text-lg hover:text-primary transition-colors">north_east</button>
+          </div>
+        </div>
+        <h3 class="text-3xl font-extrabold text-primary mb-1">R$ 30.709,50</h3>
+        <p class="text-[10px] text-gray-500">Em operações abertas</p>
+      </div>
+      <!-- Freebets Section -->
+      <div class="col-span-4 glass-card p-6 rounded-3xl tilt-card interactive-card">
+        <div class="flex justify-between items-start mb-4">
+          <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Freebets Próximas</p>
+          <div class="flex gap-2">
+            <span class="material-symbols-outlined text-primary text-lg">redeem</span>
+            <button
+              class="material-symbols-outlined text-white/40 text-lg hover:text-primary transition-colors">north_east</button>
+          </div>
+        </div>
+        <div class="space-y-3 mt-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]"></div>
+              <span class="text-xs font-bold">Betano</span>
+            </div>
+            <div class="text-right">
+              <p class="text-xs font-black text-white">R$ 50,00</p>
+              <p class="text-[9px] text-red-500 font-bold uppercase">2h restantes</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-2 rounded-full bg-orange-400 shadow-[0_0_8px_rgba(251,146,60,0.4)]"></div>
+              <span class="text-xs font-bold">Bet365</span>
+            </div>
+            <div class="text-right">
+              <p class="text-xs font-black text-white">R$ 100,00</p>
+              <p class="text-[9px] text-orange-400 font-bold uppercase">6h restantes</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(0,255,157,0.4)]"></div>
+              <span class="text-xs font-bold">Sportingbet</span>
+            </div>
+            <div class="text-right">
+              <p class="text-xs font-black text-white">R$ 25,00</p>
+              <p class="text-[9px] text-primary font-bold uppercase">12h restantes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Analytics Row -->
+    <div class="grid grid-cols-12 gap-6 mb-8">
+      <!-- Lucro Acumulado -->
+      <div class="col-span-5 glass-card p-8 rounded-[40px] tilt-card interactive-card">
+        <div class="flex justify-between items-start mb-8">
+          <div>
+            <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Lucro Acumulado (Mês)</p>
+            <h3 class="text-4xl font-extrabold text-primary tracking-tight">R$ 8.420,15</h3>
+          </div>
+          <button
+            class="material-symbols-outlined text-white/40 hover:text-primary transition-colors">north_east</button>
+        </div>
+        <div class="flex items-end gap-3 h-28 mb-8">
+          <div class="flex-1 bg-white/5 rounded-full h-[40%] hover:bg-primary/20 transition-all"></div>
+          <div class="flex-1 bg-white/5 rounded-full h-[60%] hover:bg-primary/20 transition-all"></div>
+          <div class="flex-1 bg-white/5 rounded-full h-[50%] hover:bg-primary/20 transition-all"></div>
+          <div class="flex-1 bg-primary rounded-full h-[100%] shadow-[0_0_10px_rgba(0,255,157,0.2)]"></div>
+          <div class="flex-1 bg-primary rounded-full h-[85%] shadow-[0_0_8px_rgba(0,255,157,0.15)]"></div>
+          <div class="flex-1 bg-primary rounded-full h-[70%] shadow-[0_0_8px_rgba(0,255,157,0.1)]"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-y-4 gap-x-8">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded bg-primary"></div>
+              <span class="text-[11px] font-bold text-gray-400">Extração</span>
+            </div>
+            <span class="text-xs font-bold">R$ 3.200,00</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded bg-secondary"></div>
+              <span class="text-[11px] font-bold text-gray-400">Aumentos</span>
+            </div>
+            <span class="text-xs font-bold">R$ 2.850,15</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded bg-yellow-400"></div>
+              <span class="text-[11px] font-bold text-gray-400">SO</span>
+            </div>
+            <span class="text-xs font-bold">R$ 1.120,00</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded bg-white/40"></div>
+              <span class="text-[11px] font-bold text-gray-400">TD</span>
+            </div>
+            <span class="text-xs font-bold">R$ 1.250,00</span>
+          </div>
+        </div>
+      </div>
+      <!-- Clube 365 -->
+      <div class="col-span-3 glass-card p-8 rounded-[40px] tilt-card interactive-card">
+        <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-yellow-500"
+              style="font-variation-settings: 'FILL' 1;">stars</span>
+            <h4 class="text-sm font-bold uppercase tracking-widest">Clube 365</h4>
+          </div>
+          <button
+            class="material-symbols-outlined text-white/40 hover:text-primary transition-colors">north_east</button>
+        </div>
+        <div class="space-y-6">
+          <div>
+            <div class="flex justify-between text-[10px] mb-2 font-bold">
+              <span class="text-gray-400">161380 (Caike)</span>
+              <span class="text-white">R$ 1.300 / 1.500</span>
+            </div>
+            <div class="w-full bg-white/5 h-1.5 rounded-full">
+              <div class="bg-primary h-full w-[85%] rounded-full"></div>
+            </div>
+            <p class="text-[9px] text-primary mt-1 font-bold">BET365</p>
+          </div>
+          <div>
+            <div class="flex justify-between text-[10px] mb-2 font-bold">
+              <span class="text-gray-400">204592 (Bruna)</span>
+              <span class="text-white">R$ 840 / 1.500</span>
+            </div>
+            <div class="w-full bg-white/5 h-1.5 rounded-full">
+              <div class="bg-primary h-full w-[55%] rounded-full"></div>
+            </div>
+            <p class="text-[9px] text-primary mt-1 font-bold">BET365</p>
+          </div>
+          <div>
+            <div class="flex justify-between text-[10px] mb-2 font-bold">
+              <span class="text-gray-400">192843 (Lucas)</span>
+              <span class="text-white">R$ 1.480 / 1.500</span>
+            </div>
+            <div class="w-full bg-white/5 h-1.5 rounded-full">
+              <div class="bg-primary h-full w-[95%] rounded-full"></div>
+            </div>
+            <p class="text-[9px] text-primary mt-1 font-bold">BET365</p>
+          </div>
+        </div>
+        <div class="mt-10 pt-6 border-t border-white/5 flex justify-between items-center">
+          <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Progresso Total</span>
+          <span class="text-primary font-black">68%</span>
+        </div>
+      </div>
+      <!-- Resultado Operações -->
+      <div class="col-span-4 glass-card p-8 rounded-[40px] tilt-card interactive-card">
+        <div class="flex justify-between items-start mb-8">
+          <h4 class="text-sm font-bold uppercase tracking-widest">Resultado das Operações</h4>
+          <button
+            class="material-symbols-outlined text-white/40 hover:text-primary transition-colors">north_east</button>
+        </div>
+        <div class="flex items-center gap-10">
+          <div class="relative w-40 h-40">
+            <svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+              <circle class="stroke-white/5" cx="18" cy="18" fill="none" r="15.5" stroke-width="3"></circle>
+              <circle class="stroke-primary" cx="18" cy="18" fill="none" r="15.5" stroke-dasharray="45 100"
+                stroke-linecap="round" stroke-width="3"></circle>
+              <circle class="stroke-secondary" cx="18" cy="18" fill="none" r="15.5" stroke-dasharray="30 100"
+                stroke-dashoffset="-45" stroke-linecap="round" stroke-width="3"></circle>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div class="w-24 h-24 rounded-full bg-black flex items-center justify-center border border-white/5">
+                <div class="text-center">
+                  <span class="block text-[8px] text-gray-500 uppercase font-bold">Total</span>
+                  <span class="text-xl font-black">100%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-2 rounded-full bg-primary"></div>
+              <span class="text-xs text-gray-400 font-bold">Normal <span class="text-white ml-2">45%</span></span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-2 rounded-full bg-secondary"></div>
+              <span class="text-xs text-gray-400 font-bold">Proteção <span class="text-white ml-2">30%</span></span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-2 rounded-full bg-white/20"></div>
+              <span class="text-xs text-gray-400 font-bold">Duplo <span class="text-white ml-2">25%</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Recent Operations Table -->
+    <section class="bg-[#0A0A0A] rounded-[40px] border border-white/5 overflow-hidden">
+      <div class="p-8 flex justify-between items-center border-b border-white/5">
+        <h3 class="text-xl font-extrabold">Operações Recentes</h3>
+        <button
+          class="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-widest hover:underline transition-all">
+          VER TUDO <span class="material-symbols-outlined text-sm">north_east</span>
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="text-[10px] uppercase tracking-[0.2em] text-gray-500 border-b border-white/5">
+              <th class="px-8 py-6 font-bold">Data/Hora</th>
+              <th class="px-8 py-6 font-bold">Evento / Mercado</th>
+              <th class="px-8 py-6 font-bold">Modo</th>
+              <th class="px-8 py-6 font-bold">Investimento</th>
+              <th class="px-8 py-6 font-bold">Retorno</th>
+              <th class="px-8 py-6 font-bold">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5">
+            <tr class="hover:bg-white/[0.02] transition-colors group">
+              <td class="px-8 py-6">
+                <p class="text-sm font-bold">14 Out, 15:30</p>
+                <p class="text-[10px] text-gray-500 font-bold">#882193</p>
+              </td>
+              <td class="px-8 py-6">
+                <p class="text-sm font-bold">Real Madrid vs Barcelona</p>
+                <p class="text-[10px] text-gray-500 font-bold">Over 2.5 Goals</p>
+              </td>
+              <td class="px-8 py-6">
+                <span
+                  class="px-3 py-1 bg-primary/10 text-primary text-[9px] font-black tracking-widest rounded-md uppercase">DUPLO</span>
+              </td>
+              <td class="px-8 py-6 text-sm font-bold text-gray-300">R$ 500,00</td>
+              <td class="px-8 py-6 text-sm font-black text-primary">+R$ 120,50</td>
+              <td class="px-8 py-6">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(0,255,157,0.6)]"></div>
+                  <span class="text-[10px] font-black uppercase tracking-widest text-white">FINALIZADO</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-white/[0.02] transition-colors group">
+              <td class="px-8 py-6">
+                <p class="text-sm font-bold">14 Out, 14:15</p>
+                <p class="text-[10px] text-gray-500 font-bold">#882188</p>
+              </td>
+              <td class="px-8 py-6">
+                <p class="text-sm font-bold">Man City vs Arsenal</p>
+                <p class="text-[10px] text-gray-500 font-bold">Match Result: 1</p>
+              </td>
+              <td class="px-8 py-6">
+                <span
+                  class="px-3 py-1 bg-white/5 text-gray-400 text-[9px] font-black tracking-widest rounded-md uppercase border border-white/10">PROTEÇÃO</span>
+              </td>
+              <td class="px-8 py-6 text-sm font-bold text-gray-300">R$ 1.200,00</td>
+              <td class="px-8 py-6 text-sm font-black text-primary">+R$ 240,00</td>
+              <td class="px-8 py-6">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(0,255,157,0.6)]"></div>
+                  <span class="text-[10px] font-black uppercase tracking-widest text-white">FINALIZADO</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-white/[0.02] transition-colors group">
+              <td class="px-8 py-6">
+                <p class="text-sm font-bold">14 Out, 12:00</p>
+                <p class="text-[10px] text-gray-500 font-bold">#882180</p>
+              </td>
+              <td class="px-8 py-6">
+                <p class="text-sm font-bold">Inter vs Milan</p>
+                <p class="text-[10px] text-gray-500 font-bold">Draw No Bet</p>
+              </td>
+              <td class="px-8 py-6">
+                <span
+                  class="px-3 py-1 bg-primary/10 text-primary text-[9px] font-black tracking-widest rounded-md uppercase">DUPLO</span>
+              </td>
+              <td class="px-8 py-6 text-sm font-bold text-gray-300">R$ 350,00</td>
+              <td class="px-8 py-6 text-sm font-bold text-gray-500 text-sm tracking-tight">R$ 0,00</td>
+              <td class="px-8 py-6">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(0,209,255,0.6)]"></div>
+                  <span class="text-[10px] font-black uppercase tracking-widest text-white">PENDENTE</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script>
+    // Softer mouse interaction for tilt cards
+    const cards = document.querySelectorAll('.interactive-card');
+
+    cards.forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        // Reduced rotation intensity from 10 to 25 for softer feel
+        const rotateX = (y - centerY) / 25;
+        const rotateY = (centerX - x) / 25;
+
+        card.style.setProperty('--rx', `${rotateX}deg`);
+        card.style.setProperty('--ry', `${rotateY}deg`);
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+      });
+    });
+  </script>
+  <script>localStorage.setItem("sucatabet_title", "Dashboard");</script>
+</body>
+
+</html>

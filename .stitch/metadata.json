@@ -1,0 +1,67 @@
+{
+  "name": "projects/4175510724711862502",
+  "projectId": "4175510724711862502",
+  "title": "Sucata Bet Dashboard",
+  "visibility": "PUBLIC",
+  "createTime": "2026-03-25T01:36:21.912082Z",
+  "updateTime": "2026-03-25T02:53:33.376133Z",
+  "projectType": "TEXT_TO_UI_PRO",
+  "origin": "STITCH",
+  "deviceType": "DESKTOP",
+  "designTheme": {
+    "colorMode": "DARK",
+    "font": "MANROPE",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#00FF9D",
+    "headlineFont": "MANROPE",
+    "bodyFont": "INTER",
+    "labelFont": "INTER"
+  },
+  "screens": {
+    "0103ddfe43f54487a7f5bb21d77b0f74": {
+      "id": "0103ddfe43f54487a7f5bb21d77b0f74",
+      "sourceScreen": "projects/4175510724711862502/screens/0103ddfe43f54487a7f5bb21d77b0f74",
+      "x": 2195,
+      "width": 1990,
+      "height": 1024
+    },
+    "1d4bf144-3e85-41ac-92fa-5e20f6fb551d": {
+      "id": "1d4bf144-3e85-41ac-92fa-5e20f6fb551d",
+      "sourceScreen": "projects/4175510724711862502/screens/2894197587416998926",
+      "width": 787,
+      "height": 800
+    },
+    "4cf62e895cae4cb8adbab4e017c23447": {
+      "id": "4cf62e895cae4cb8adbab4e017c23447",
+      "sourceScreen": "projects/4175510724711862502/screens/4cf62e895cae4cb8adbab4e017c23447",
+      "x": 4249,
+      "width": 1781,
+      "height": 1024
+    },
+    "ba31cf8122db44cdaea7fa0e90a3d6d2": {
+      "id": "ba31cf8122db44cdaea7fa0e90a3d6d2",
+      "sourceScreen": "projects/4175510724711862502/screens/ba31cf8122db44cdaea7fa0e90a3d6d2",
+      "x": 8782,
+      "width": 1280,
+      "height": 1024
+    },
+    "c67523ac9ca84641b3731d9fb4b70fd9": {
+      "id": "c67523ac9ca84641b3731d9fb4b70fd9",
+      "sourceScreen": "projects/4175510724711862502/screens/c67523ac9ca84641b3731d9fb4b70fd9",
+      "x": 1139,
+      "y": 575,
+      "width": 1946,
+      "height": 1081
+    },
+    "ec919669a05e4d69924e93879d944b0f": {
+      "id": "ec919669a05e4d69924e93879d944b0f",
+      "sourceScreen": "projects/4175510724711862502/screens/ec919669a05e4d69924e93879d944b0f",
+      "x": 851,
+      "width": 1280,
+      "height": 1024
+    }
+  },
+  "metadata": {
+    "userRole": "OWNER"
+  }
+}

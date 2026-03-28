@@ -1,0 +1,24 @@
+
+> web@0.1.0 build
+> next build
+
+▲ Next.js 16.2.1 (Turbopack)
+- Environments: .env.local
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.9s
+  Running TypeScript ...
+Failed to type check.
+
+./src/components/LayoutWrapper.tsx:106:10
+Type error: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+
+  [90m104 |[0m         }}
+  [90m105 |[0m       >
+[31m[1m>[0m [90m106 |[0m         <[33mReact[0m.[33mSuspense[0m fallback={<div className=[32m"fixed top-0 left-0 right-0 h-20 bg-[#05...[0m
+  [90m    |[0m          [31m[1m^[0m
+  [90m107 |[0m           <[33mTopbar[0m isMobile={isMobile} isHalf={isHalf} isCollapsed={isHalf || !isDashboard...
+  [90m108 |[0m         </[33mReact[0m.[33mSuspense[0m>
+  [90m109 |[0m         <main className=[32m"flex-1 overflow-y-auto pt-[100px] pb-10 px-3 md:px-8 lg:px-10 cu...[0m
+Next.js build worker exited with code: 1 and signal: null

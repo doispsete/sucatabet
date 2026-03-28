@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+}
+
+enum OperationType {
+  NORMAL
+  FREEBET_GEN
+  EXTRACAO
+  BOOST_25
+  BOOST_50
+  SUPERODDS
+  TENTATIVA_DUPLO
+}
+
+enum OperationCategory {
+  GERACAO
+  CONVERSAO
+  BOOST
+  RISCO
+}
+
+enum OperationStatus {
+  PENDING
+  FINISHED
+  CASHOUT
+  VOID
+}
+
+enum OperationResult {
+  NORMAL
+  DUPLO
+  PROTECAO
+}
+
+model User {
+  id          String       @id @default(uuid())
+  email       String       @unique
+  password    String       // hash
+  name        String
+  role        UserRole     @default(OPERATOR)
+  cpfProfiles CpfProfile[]
+  operations  Operation[]
+  logs        AuditLog[]
+  freebets    Freebet[]
+}
+
+model CpfProfile {
+  id        String    @id @default(uuid())
+  cpf       String    @unique // 6 primeiros dígitos para display
+  name      String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  accounts  Account[]
+}
+
+model BettingHouse {
+  id        String    @id @default(uuid())
+  name      String
+  domain    String?
+  logoUrl   String?   // gerado via favicon automático
+  accounts  Account[]
+}
+
+model Account {
+  id             String       @id @default(uuid())
+  balance        Decimal      @default(0.0)
+  inOperation    Decimal      @default(0.0)
+  cpfProfileId   String
+  cpfProfile     CpfProfile   @relation(fields: [cpfProfileId], references: [id])
+  bettingHouseId String
+  bettingHouse   BettingHouse @relation(fields: [bettingHouseId], references: [id])
+  bets           Bet[]
+  freebets       Freebet[]
+  weeklyClubs    WeeklyClub[] 
+
+  @@index([cpfProfileId])
+  @@index([bettingHouseId])
+  @@unique([cpfProfileId, bettingHouseId])
+}
+
+model Operation {
+  id               String            @id @default(uuid())
+  type             OperationType
+  category         OperationCategory
+  status           OperationStatus   @default(PENDING)
+  result           OperationResult?
+  expectedProfit   Decimal
+  realProfit       Decimal?
+  profitDifference Decimal?
+  userId           String
+  user             User              @relation(fields: [userId], references: [id])
+  bets             Bet[]
+  freebet          Freebet?
+  description      String?
+  createdAt        DateTime          @default(now())
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Bet {
+  id             String    @id @default(uuid())
+  odds           Decimal
+  stake          Decimal
+  cost           Decimal   @default(0.0)
+  expectedProfit Decimal
+  side           String    @default("BACK") // BACK ou LAY
+  type           String    @default("Normal") // Normal, Freebet ou Aumento
+  operationId    String
+  operation      Operation @relation(fields: [operationId], references: [id])
+  accountId      String
+  account        Account   @relation(fields: [accountId], references: [id])
+  isWinner       Boolean   @default(false)
+  commission     Decimal   @default(0.0)
+  isBenefit      Boolean   @default(false)
+
+  @@index([operationId])
+  @@index([accountId])
+}
+
+model Freebet {
+  id        String    @id @default(uuid())
+  value     Decimal
+  origin    String
+  expiresAt DateTime
+  usedAt    DateTime? 
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  accountId String
+  account   Account   @relation(fields: [accountId], references: [id])
+  operationId String?   @unique
+  operation   Operation? @relation(fields: [operationId], references: [id])
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String   // CREATE | UPDATE | DELETE | DEPOSIT | WITHDRAW | CLOSE | VOID | RESET
+  entity     String
+  entityId   String
+  oldValue   Json?
+  newValue   Json?
+  executedBy String
+  user       User     @relation(fields: [executedBy], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@index([executedBy])
+  @@index([createdAt])
+}
+
+model WeeklyClub {
+  id         String   @id @default(uuid())
+  accountId  String
+  account    Account  @relation(fields: [accountId], references: [id])
+  weekStart  DateTime
+  totalStake Decimal  @default(0.0)
+
+  @@index([accountId])
+  @@index([weekStart])
+  @@unique([accountId, weekStart])
+}
