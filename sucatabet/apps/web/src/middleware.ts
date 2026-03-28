@@ -7,23 +7,10 @@ export function middleware(request: NextRequest) {
   const isLoginPage = pathname === '/login';
   const isApiRoute = pathname.startsWith('/api');
 
-  // 1. Redirecionar para login se não houver token (exceto p/ login e API pública)
+  // Proteção de rotas: se não houver token, redireciona para login
+  // (Ignora páginas de login, arquivos estáticos e chamadas de API)
   if (!token && !isLoginPage && !isApiRoute) {
     return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  // 2. Injetar o header Authorization nas requisições p/ a API
-  if (isApiRoute) {
-    const requestHeaders = new Headers(request.headers);
-    if (token) {
-      requestHeaders.set('Authorization', `Bearer ${token}`);
-    }
-
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
   }
 
   return NextResponse.next();

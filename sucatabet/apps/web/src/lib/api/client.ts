@@ -13,15 +13,24 @@ export class ApiError extends Error {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3006';
 
 
+function getTokenFromCookie(): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/(?:^|; )token=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 async function request<T>(path: string, options: RequestInit & { retries?: number; _retryCount?: number } = {}): Promise<T> {
   const { retries = 2, _retryCount = 0, ...fetchOptions } = options;
   const url = `${API_URL}${path}`;
+
+  const token = getTokenFromCookie();
   
   const defaultOptions: RequestInit = {
     ...fetchOptions,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       ...fetchOptions.headers,
     },
   };
