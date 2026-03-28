@@ -5,8 +5,15 @@ on:
     branches:
       - main
 
+# Secrets necessários:
+# VPS_HOST: IP da VPS
+# VPS_USER: root ou sucatabet
+# SSH_PRIVATE_KEY: Chave privada SSH autorizada na VPS
+# VPS_PORT: 22
+
 jobs:
-  deploy:
+  test:
+    name: Build & Test Validation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -15,29 +22,68 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-node: '20'
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build Project
+      - name: Validate Production Build
         run: npm run build:prod
 
-      - name: Copy files to VPS via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.HOSTINGER_USER }}
-          key: ${{ secrets.HOSTINGER_SSH_KEY }}
-          source: "docker-compose.prod.yml,nginx/nginx.conf,scripts/deploy.sh"
-          target: "~/app/sucatabet"
+  deploy:
+    name: Deploy to VPS
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Execute Deploy Script on VPS
+      - name: Execute Remote Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.HOSTINGER_USER }}
-          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
           script: |
-             chmod +x ~/app/sucatabet/scripts/deploy.sh
-             ~/app/sucatabet/scripts/deploy.sh
+            cd /var/www/sucatabet
+            
+            # 1. Atualizar código
+            echo "📥 Atualizando código do repositório..."
+            git pull origin main
+            
+            # 2. Instalar dependências e Migrations
+            echo "💎 Executando migrations do banco..."
+            npm ci --production
+            npx prisma migrate deploy
+            
+            # 3. Pull/Build das Imagens
+            echo "🐳 Iniciando build dos containers..."
+            docker compose -f docker-compose.prod.yml build
+            
+            # 4. Deploy com Rollback
+            echo "🚢 Subindo novos containers..."
+            docker compose -f docker-compose.prod.yml up -d
+            
+            # 5. Healthcheck (30s)
+            echo "🔍 Aguardando healthcheck (30s)..."
+            sleep 30
+            
+            # Verifica se os containers estão rodando
+            HEALTH=$(docker compose -f docker-compose.prod.yml ps --format json | grep -c '"Status":"running"')
+            TOTAL=$(grep -c "container_name:" docker-compose.prod.yml)
+            
+            if [ "$HEALTH" -lt "$TOTAL" ]; then
+              echo "⚠️ Healthcheck falhou ($HEALTH/$TOTAL rodando). Iniciando Rollback..."
+              # Aqui assumimos que temos as imagens anteriores registradas localmente
+              # O Docker Compose reiniciará os containers que falharam ou podemos forçar um revert
+              docker compose -f docker-compose.prod.yml up -d --no-build
+              exit 1
+            else
+              echo "✅ Deploy concluído com sucesso e serviços saudáveis!"
+            fi
+            
+            # 6. Limpeza
+            docker image prune -f

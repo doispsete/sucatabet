@@ -41,6 +41,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     try {
       const response = await authService.login({ email, password }) as any;
+      
+      // Armazena o token para o Authorization header nas requisições subsequentes
+      if (response.access_token) {
+        localStorage.setItem('access_token', response.access_token);
+      }
+      
       setUser(response.user);
       router.push('/');
     } catch (error) {
@@ -56,7 +62,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await authService.logout().catch(() => {}); // Final logout attempt
     } finally {
       setUser(null);
-      // Remove token client-side for immediate effect
+      // Remove o token do localStorage e o cookie residual
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('access_token');
+      }
       document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       router.push('/login');
     }
