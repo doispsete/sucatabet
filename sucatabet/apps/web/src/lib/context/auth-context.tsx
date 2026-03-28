@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function initAuth() {
       try {
         // Verifica se o cookie de token existe antes de tentar buscar o usuário
-        const hasToken = typeof document !== 'undefined' && document.cookie.includes('token=');
+        const hasToken = typeof document !== 'undefined' && document.cookie.includes('access_token=');
         if (!hasToken) {
           setIsLoading(false);
           return;
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Armazena o token via cookie para persistência e uso pelo middleware
       if (response.access_token) {
-        document.cookie = `token=${response.access_token}; path=/; max-age=28800; SameSite=Lax`;
+        document.cookie = `access_token=${response.access_token}; path=/; max-age=28800; SameSite=Lax`;
       }
       
       setUser(response.user);
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setUser(null);
       // Remove o token do cookie
-      document.cookie = `token=; path=/; max-age=0`;
+      document.cookie = `access_token=; path=/; max-age=0`;
       router.push('/login');
     }
   };
