@@ -101,6 +101,7 @@ model Operation {
   bets             Bet[]
   freebet          Freebet?
   description      String?
+  generatedFbValue Decimal?
   createdAt        DateTime          @default(now())
 
   @@index([userId])

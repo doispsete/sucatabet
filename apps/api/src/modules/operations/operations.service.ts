@@ -172,11 +172,14 @@ export class OperationsService {
   async create(userId: string, createOperationDto: CreateOperationDto) {
     const category = this.getCategory(createOperationDto.type);
     
-    if (createOperationDto.type === OperationType.EXTRACAO && createOperationDto.freebetId) {
+    if (createOperationDto.type === OperationType.EXTRACAO) {
+      if (!createOperationDto.freebetId) {
+        throw new BadRequestException('Operações de extração exigem uma freebet vinculada');
+      }
       const fb = await this.prisma.freebet.findUnique({ where: { id: createOperationDto.freebetId } });
       const benefitBet = createOperationDto.bets.find(b => b.type === 'Freebet' || b.isBenefit);
-      if (fb && benefitBet && fb.accountId !== benefitBet.accountId) {
-        throw new BadRequestException('A freebet selecionada não pertence à conta da operação de extração');
+      if (!fb || (benefitBet && fb.accountId !== benefitBet.accountId)) {
+        throw new BadRequestException('A freebet selecionada não existe ou não pertence à conta da operação de extração');
       }
     }
 
@@ -236,9 +239,10 @@ export class OperationsService {
           category,
           expectedProfit: operationExpectedProfit,
           description: createOperationDto.description,
+          generatedFbValue: createOperationDto.generatedFbValue ? new Prisma.Decimal(createOperationDto.generatedFbValue) : null,
           userId,
           status: OperationStatus.PENDING,
-        },
+        } as any,
       });
 
       for (const bet of betsToCreate) {
@@ -302,24 +306,6 @@ export class OperationsService {
           data: { 
             operationId: operation.id,
             usedAt: new Date().toISOString()
-          }
-        });
-      }
-
-      // Geração automática de Freebet
-      const benefitBet = createOperationDto.bets.find(b => b.isBenefit);
-      if (createOperationDto.type === OperationType.FREEBET_GEN && (createOperationDto.generatedFbValue || 0) > 0 && benefitBet) {
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + 7); // Default 7 days
-        
-        await tx.freebet.create({
-          data: {
-            value: new Prisma.Decimal(createOperationDto.generatedFbValue || 0),
-            origin: createOperationDto.description || 'Geração automática de Freebet',
-            accountId: benefitBet.accountId,
-            userId,
-            operationId: operation.id,
-            expiresAt,
           }
         });
       }
@@ -427,6 +413,29 @@ export class OperationsService {
         },
       });
 
+      // Criação de Freebet ao Encerramento (Apenas se for WIN ou se o usuário desejar)
+      // Geralmente geramos se o status for FINISHED (encerrada com sucesso)
+      if (operation.type === OperationType.FREEBET_GEN && closeDto.status === OperationStatus.FINISHED) {
+        const benefitBet = operation.bets.find(b => (b as any).isBenefit);
+        const fbValue = (operation as any).generatedFbValue;
+        
+        if (benefitBet && fbValue && (fbValue as any).toNumber() > 0) {
+            const expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + 7);
+            
+            await tx.freebet.create({
+                data: {
+                    value: fbValue,
+                    origin: operation.description || 'Geração via Encerramento de Operação',
+                    accountId: benefitBet.accountId,
+                    userId,
+                    operationId: id,
+                    expiresAt,
+                }
+            });
+        }
+      }
+
       await this.auditLogs.log('CLOSE', 'Operation', id, userId, operation, updated, tx);
       await this.clearUserDashboardCache(userId, role);
 
@@ -514,11 +523,14 @@ export class OperationsService {
       throw new BadRequestException('Apenas operações pendentes podem ser editadas');
     }
 
-    if (updateDto.type === OperationType.EXTRACAO && updateDto.freebetId) {
+    if (updateDto.type === OperationType.EXTRACAO) {
+      if (!updateDto.freebetId) {
+        throw new BadRequestException('Operações de extração exigem uma freebet vinculada');
+      }
       const fb = await this.prisma.freebet.findUnique({ where: { id: updateDto.freebetId } });
       const benefitBet = updateDto.bets.find(b => b.type === 'Freebet' || b.isBenefit);
-      if (fb && benefitBet && fb.accountId !== benefitBet.accountId) {
-        throw new BadRequestException('A freebet selecionada não pertence à conta da operação de extração');
+      if (!fb || (benefitBet && fb.accountId !== benefitBet.accountId)) {
+        throw new BadRequestException('A freebet selecionada não existe ou não pertence à conta da operação de extração');
       }
     }
 
@@ -659,38 +671,9 @@ export class OperationsService {
           category,
           expectedProfit: operationExpectedProfit,
           description: updateDto.description,
-        },
+          generatedFbValue: updateDto.generatedFbValue ? new Prisma.Decimal(updateDto.generatedFbValue) : null,
+        } as any,
       });
-
-      // Sincronização automática de Freebet Gerada
-      if (updateDto.type === OperationType.FREEBET_GEN) {
-        const benefitBet = updateDto.bets.find(b => b.isBenefit);
-        if (benefitBet && (updateDto.generatedFbValue || 0) > 0) {
-          const expiresAt = new Date();
-          expiresAt.setDate(expiresAt.getDate() + 7);
-
-          await tx.freebet.upsert({
-            where: { operationId: id },
-            update: {
-              value: new Prisma.Decimal(updateDto.generatedFbValue || 0),
-              accountId: benefitBet.accountId,
-              origin: updateDto.description || 'Geração automática (editada)',
-            },
-            create: {
-              value: new Prisma.Decimal(updateDto.generatedFbValue || 0),
-              origin: updateDto.description || 'Geração automática de Freebet',
-              accountId: benefitBet.accountId,
-              userId,
-              operationId: id,
-              expiresAt,
-            }
-          });
-        } else {
-          // Se o tipo mudou ou o valor for zero, poderíamos deletar a freebet ligada
-          // Mas vamos apenas atualizar o valor se o campo for nulo
-          await tx.freebet.deleteMany({ where: { operationId: id } });
-        }
-      }
 
       await this.auditLogs.log('UPDATE', 'Operation', id, userId, existingOperation, updated, tx);
       await this.clearUserDashboardCache(userId, role);

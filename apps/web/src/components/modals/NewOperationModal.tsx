@@ -56,7 +56,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
       if (operationToEdit) {
         setType(operationToEdit.type as OperationType);
         setNotes(operationToEdit.description || "");
-        setGeneratedFbValue((operationToEdit as any).freebet?.value?.toString() || "");
+        setGeneratedFbValue(operationToEdit.generatedFbValue?.toString() || "");
         setBets((operationToEdit.bets || []).map((b, i) => ({
           id: b.id || (Date.now() + i).toString(),
           accountId: b.accountId,

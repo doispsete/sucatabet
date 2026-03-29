@@ -102,6 +102,7 @@ export interface Operation {
   result?: OperationResult;
   userId: string;
   description?: string;
+  generatedFbValue?: number;
   createdAt: string;
   bets?: Bet[];
 }
