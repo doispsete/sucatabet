@@ -13,14 +13,14 @@ interface ToastProps {
 
 export function Toast({ message, type, onClose }: ToastProps) {
   useEffect(() => {
-    const timer = setTimeout(onClose, type === 'success' ? 3000 : 5000);
+    const timer = setTimeout(onClose, type === 'success' ? 4000 : 8000);
     return () => clearTimeout(timer);
   }, [type, onClose]);
 
   return (
     <div className={`
-      fixed bottom-8 right-8 z-[100] flex items-center gap-4 p-5 rounded-2xl border-l-[6px] shadow-2xl animate-in slide-in-from-right-4 transition-all
-      bg-[#131313] ${type === 'success' ? 'border-[#03D791] text-[#e5e2e1]' : 'border-[#EF4444] text-[#e5e2e1]'}
+      fixed bottom-8 right-8 z-[999999] flex items-center gap-4 p-5 rounded-2xl border-l-[6px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] animate-in slide-in-from-right-4 transition-all
+      bg-[#131313] ${type === 'success' ? 'border-[#03D791] text-[#e5e2e1]' : 'border-[#EF4444] text-[#e5e2e1] ring-2 ring-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.2)]'}
     `}>
       {type === 'success' ? <CheckCircle className="w-6 h-6 text-[#03D791]" /> : <AlertCircle className="w-6 h-6 text-[#EF4444]" />}
       <span className="text-sm font-bold tracking-tight">{message}</span>
