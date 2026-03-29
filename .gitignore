@@ -1,2 +1,6 @@
 .env.prod.tmp
 *.tmp
+.env.local
+node_modules
+dist
+.next

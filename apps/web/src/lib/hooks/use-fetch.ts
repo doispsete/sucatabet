@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { ApiError } from '../api/client';
 
 export function useFetch<T>(
   fetcher: () => Promise<T>,
@@ -10,20 +9,34 @@ export function useFetch<T>(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Stabilize deps to avoid infinite loops when literals like [] are passed
-  const prevDepsRef = useRef(deps);
-  const depsChanged = JSON.stringify(deps) !== JSON.stringify(prevDepsRef.current);
-  
-  if (depsChanged) {
-    prevDepsRef.current = deps;
-  }
+  // Preserve fetcher to avoid stale closures in the interval
+  const fetcherRef = useRef(fetcher);
+  useEffect(() => {
+    fetcherRef.current = fetcher;
+  }, [fetcher]);
 
-  const fetch = useCallback(async () => {
-    setIsLoading(true);
+  // Keep track of data to determine if we should show loading state on refresh
+  const dataRef = useRef<T | null>(null);
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
+  // Stabilize deps and serialize them for comparison
+  const serializedDeps = JSON.stringify(deps);
+  
+  const fetch = useCallback(async (isInitialOrManual = false) => {
+    // Only show loading indicator if we don't have data yet or it's an initial/manual refetch
+    if (!dataRef.current || isInitialOrManual) {
+      setIsLoading(true);
+    }
     setError(null);
     try {
-      const result = await fetcher();
-      setData(result);
+      const result = await fetcherRef.current();
+      
+      // Only update state if data actually changed to avoid unnecessary re-renders
+      if (JSON.stringify(result) !== JSON.stringify(dataRef.current)) {
+        setData(result);
+      }
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') return;
       
@@ -32,24 +45,29 @@ export function useFetch<T>(
     } finally {
       setIsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prevDepsRef.current]);
+  }, []); 
 
+  // Initial fetch and dependency-based fetch
   useEffect(() => {
-    fetch();
+    fetch(true);
+  }, [serializedDeps, fetch]);
+
+  // Polling setup
+  useEffect(() => {
     if (options?.polling) {
-      const interval = setInterval(fetch, options.polling);
+      const interval = setInterval(() => fetch(false), options.polling);
       return () => clearInterval(interval);
     }
   }, [fetch, options?.polling]);
 
+  // Global refetch event listener
   useEffect(() => {
     const handleGlobalRefetch = () => {
-      fetch();
+      fetch(true);
     };
     window.addEventListener('refetch-data', handleGlobalRefetch);
     return () => window.removeEventListener('refetch-data', handleGlobalRefetch);
   }, [fetch]);
 
-  return { data, isLoading, error, refetch: fetch };
+  return { data, isLoading, error, refetch: () => fetch(true) };
 }

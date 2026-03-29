@@ -245,7 +245,7 @@ function AddAccountModal({ isOpen, onClose, onSuccess, initialProfileId, profile
 
   const selectedProfile = (Array.isArray(profiles) ? profiles : []).find(p => p.id === cpfProfileId);
   const linkedHouseIds = selectedProfile?.accounts?.map((acc: any) => acc.bettingHouseId) || [];
-  
+
   const houseOptions = (Array.isArray(houses) ? houses : [])
     .filter(h => !linkedHouseIds.includes(h.id))
     .map(h => ({
@@ -343,29 +343,29 @@ export default function AccountsPage() {
     }
   };
 
-  const summaryStats = [
+  const summaryStats = React.useMemo(() => [
     {
-      label: "EXPOSIÇÃO TOTAL",
+      label: "BANCA TOTAL",
       value: `R$ ${formatCurrency(summary?.bancaTotal ?? 0)}`,
       icon: Wallet,
       color: "text-white",
       accent: "#03D791"
     },
     {
-      label: "LIQUIDEZ IMEDIATA",
+      label: "DISPONÍVEL PARA OPERAR",
       value: `R$ ${formatCurrency(summary?.disponivel ?? 0)}`,
       icon: TrendingUp,
       color: "text-[#14d1ff]",
       accent: "#14d1ff"
     },
     {
-      label: "CAPITAL ALOCADO",
+      label: "VALOR EM OPERAÇÃO",
       value: `R$ ${formatCurrency(summary?.emOperacao ?? 0)}`,
       icon: Activity,
       color: "text-[#03D791]",
       accent: "#03D791"
     },
-  ];
+  ], [summary]);
 
   return (
     <div className="space-y-12 pb-20 pt-4">
@@ -476,7 +476,7 @@ export default function AccountsPage() {
                 </div>
               </div>
 
-              <AccountCarousel 
+              <AccountCarousel
                 accounts={Array.isArray(profile.accounts) ? profile.accounts : []}
                 profileName={profile.name}
                 onAddAccount={() => {
