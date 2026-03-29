@@ -151,20 +151,22 @@ let DashboardService = class DashboardService {
             },
             orderBy: { createdAt: 'asc' }
         });
-        const processGroup = (ops, filterFn, labelFn, stepFn, start, end) => {
+        const processGroup = (ops, filterFn, labelFn, stepFn, start, end, fullDateFn) => {
             const result = [];
             const record = {};
             ops.filter(op => filterFn(op.createdAt)).forEach(op => {
                 const key = labelFn(op.createdAt);
+                const fullDate = fullDateFn ? fullDateFn(op.createdAt) : op.createdAt.toISOString().split('T')[0];
                 if (!record[key])
-                    record[key] = { value: 0, count: 0, volume: 0, label: key };
+                    record[key] = { value: 0, count: 0, volume: 0, label: key, fullDate };
                 record[key].value += Number(op.realProfit || 0);
                 record[key].count += 1;
                 record[key].volume += op.bets.reduce((s, b) => s + Number(b.stake || 0), 0);
             });
             for (let d = new Date(start); d <= end; stepFn(d)) {
                 const key = labelFn(d);
-                result.push(record[key] || { label: key, value: 0, count: 0, volume: 0 });
+                const fullDate = fullDateFn ? fullDateFn(d) : d.toISOString().split('T')[0];
+                result.push(record[key] || { label: key, value: 0, count: 0, volume: 0, fullDate });
             }
             return result;
         };
@@ -175,9 +177,9 @@ let DashboardService = class DashboardService {
         const lastMonday = new Date(now);
         lastMonday.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
         lastMonday.setHours(0, 0, 0, 0);
-        const weekly = processGroup(allOps, d => d >= lastMonday, d => d.toLocaleDateString('pt-BR', { weekday: 'short' }), d => d.setDate(d.getDate() + 1), lastMonday, now);
+        const weekly = processGroup(allOps, d => d >= lastMonday, d => d.toLocaleDateString('pt-BR', { weekday: 'short' }), d => d.setDate(d.getDate() + 1), lastMonday, now, d => d.toISOString().split('T')[0]);
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        const monthly = processGroup(allOps, d => d >= monthStart, d => d.toLocaleDateString('pt-BR', { day: '2-digit' }), d => d.setDate(d.getDate() + 1), monthStart, new Date(now.getFullYear(), now.getMonth() + 1, 0));
+        const monthly = processGroup(allOps, d => d >= monthStart, d => d.toLocaleDateString('pt-BR', { day: '2-digit' }), d => d.setDate(d.getDate() + 1), monthStart, new Date(now.getFullYear(), now.getMonth() + 1, 0), d => d.toISOString().split('T')[0]);
         const yearly = [];
         for (let i = 0; i < 6; i++) {
             const m1 = i * 2;

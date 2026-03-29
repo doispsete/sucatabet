@@ -194,7 +194,7 @@ function HousesManagementModal({ isOpen, onClose }: { isOpen: boolean, onClose: 
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[440px] overflow-y-auto pr-4 custom-scrollbar lg:no-scrollbar pb-6">
-            {(Array.isArray(houses) ? houses : []).map(h => (
+            {(Array.isArray(houses) ? [...houses].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })) : []).map(h => (
               <div key={h.id} className="group flex items-center justify-between p-5 glass-card rounded-3xl border border-white/5 hover:border-[#03D791]/20 group-item">
                 <div className="flex items-center gap-5">
                   <div className="w-14 h-14 rounded-2xl bg-black/60 flex items-center justify-center border border-white/5 shadow-2xl">
@@ -246,8 +246,9 @@ function AddAccountModal({ isOpen, onClose, onSuccess, initialProfileId, profile
   const selectedProfile = (Array.isArray(profiles) ? profiles : []).find(p => p.id === cpfProfileId);
   const linkedHouseIds = selectedProfile?.accounts?.map((acc: any) => acc.bettingHouseId) || [];
 
-  const houseOptions = (Array.isArray(houses) ? houses : [])
+  const houseOptions = (Array.isArray(houses) ? [...houses] : [])
     .filter(h => !linkedHouseIds.includes(h.id))
+    .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' }))
     .map(h => ({
       value: h.id,
       label: h.name.toUpperCase()

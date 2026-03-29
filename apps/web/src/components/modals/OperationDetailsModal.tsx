@@ -185,7 +185,7 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
 
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-3">
-                      <span className="text-xl font-black text-white italic tracking-tighter uppercase">{bet.account?.bettingHouse?.name}</span>
+                      <span className="text-xl font-black text-white italic tracking-tighter uppercase">{bet.account?.bettingHouse?.name}{bet.account?.cpfProfile?.name ? <span className="text-[#b9cbbc]/50 font-bold normal-case tracking-normal text-sm"> ({bet.account.cpfProfile.name})</span> : null}</span>
                       {bet.isWinner && (
                         <div
                           style={{ backgroundColor: primaryColor }}

@@ -12,14 +12,23 @@ interface ProfileModalProps {
 
 export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const { user, updateProfile, isMutating } = useProfile();
-  const [name, setName] = useState(user?.name || "");
+  const [name, setName] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isConfirmingDiscard, setIsConfirmingDiscard] = useState(false);
+  const [initialName, setInitialName] = useState("");
   const modalRef = React.useRef<HTMLDivElement>(null);
 
-  const hasUnsavedChanges = name !== (user?.name || "") || oldPassword !== "" || newPassword !== "" || confirmPassword !== "";
+  // Sincroniza o nome inicial quando o modal abre ou user carrega
+  React.useEffect(() => {
+    if (isOpen && user?.name) {
+      setName(user.name);
+      setInitialName(user.name);
+    }
+  }, [isOpen, user?.name]);
+
+  const hasUnsavedChanges = name !== initialName || oldPassword !== "" || newPassword !== "" || confirmPassword !== "";
 
   const wrappedOnClose = () => {
     if (hasUnsavedChanges) {
@@ -32,13 +41,15 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   React.useEffect(() => {
     if (!isOpen) return;
     const handleClick = (e: MouseEvent) => {
+      // Ignora cliques enquanto o dialog de confirmação está aberto
+      if (isConfirmingDiscard) return;
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         wrappedOnClose();
       }
     };
     window.addEventListener("mousedown", handleClick);
     return () => window.removeEventListener("mousedown", handleClick);
-  }, [isOpen, hasUnsavedChanges]);
+  }, [isOpen, hasUnsavedChanges, isConfirmingDiscard]);
 
   if (!isOpen) return null;
 
@@ -72,6 +83,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      setInitialName(name);
       onClose();
     } catch (err: any) {
       toast.error(err.message || "Erro ao atualizar perfil");

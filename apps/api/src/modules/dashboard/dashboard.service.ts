@@ -162,13 +162,14 @@ export class DashboardService {
       orderBy: { createdAt: 'asc' }
     });
 
-    const processGroup = (ops: any[], filterFn: (d: Date) => boolean, labelFn: (d: Date) => string, stepFn: (d: Date) => void, start: Date, end: Date) => {
+    const processGroup = (ops: any[], filterFn: (d: Date) => boolean, labelFn: (d: Date) => string, stepFn: (d: Date) => void, start: Date, end: Date, fullDateFn?: (d: Date) => string) => {
       const result: any[] = [];
       const record: Record<string, any> = {};
       
       ops.filter(op => filterFn(op.createdAt)).forEach(op => {
         const key = labelFn(op.createdAt);
-        if (!record[key]) record[key] = { value: 0, count: 0, volume: 0, label: key };
+        const fullDate = fullDateFn ? fullDateFn(op.createdAt) : op.createdAt.toISOString().split('T')[0];
+        if (!record[key]) record[key] = { value: 0, count: 0, volume: 0, label: key, fullDate };
         record[key].value += Number(op.realProfit || 0);
         record[key].count += 1;
         record[key].volume += op.bets.reduce((s: number, b: any) => s + Number(b.stake || 0), 0);
@@ -176,7 +177,8 @@ export class DashboardService {
 
       for (let d = new Date(start); d <= end; stepFn(d)) {
         const key = labelFn(d);
-        result.push(record[key] || { label: key, value: 0, count: 0, volume: 0 });
+        const fullDate = fullDateFn ? fullDateFn(d) : d.toISOString().split('T')[0];
+        result.push(record[key] || { label: key, value: 0, count: 0, volume: 0, fullDate });
       }
       return result;
     };
@@ -187,15 +189,16 @@ export class DashboardService {
       return { weekly: custom, monthly: custom, yearly: custom, isCustom: true };
     }
 
+
     // Weekly
     const lastMonday = new Date(now);
     lastMonday.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
     lastMonday.setHours(0,0,0,0);
-    const weekly = processGroup(allOps, d => d >= lastMonday, d => d.toLocaleDateString('pt-BR', { weekday: 'short' }), d => d.setDate(d.getDate() + 1), lastMonday, now);
+    const weekly = processGroup(allOps, d => d >= lastMonday, d => d.toLocaleDateString('pt-BR', { weekday: 'short' }), d => d.setDate(d.getDate() + 1), lastMonday, now, d => d.toISOString().split('T')[0]);
 
     // Monthly
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthly = processGroup(allOps, d => d >= monthStart, d => d.toLocaleDateString('pt-BR', { day: '2-digit' }), d => d.setDate(d.getDate() + 1), monthStart, new Date(now.getFullYear(), now.getMonth() + 1, 0));
+    const monthly = processGroup(allOps, d => d >= monthStart, d => d.toLocaleDateString('pt-BR', { day: '2-digit' }), d => d.setDate(d.getDate() + 1), monthStart, new Date(now.getFullYear(), now.getMonth() + 1, 0), d => d.toISOString().split('T')[0]);
 
     // Yearly (Bi-monthly)
     const yearly: any[] = [];
