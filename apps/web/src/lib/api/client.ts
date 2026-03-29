@@ -50,12 +50,10 @@ async function request<T>(path: string, options: RequestInit & { retries?: numbe
     if (response.status === 401) {
       const isLoginPath = typeof window !== 'undefined' && window.location.pathname === '/login';
       const isLogoutPath = path === '/auth/logout';
-
-      if (typeof window !== 'undefined' && !isLoginPath && !isLogoutPath) {
-        // Attempt to clear cookie via server before redirecting
-        fetch(`${API_URL}/auth/logout`, { method: 'POST', credentials: 'include' }).finally(() => {
-          window.location.href = '/login';
-        });
+      const isMePath = path === '/auth/me';
+      if (typeof window !== 'undefined' && !isLoginPath && !isLogoutPath && !isMePath) {
+        document.cookie = 'access_token=; path=/; max-age=0';
+        window.location.href = '/login';
       }
       throw new ApiError(401, 'Não autenticado', path, new Date().toISOString());
     }
