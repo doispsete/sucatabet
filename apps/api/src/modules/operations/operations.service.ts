@@ -45,7 +45,7 @@ export class OperationsService {
     const { page, limit, status, startDate, endDate, search } = options;
     const skip = (page - 1) * limit;
     
-    const where: any = role === UserRole.ADMIN ? {} : { userId };
+    const where: any = { userId };
     
     if (status) {
       where.status = status;

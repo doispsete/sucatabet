@@ -19,11 +19,11 @@ export declare class CpfProfilesController {
                 logoUrl: string | null;
             };
         } & {
+            id: string;
+            balance: import("@prisma/client-runtime-utils").Decimal;
+            inOperation: import("@prisma/client-runtime-utils").Decimal;
             cpfProfileId: string;
             bettingHouseId: string;
-            balance: import("@prisma/client-runtime-utils").Decimal;
-            id: string;
-            inOperation: import("@prisma/client-runtime-utils").Decimal;
         })[];
     } & {
         id: string;
@@ -40,11 +40,11 @@ export declare class CpfProfilesController {
                 logoUrl: string | null;
             };
         } & {
+            id: string;
+            balance: import("@prisma/client-runtime-utils").Decimal;
+            inOperation: import("@prisma/client-runtime-utils").Decimal;
             cpfProfileId: string;
             bettingHouseId: string;
-            balance: import("@prisma/client-runtime-utils").Decimal;
-            id: string;
-            inOperation: import("@prisma/client-runtime-utils").Decimal;
         })[];
     } & {
         id: string;

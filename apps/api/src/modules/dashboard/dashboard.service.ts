@@ -15,8 +15,8 @@ export class DashboardService {
     const cacheKey = `dashboard:vFinal:summary:${userId}:${role}:${startDate || 'none'}:${endDate || 'none'}`;
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) return cached;
-    const userFilter = role === UserRole.ADMIN ? {} : { userId };
-    const accountFilter = role === UserRole.ADMIN ? {} : { cpfProfile: { userId } };
+    const userFilter = { userId };
+    const accountFilter = { cpfProfile: { userId } };
 
     // 1. Fetch accounts and operations in parallel
     const now = new Date();
@@ -136,7 +136,7 @@ export class DashboardService {
   }
 
   private async calculatePerformanceData(userId: string, role: UserRole, startDate?: string, endDate?: string) {
-    const userFilter = role === UserRole.ADMIN ? {} : { userId };
+    const userFilter = { userId };
     const now = new Date();
 
     // 1. Determine Range
@@ -223,7 +223,7 @@ export class DashboardService {
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) return cached;
 
-    const userFilter = role === UserRole.ADMIN ? {} : { userId };
+    const userFilter = { userId };
     const accounts = await this.prisma.account.findMany({
       where: { 
         cpfProfile: userFilter,

@@ -33,7 +33,7 @@ let AccountsService = class AccountsService {
     }
     async findAll(userId, role) {
         return this.prisma.account.findMany({
-            where: role === client_1.UserRole.ADMIN ? {} : { cpfProfile: { userId } },
+            where: { cpfProfile: { userId } },
             include: {
                 cpfProfile: true,
                 bettingHouse: true,

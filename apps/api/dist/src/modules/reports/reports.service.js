@@ -19,7 +19,7 @@ let ReportsService = class ReportsService {
         this.prisma = prisma;
     }
     async getProfitReport(userId, role, query) {
-        const userFilter = (role === client_1.UserRole.ADMIN && query.userId) ? { userId: query.userId } : (role === client_1.UserRole.ADMIN ? {} : { userId });
+        const userFilter = query.userId ? { userId: query.userId } : { userId };
         const startDate = query.startDate ? new Date(query.startDate) : undefined;
         const endDate = query.endDate ? new Date(query.endDate) : undefined;
         const commonWhere = {

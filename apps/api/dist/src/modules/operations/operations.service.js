@@ -56,7 +56,7 @@ let OperationsService = class OperationsService {
     async findAll(userId, role, options) {
         const { page, limit, status, startDate, endDate, search } = options;
         const skip = (page - 1) * limit;
-        const where = role === client_1.UserRole.ADMIN ? {} : { userId };
+        const where = { userId };
         if (status) {
             where.status = status;
         }

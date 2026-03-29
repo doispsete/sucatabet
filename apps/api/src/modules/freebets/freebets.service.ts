@@ -26,7 +26,7 @@ export class FreebetsService {
 
   async findAll(userId: string, role: UserRole) {
     const freebets = await this.prisma.freebet.findMany({
-      where: role === UserRole.ADMIN ? {} : { userId },
+      where: { userId },
       include: {
         account: {
           include: {

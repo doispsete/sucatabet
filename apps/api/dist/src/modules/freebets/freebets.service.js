@@ -35,7 +35,7 @@ let FreebetsService = class FreebetsService {
     }
     async findAll(userId, role) {
         const freebets = await this.prisma.freebet.findMany({
-            where: role === client_1.UserRole.ADMIN ? {} : { userId },
+            where: { userId },
             include: {
                 account: {
                     include: {

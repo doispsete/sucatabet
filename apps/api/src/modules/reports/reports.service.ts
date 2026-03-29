@@ -8,7 +8,7 @@ export class ReportsService {
   constructor(private prisma: PrismaService) {}
 
   async getProfitReport(userId: string, role: UserRole, query: ProfitReportDto) {
-    const userFilter = (role === UserRole.ADMIN && query.userId) ? { userId: query.userId } : (role === UserRole.ADMIN ? {} : { userId });
+    const userFilter = query.userId ? { userId: query.userId } : { userId };
 
     const startDate = query.startDate ? new Date(query.startDate) : undefined;
     const endDate = query.endDate ? new Date(query.endDate) : undefined;

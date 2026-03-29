@@ -23,11 +23,11 @@ export declare class AccountsService {
             logoUrl: string | null;
         };
     } & {
+        id: string;
+        balance: Prisma.Decimal;
+        inOperation: Prisma.Decimal;
         cpfProfileId: string;
         bettingHouseId: string;
-        balance: Prisma.Decimal;
-        id: string;
-        inOperation: Prisma.Decimal;
     })[]>;
     findOne(id: string, userId: string, role: UserRole): Promise<{
         cpfProfile: {
@@ -43,46 +43,46 @@ export declare class AccountsService {
             logoUrl: string | null;
         };
     } & {
+        id: string;
+        balance: Prisma.Decimal;
+        inOperation: Prisma.Decimal;
         cpfProfileId: string;
         bettingHouseId: string;
-        balance: Prisma.Decimal;
-        id: string;
-        inOperation: Prisma.Decimal;
     }>;
     create(userId: string, role: UserRole, createAccountDto: CreateAccountDto): Promise<{
+        id: string;
+        balance: Prisma.Decimal;
+        inOperation: Prisma.Decimal;
         cpfProfileId: string;
         bettingHouseId: string;
-        balance: Prisma.Decimal;
-        id: string;
-        inOperation: Prisma.Decimal;
     }>;
     deposit(id: string, userId: string, role: UserRole, amountDto: AmountDto): Promise<{
+        id: string;
+        balance: Prisma.Decimal;
+        inOperation: Prisma.Decimal;
         cpfProfileId: string;
         bettingHouseId: string;
-        balance: Prisma.Decimal;
-        id: string;
-        inOperation: Prisma.Decimal;
     }>;
     withdraw(id: string, userId: string, role: UserRole, amountDto: AmountDto): Promise<{
+        id: string;
+        balance: Prisma.Decimal;
+        inOperation: Prisma.Decimal;
         cpfProfileId: string;
         bettingHouseId: string;
-        balance: Prisma.Decimal;
-        id: string;
-        inOperation: Prisma.Decimal;
     }>;
     update(id: string, userId: string, role: UserRole, updateAccountDto: UpdateAccountDto): Promise<{
+        id: string;
+        balance: Prisma.Decimal;
+        inOperation: Prisma.Decimal;
         cpfProfileId: string;
         bettingHouseId: string;
-        balance: Prisma.Decimal;
-        id: string;
-        inOperation: Prisma.Decimal;
     }>;
     remove(id: string, userId: string, role: UserRole): Promise<{
+        id: string;
+        balance: Prisma.Decimal;
+        inOperation: Prisma.Decimal;
         cpfProfileId: string;
         bettingHouseId: string;
-        balance: Prisma.Decimal;
-        id: string;
-        inOperation: Prisma.Decimal;
     }>;
     getHistory(id: string, userId: string, role: UserRole): Promise<({
         user: {

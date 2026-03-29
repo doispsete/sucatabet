@@ -34,7 +34,7 @@ export class CpfProfilesService {
     const filterUserId = (role === UserRole.ADMIN && targetUserId) ? targetUserId : userId;
     
     return this.prisma.cpfProfile.findMany({
-      where: role === UserRole.ADMIN && !targetUserId ? {} : { userId: filterUserId },
+      where: { userId: filterUserId },
       include: {
         accounts: {
           include: {

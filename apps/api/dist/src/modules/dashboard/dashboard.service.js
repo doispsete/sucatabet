@@ -29,8 +29,8 @@ let DashboardService = class DashboardService {
         const cached = await this.cacheManager.get(cacheKey);
         if (cached)
             return cached;
-        const userFilter = role === client_1.UserRole.ADMIN ? {} : { userId };
-        const accountFilter = role === client_1.UserRole.ADMIN ? {} : { cpfProfile: { userId } };
+        const userFilter = { userId };
+        const accountFilter = { cpfProfile: { userId } };
         const now = new Date();
         const startOfWeek = new Date(now);
         startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
@@ -130,7 +130,7 @@ let DashboardService = class DashboardService {
         return result;
     }
     async calculatePerformanceData(userId, role, startDate, endDate) {
-        const userFilter = role === client_1.UserRole.ADMIN ? {} : { userId };
+        const userFilter = { userId };
         const now = new Date();
         let rangeStart;
         let rangeEnd = now;
@@ -200,7 +200,7 @@ let DashboardService = class DashboardService {
         const cached = await this.cacheManager.get(cacheKey);
         if (cached)
             return cached;
-        const userFilter = role === client_1.UserRole.ADMIN ? {} : { userId };
+        const userFilter = { userId };
         const accounts = await this.prisma.account.findMany({
             where: {
                 cpfProfile: userFilter,
