@@ -107,7 +107,7 @@ export function FreebetCard({ freebet, onUse, onExpire, onDelete, onEdit }: Free
             <Calendar className="w-4 h-4" />
           </button>
           <button 
-            onClick={(e) => { e.stopPropagation(); if(confirm('Excluir esta freebet?')) onDelete(freebet.id); }}
+            onClick={(e) => { e.stopPropagation(); onDelete(freebet.id); }}
             className="text-[#b9cbbc] hover:text-red-500 hover:bg-red-500/10 transition-all p-2 rounded-lg"
             title="Excluir"
           >

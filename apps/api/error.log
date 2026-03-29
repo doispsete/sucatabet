@@ -747,3 +747,70 @@ Invalid input value: valor de entrada é inválido para enum "OperationStatus": 
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
 
+[2026-03-29T05:38:07.542Z] PATCH /users/profile
+PrismaClientKnownRequestError: 
+Invalid `this.prisma.user.update()` invocation in
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\users\users.service.js:104:33
+
+  101 if (updateUserDto.password) {
+  102     updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+  103 }
+→ 104 return this.prisma.user.update(
+An operation failed because it depends on one or more records that were required but not found. No record was found for an update.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-29T05:53:44.639Z] PATCH /users/profile
+PrismaClientKnownRequestError: 
+Invalid `this.prisma.user.update()` invocation in
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\users\users.service.js:104:33
+
+  101 if (updateUserDto.password) {
+  102     updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+  103 }
+→ 104 return this.prisma.user.update(
+An operation failed because it depends on one or more records that were required but not found. No record was found for an update.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-29T05:54:03.499Z] PATCH /users/profile
+PrismaClientKnownRequestError: 
+Invalid `this.prisma.user.update()` invocation in
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\users\users.service.js:104:33
+
+  101 if (updateUserDto.password) {
+  102     updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+  103 }
+→ 104 return this.prisma.user.update(
+An operation failed because it depends on one or more records that were required but not found. No record was found for an update.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-03-29T06:22:01.668Z] GET /dashboard/summary
+DriverAdapterError: sem memória
+    at PrismaPgAdapter.onError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:687:11)
+    at PrismaPgAdapter.performIO (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:682:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PrismaPgAdapter.queryRaw (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\adapter-pg\dist\index.js:602:30)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:128:29)
+    at async e.interpretNode (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+    at async e.run (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+    at async e.execute (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+    at async jt.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:498:22)
+

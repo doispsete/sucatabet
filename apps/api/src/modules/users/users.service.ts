@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -70,6 +70,37 @@ export class UsersService {
     return this.prisma.user.update({
       where: { id },
       data: updateUserDto,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+      },
+    });
+  }
+
+  async updateProfile(id: string, data: { name?: string, email?: string, oldPassword?: string, newPassword?: string }) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException('Usuário não encontrado');
+
+    const updateData: any = {};
+    if (data.name) updateData.name = data.name;
+    if (data.email) updateData.email = data.email;
+
+    if (data.newPassword) {
+      if (!data.oldPassword) {
+        throw new BadRequestException('Senha atual é obrigatória para alteração');
+      }
+      const isMatch = await bcrypt.compare(data.oldPassword, user.password);
+      if (!isMatch) {
+        throw new BadRequestException('Senha atual incorreta');
+      }
+      updateData.password = await bcrypt.hash(data.newPassword, 10);
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: updateData,
       select: {
         id: true,
         email: true,

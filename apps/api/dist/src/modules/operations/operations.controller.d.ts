@@ -27,10 +27,10 @@ export declare class OperationsController {
                     inOperation: import("@prisma/client-runtime-utils").Decimal;
                 };
             } & {
+                stake: import("@prisma/client-runtime-utils").Decimal;
                 id: string;
                 accountId: string;
                 odds: import("@prisma/client-runtime-utils").Decimal;
-                stake: import("@prisma/client-runtime-utils").Decimal;
                 side: string;
                 type: string;
                 commission: import("@prisma/client-runtime-utils").Decimal;
@@ -80,10 +80,10 @@ export declare class OperationsController {
                 inOperation: import("@prisma/client-runtime-utils").Decimal;
             };
         } & {
+            stake: import("@prisma/client-runtime-utils").Decimal;
             id: string;
             accountId: string;
             odds: import("@prisma/client-runtime-utils").Decimal;
-            stake: import("@prisma/client-runtime-utils").Decimal;
             side: string;
             type: string;
             commission: import("@prisma/client-runtime-utils").Decimal;

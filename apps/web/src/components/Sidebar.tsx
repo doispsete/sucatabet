@@ -1,4 +1,4 @@
-"use client";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/context/auth-context";
 import { useModal } from "@/lib/context/modal-context";
+import { ProfileModal } from "./modals/ProfileModal";
 
 interface SidebarProps {
   isMobile?: boolean;
@@ -24,8 +25,9 @@ interface SidebarProps {
 
 export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: SidebarProps) {
   const pathname = usePathname();
-  const { logout, user, isAdmin } = useAuth();
+  const { logout, user, isAdmin, isLoading: isAuthLoading } = useAuth();
   const { openNewOperation } = useModal();
+  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
   const activeCollapsed = isCollapsed || isHalf;
   
   const menuItems = [
@@ -113,25 +115,39 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
       {/* Profile Section - Stabilized */}
       <div className="mt-auto w-full flex flex-col gap-2 px-2 mb-6">
         <div 
-          className={`group flex items-center h-14 rounded-2xl transition-all duration-300 relative overflow-hidden
+          onClick={() => setIsProfileOpen(true)}
+          className={`group flex items-center h-14 rounded-2xl transition-all duration-300 relative overflow-hidden cursor-pointer
             ${isWide ? 'bg-white/5 border border-white/5 hover:border-[#00ff88]/30' : 'hover:bg-white/5 border border-transparent'}`}
         >
           {/* Avatar Slot - Fixed */}
           <div className="flex items-center justify-center min-w-[48px] h-14 shrink-0 relative z-10">
-            <div className="w-9 h-9 rounded-xl overflow-hidden border border-[#00ff88]/20 shadow-[0_0_10px_rgba(0,255,136,0.1)]">
-              <img 
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Lucky'}`} 
-                alt="Profile" 
-                className="w-full h-full object-cover"
-              />
+            <div className="w-9 h-9 rounded-xl overflow-hidden border border-[#00ff88]/20 shadow-[0_0_10px_rgba(0,255,136,0.1)] bg-white/5">
+              {isAuthLoading ? (
+                <div className="w-full h-full animate-pulse bg-white/10" />
+              ) : (
+                <img 
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Lucky'}`} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
           </div>
 
           {/* User Info - Slid in */}
           <div className={`flex flex-col min-w-0 transition-all duration-300 ml-1
             ${isWide ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12 pointer-events-none'}`}>
-            <span className="text-[11px] font-black text-white truncate uppercase tracking-tight italic whitespace-nowrap">{user?.name || 'Usuário'}</span>
-            <span className="text-[8px] text-[#00ff88] truncate uppercase tracking-[0.2em] font-black whitespace-nowrap">{user?.role || 'User'}</span>
+            {isAuthLoading ? (
+              <>
+                <div className="h-3 w-20 animate-pulse bg-white/10 rounded mb-1" />
+                <div className="h-2 w-12 animate-pulse bg-[#00ff88]/20 rounded" />
+              </>
+            ) : (
+              <>
+                <span className="text-[11px] font-black text-white truncate uppercase tracking-tight italic whitespace-nowrap">{user?.name || 'Usuário'}</span>
+                <span className="text-[8px] text-[#00ff88] truncate uppercase tracking-[0.2em] font-black whitespace-nowrap">{user?.role || 'User'}</span>
+              </>
+            )}
           </div>
         </div>
 
@@ -151,6 +167,11 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
           </span>
         </button>
       </div>
+
+      <ProfileModal 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)} 
+      />
     </aside>
   );
 }

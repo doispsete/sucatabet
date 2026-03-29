@@ -210,7 +210,23 @@ export function useUsers() {
     () => refetch()
   );
 
-  const isMutating = isCreating || isUpdating;
+  const { mutate: remove, isMutating: isRemoving } = useMutation(
+    (id: string) => services.usersService.delete(id),
+    () => refetch()
+  );
 
-  return { data, isLoading, error, refetch, isMutating, create, update: (id: string, p: unknown) => update({ id, p }) };
+  const isMutating = isCreating || isUpdating || isRemoving;
+
+  return { data, isLoading, error, refetch, isMutating, create, update: (id: string, p: unknown) => update({ id, p }), remove };
+}
+
+export function useProfile() {
+  const { user, refetch: refetchAuth } = useAuth();
+  
+  const { mutate: updateProfile, isMutating, mutationError } = useMutation(
+    services.usersService.updateProfile,
+    () => refetchAuth()
+  );
+
+  return { user, updateProfile, isMutating, mutationError };
 }

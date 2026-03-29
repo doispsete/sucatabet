@@ -13,12 +13,12 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useUsers, useAuth } from "@/lib/hooks";
-import { SkeletonRow, EmptyState, Modal, LoadingButton, toast, Input, CustomSelect } from "@/components/ui/components";
+import { SkeletonRow, EmptyState, Modal, LoadingButton, toast, Input, CustomSelect, ConfirmDialog } from "@/components/ui/components";
 import { UserRole, User } from "@/lib/api/types";
 
 export default function AdminPage() {
   const { user: currentUser } = useAuth();
-  const { data: users, isLoading, refetch, create: createUser, update: updateUser, isMutating } = useUsers();
+  const { data: users, isLoading, refetch, create: createUser, update: updateUser, remove, isMutating } = useUsers();
   const [searchQuery, setSearchQuery] = useState("");
 
   // Modal States
@@ -36,6 +36,9 @@ export default function AdminPage() {
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editRole, setEditRole] = useState(UserRole.OPERATOR);
+  const [editPassword, setEditPassword] = useState("");
+
+  const [confirmDeleteUser, setConfirmDeleteUser] = useState<string | null>(null);
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,10 +63,19 @@ export default function AdminPage() {
     e.preventDefault();
     if (!selectedUser) return;
     try {
-      await updateUser(selectedUser.id, { name: editName, email: editEmail, role: editRole });
+      const data: any = { name: editName, email: editEmail, role: editRole };
+      if (editPassword) {
+        if (editPassword.length < 8) {
+          toast.error("A nova senha deve ter no mínimo 8 caracteres");
+          return;
+        }
+        data.password = editPassword;
+      }
+      await updateUser(selectedUser.id, data);
       toast.success("Usuário atualizado com sucesso");
       setIsEditModalOpen(false);
       setSelectedUser(null);
+      setEditPassword("");
     } catch (err: unknown) {
       toast.error((err as Error).message || "Erro ao atualizar usuário");
     }
@@ -75,6 +87,16 @@ export default function AdminPage() {
     setEditEmail(user.email);
     setEditRole(user.role);
     setIsEditModalOpen(true);
+  };
+
+  const handleDeleteUser = async (id: string) => {
+    try {
+      await remove(id);
+      toast.success("Usuário excluído com sucesso");
+      setConfirmDeleteUser(null);
+    } catch (err: unknown) {
+      toast.error((err as Error).message || "Erro ao excluir usuário");
+    }
   };
 
   const isAdmin = currentUser?.role === UserRole.ADMIN;
@@ -211,7 +233,10 @@ export default function AdminPage() {
                         >
                           <Edit size={16} />
                         </button>
-                        <button className="p-2.5 text-[#b9cbbc] hover:text-red-500 transition-colors bg-white/5 rounded-xl hover:bg-red-500/10 btn-interact">
+                        <button 
+                          onClick={() => setConfirmDeleteUser(user.id)}
+                          className="p-2.5 text-[#b9cbbc] hover:text-red-500 transition-colors bg-white/5 rounded-xl hover:bg-red-500/10 btn-interact"
+                        >
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -344,7 +369,7 @@ export default function AdminPage() {
               onChange={e => setEditEmail(e.target.value)}
             />
           </div>
-          <div className="space-y-2.5">
+           <div className="space-y-2.5">
             <label className="text-[10px] font-black uppercase tracking-[0.4em] text-[#b9cbbc]/40 pl-4 italic">Cargo / Permissões</label>
             <CustomSelect
               value={editRole}
@@ -354,6 +379,15 @@ export default function AdminPage() {
                 { value: UserRole.ADMIN, label: "ADMIN (TOTAL)" }
               ]}
               placeholder="SELECIONAR CARGO"
+            />
+          </div>
+          <div className="space-y-2.5">
+            <label className="text-[10px] font-black uppercase tracking-[0.4em] text-[#b9cbbc]/40 pl-4 italic">Nova Senha (Opcional)</label>
+            <Input
+              type="password"
+              value={editPassword}
+              onChange={e => setEditPassword(e.target.value)}
+              placeholder="DEIXE EM BRANCO PARA MANTER A ATUAL"
             />
           </div>
           <div className="pt-6">
@@ -368,6 +402,16 @@ export default function AdminPage() {
         </form>
       </Modal>
 
+      <ConfirmDialog
+        isOpen={!!confirmDeleteUser}
+        onClose={() => setConfirmDeleteUser(null)}
+        onConfirm={() => confirmDeleteUser && handleDeleteUser(confirmDeleteUser)}
+        title="Excluir Usuário"
+        message="Tem certeza que deseja remover permanentemente este acesso do sistema?"
+        type="danger"
+        confirmLabel="EXCLUIR AGORA"
+        cancelLabel="MANTER ACESSO"
+      />
     </div>
   );
 }

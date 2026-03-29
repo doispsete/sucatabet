@@ -112,6 +112,36 @@ let UsersService = class UsersService {
             },
         });
     }
+    async updateProfile(id, data) {
+        const user = await this.prisma.user.findUnique({ where: { id } });
+        if (!user)
+            throw new common_1.NotFoundException('Usuário não encontrado');
+        const updateData = {};
+        if (data.name)
+            updateData.name = data.name;
+        if (data.email)
+            updateData.email = data.email;
+        if (data.newPassword) {
+            if (!data.oldPassword) {
+                throw new common_1.BadRequestException('Senha atual é obrigatória para alteração');
+            }
+            const isMatch = await bcrypt.compare(data.oldPassword, user.password);
+            if (!isMatch) {
+                throw new common_1.BadRequestException('Senha atual incorreta');
+            }
+            updateData.password = await bcrypt.hash(data.newPassword, 10);
+        }
+        return this.prisma.user.update({
+            where: { id },
+            data: updateData,
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+            },
+        });
+    }
     async remove(id) {
         await this.findOne(id);
         return this.prisma.user.delete({ where: { id } });

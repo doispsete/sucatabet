@@ -21,6 +21,7 @@ export const usersService = {
   create: (body: unknown) => api.post<T.User>('/users', body),
   update: (id: string, body: unknown) => api.patch<T.User>(`/users/${id}`, body),
   delete: (id: string) => api.delete(`/users/${id}`),
+  updateProfile: (body: unknown) => api.patch<T.User>('/users/profile', body),
 };
 
 export const cpfProfilesService = {

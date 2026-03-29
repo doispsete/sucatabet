@@ -16,6 +16,12 @@ export declare class UsersController {
         email: string;
         role: import("@prisma/client").$Enums.UserRole;
     }[]>;
+    updateProfile(data: any, req: any): Promise<{
+        id: string;
+        name: string;
+        email: string;
+        role: import("@prisma/client").$Enums.UserRole;
+    }>;
     findOne(id: string): Promise<{
         id: string;
         name: string;

@@ -42,10 +42,10 @@ export declare class OperationsService {
                     inOperation: Prisma.Decimal;
                 };
             } & {
+                stake: Prisma.Decimal;
                 id: string;
                 accountId: string;
                 odds: Prisma.Decimal;
-                stake: Prisma.Decimal;
                 side: string;
                 type: string;
                 commission: Prisma.Decimal;
@@ -95,10 +95,10 @@ export declare class OperationsService {
                 inOperation: Prisma.Decimal;
             };
         } & {
+            stake: Prisma.Decimal;
             id: string;
             accountId: string;
             odds: Prisma.Decimal;
-            stake: Prisma.Decimal;
             side: string;
             type: string;
             commission: Prisma.Decimal;

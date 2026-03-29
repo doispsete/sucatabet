@@ -32,7 +32,7 @@ export function Topbar({ onMenuClick, isMobile, isHalf, isCollapsed }: TopbarPro
     const now = Date.now();
     const clientFiltered = (Array.isArray(allFreebets) ? allFreebets : [])
       .filter((fb: any) => {
-        if (!fb.expiresAt) return false;
+        if (!fb.expiresAt || fb.usedAt) return false;
         const diff = (new Date(fb.expiresAt).getTime() - now) / 3600000;
         return diff > 0 && diff <= 48; // Only future freebets within 48h
       });

@@ -32,6 +32,10 @@ let UsersController = class UsersController {
     findAll() {
         return this.usersService.findAll();
     }
+    updateProfile(data, req) {
+        const userId = req?.user?.userId;
+        return this.usersService.updateProfile(userId, data);
+    }
     findOne(id) {
         return this.usersService.findOne(id);
     }
@@ -58,6 +62,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Patch)('profile'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "updateProfile", null);
 __decorate([
     (0, roles_decorator_1.Roles)(client_1.UserRole.ADMIN),
     (0, common_1.Get)(':id'),

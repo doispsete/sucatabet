@@ -532,10 +532,10 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-full flex items-center justify-between bg-black/50 border border-white/10 rounded-2xl px-5 py-3.5 text-sm font-black uppercase tracking-widest text-[#ffdd65] focus:border-[#03D791]/30 transition-all group hover:bg-black/70"
+        className="w-full h-full flex items-center justify-between bg-black/50 border border-white/10 rounded-2xl px-5 py-3.5 text-sm font-black uppercase tracking-widest text-[#00ff88] focus:border-[#00ff88]/30 transition-all group hover:bg-black/70"
       >
         <div className="flex items-center gap-3">
-            <CalendarIcon size={16} className="text-[#03D791] animate-pulse" />
+            <CalendarIcon size={16} className="text-[#00ff88] animate-pulse" />
             <span className="truncate italic">
                 {selectedDate ? selectedDate.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : placeholder}
             </span>
@@ -559,12 +559,12 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <button onClick={handlePrevMonth} className="p-2 hover:bg-white/5 rounded-full text-[#b9cbbc] transition-all hover:text-[#03D791]"><ChevronLeft size={16} /></button>
+            <button onClick={handlePrevMonth} className="p-2 hover:bg-white/5 rounded-full text-[#b9cbbc] transition-all hover:text-[#00ff88]"><ChevronLeft size={16} /></button>
             <div className="text-center">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white italic">{months[viewDate.getMonth()]}</p>
                 <p className="text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-widest">{viewDate.getFullYear()}</p>
             </div>
-            <button onClick={handleNextMonth} className="p-2 hover:bg-white/5 rounded-full text-[#b9cbbc] transition-all hover:text-[#03D791]"><ChevronRight size={16} /></button>
+            <button onClick={handleNextMonth} className="p-2 hover:bg-white/5 rounded-full text-[#b9cbbc] transition-all hover:text-[#00ff88]"><ChevronRight size={16} /></button>
           </div>
 
           {/* Weekdays */}
@@ -583,7 +583,7 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
           <div className="pt-4 border-t border-white/5 space-y-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <Clock size={12} className="text-[#03D791] opacity-50" />
+                    <Clock size={12} className="text-[#00ff88] opacity-50" />
                     <span className="text-[8px] font-black uppercase tracking-widest text-[#b9cbbc]/40 italic">Horário</span>
                 </div>
             </div>
@@ -591,39 +591,39 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
             <div className="flex items-center justify-center gap-4">
                 {/* Hours */}
                 <div className="flex flex-col items-center gap-1">
-                    <button onClick={() => handleTimeChange('h', 1)} className="p-1 hover:text-[#03D791] transition-all rounded-lg"><ChevronUp size={16}/></button>
+                    <button onClick={() => handleTimeChange('h', 1)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronUp size={16}/></button>
                     <input 
                         type="number"
                         min="0"
                         max="23"
                         value={(selectedDate?.getHours() || 0).toString().padStart(2, '0')}
                         onChange={e => handleTimeChange('h', parseInt(e.target.value) || 0, true)}
-                        className="bg-black/40 border border-white/5 rounded-xl w-12 h-10 flex items-center justify-center text-lg font-black italic text-[#03D791] text-center focus:border-[#03D791]/30 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="bg-black/40 border border-white/5 rounded-xl w-12 h-10 flex items-center justify-center text-lg font-black italic text-[#00ff88] text-center focus:border-[#00ff88]/30 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                    <button onClick={() => handleTimeChange('h', -1)} className="p-1 hover:text-[#03D791] transition-all rounded-lg"><ChevronDown size={16}/></button>
+                    <button onClick={() => handleTimeChange('h', -1)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronDown size={16}/></button>
                 </div>
                 
                 <div className="text-xl font-black text-white/5 animate-pulse">:</div>
                 
                 {/* Minutes */}
                 <div className="flex flex-col items-center gap-1">
-                    <button onClick={() => handleTimeChange('m', 5)} className="p-1 hover:text-[#03D791] transition-all rounded-lg"><ChevronUp size={16}/></button>
+                    <button onClick={() => handleTimeChange('m', 5)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronUp size={16}/></button>
                     <input 
                         type="number"
                         min="0"
                         max="59"
                         value={(selectedDate?.getMinutes() || 0).toString().padStart(2, '0')}
                         onChange={e => handleTimeChange('m', parseInt(e.target.value) || 0, true)}
-                        className="bg-black/40 border border-white/5 rounded-xl w-12 h-10 flex items-center justify-center text-lg font-black italic text-[#03D791] text-center focus:border-[#03D791]/30 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="bg-black/40 border border-white/5 rounded-xl w-12 h-10 flex items-center justify-center text-lg font-black italic text-[#00ff88] text-center focus:border-[#00ff88]/30 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                    <button onClick={() => handleTimeChange('m', -5)} className="p-1 hover:text-[#03D791] transition-all rounded-lg"><ChevronDown size={16}/></button>
+                    <button onClick={() => handleTimeChange('m', -5)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronDown size={16}/></button>
                 </div>
             </div>
           </div>
 
           <button 
             onClick={() => setIsOpen(false)}
-            className="w-full mt-4 bg-[#03D791] text-black text-[9px] font-black uppercase tracking-[0.1em] py-3 rounded-xl shadow-[0_15px_30px_rgba(3,215,145,0.2)] hover:scale-[1.02] active:scale-95 transition-all italic"
+            className="w-full mt-4 bg-[#00ff88] text-black text-[9px] font-black uppercase tracking-[0.1em] py-3 rounded-xl shadow-[0_15px_30px_rgba(0,255,136,0.2)] hover:scale-[1.02] active:scale-95 transition-all italic"
           >
             CONFIRMAR
           </button>

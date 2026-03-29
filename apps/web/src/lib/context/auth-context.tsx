@@ -11,6 +11,7 @@ interface AuthContextType {
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  refetch: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,19 +24,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function initAuth() {
       try {
-        // Verifica se o cookie de token existe antes de tentar buscar o usuário
-        const hasToken = typeof document !== 'undefined' && document.cookie.includes('access_token=');
-        if (!hasToken) {
-          setIsLoading(false);
-          return;
-        }
-
+        // Sempre tenta buscar o usuário. Se houver cookie httpOnly, o navegador enviará.
+        // Se não houver, a API retornará 401 e o catch tratará.
         const me = await authService.me();
         setUser(me);
       } catch (error) {
         setUser(null);
+        // Só redireciona se não estiver na página de login e se não estiver carregando
         if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-          router.push('/login');
+          // Opcional: router.push('/login');
         }
       } finally {
         setIsLoading(false);
@@ -75,10 +72,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const refetch = async () => {
+    try {
+      const me = await authService.me();
+      setUser(me);
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
   const isAdmin = user?.role === UserRole.ADMIN;
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isAdmin, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, isAdmin, login, logout, refetch }}>
       {children}
     </AuthContext.Provider>
   );

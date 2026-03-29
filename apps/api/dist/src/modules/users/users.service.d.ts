@@ -28,6 +28,17 @@ export declare class UsersService {
         email: string;
         role: import("@prisma/client").$Enums.UserRole;
     }>;
+    updateProfile(id: string, data: {
+        name?: string;
+        email?: string;
+        oldPassword?: string;
+        newPassword?: string;
+    }): Promise<{
+        id: string;
+        name: string;
+        email: string;
+        role: import("@prisma/client").$Enums.UserRole;
+    }>;
     remove(id: string): Promise<{
         id: string;
         name: string;
