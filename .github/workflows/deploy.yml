@@ -12,7 +12,8 @@ jobs:
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
           username: ${{ secrets.HOSTINGER_USER }}
-          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          port: 22
           script: |
             cd /var/www/sucatabet
             git pull origin main
