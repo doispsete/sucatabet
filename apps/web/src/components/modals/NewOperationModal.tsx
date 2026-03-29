@@ -56,6 +56,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
       if (operationToEdit) {
         setType(operationToEdit.type as OperationType);
         setNotes(operationToEdit.description || "");
+        setGeneratedFbValue((operationToEdit as any).freebet?.value?.toString() || "");
         setBets((operationToEdit.bets || []).map((b, i) => ({
           id: b.id || (Date.now() + i).toString(),
           accountId: b.accountId,
@@ -146,6 +147,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
             isBenefit: b.isBenefit
           };
         }),
+        generatedFbValue: type === OperationType.FREEBET_GEN ? parseFloat(generatedFbValue) : undefined
       };
 
       let operationResponse;
@@ -161,11 +163,6 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
       
       toast.success(operationToEdit ? "Operação atualizada com sucesso" : "Operação criada com sucesso");
       
-      if (!operationToEdit && type === OperationType.FREEBET_GEN && operationResponse?.id) {
-        localStorage.setItem(`pending_fb_val_${operationResponse.id}`, generatedFbValue);
-        localStorage.setItem(`pending_fb_origin_${operationResponse.id}`, notes);
-      }
-
       refetchSummary();
       if (onSuccess) onSuccess();
       onClose();
@@ -209,7 +206,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
               placeholder="EX: JOGO DO FLAMENGO - BRASILEIRÃO"
             />
           </div>
-          {type === OperationType.FREEBET_GEN && !operationToEdit && (
+          {type === OperationType.FREEBET_GEN && (
             <div className={`space-y-3 animate-in fade-in slide-in-from-top-4 duration-500`}>
               <label className="text-[10px] font-black uppercase tracking-[0.3em] text-[#03D791] italic flex items-center gap-2">
                 Valor da Freebet a Gerar (R$)

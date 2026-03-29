@@ -229,8 +229,16 @@ export default function CalculadoraPage() {
 
   const getInitialData = () => {
     const hasFreebet = bets.some(b => b.type === 'Freebet');
+    const hasBoost25 = bets.some(b => b.type === 'Aumento' && b.boostPercent === '25');
+    const hasBoost50 = bets.some(b => b.type === 'Aumento' && b.boostPercent === '50');
+
+    let type = OperationType.NORMAL;
+    if (hasFreebet) type = OperationType.EXTRACAO;
+    else if (hasBoost25) type = OperationType.BOOST_25;
+    else if (hasBoost50) type = OperationType.BOOST_50;
+
     return {
-      type: hasFreebet ? OperationType.FREEBET_GEN : OperationType.EXTRACAO,
+      type,
       bets: bets.map((b, i) => ({
         stake: (b.stake || "0").toString(),
         odds: (b.odd || "1").toString(),

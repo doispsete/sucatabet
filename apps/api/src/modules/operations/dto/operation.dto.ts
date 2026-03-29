@@ -49,6 +49,10 @@ export class CreateOperationDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @IsNumber()
+  @IsOptional()
+  generatedFbValue?: number;
 }
 
 export class CloseOperationDto {
