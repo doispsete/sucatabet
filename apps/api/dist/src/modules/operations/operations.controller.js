@@ -38,6 +38,9 @@ let OperationsController = class OperationsController {
     create(req, createOperationDto) {
         return this.operationsService.create(req.user.userId, createOperationDto);
     }
+    update(id, req, updateDto) {
+        return this.operationsService.update(id, req.user.userId, req.user.role, updateDto);
+    }
     close(id, req, closeDto) {
         return this.operationsService.close(id, req.user.userId, req.user.role, closeDto);
     }
@@ -78,6 +81,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, operation_dto_1.CreateOperationDto]),
     __metadata("design:returntype", void 0)
 ], OperationsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, operation_dto_1.CreateOperationDto]),
+    __metadata("design:returntype", void 0)
+], OperationsController.prototype, "update", null);
 __decorate([
     (0, common_1.Patch)(':id/close'),
     __param(0, (0, common_1.Param)('id')),

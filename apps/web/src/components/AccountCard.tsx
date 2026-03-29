@@ -8,6 +8,8 @@ import * as T from "@/lib/api/types";
 import { useAccounts } from "@/lib/hooks";
 import { toast, Modal, LoadingButton, ConfirmDialog, Input } from "@/components/ui/components";
 import { formatCurrency } from "@/lib/utils";
+import { History } from "lucide-react";
+import { AccountHistoryModal } from "./modals/AccountHistoryModal";
 
 interface AccountCardProps {
   account: T.Account;
@@ -19,6 +21,7 @@ export function AccountCard({ account, profileName, onUnlink }: AccountCardProps
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAmountModalOpen, setIsAmountModalOpen] = useState(false);
   const [isUnlinkConfirmOpen, setIsUnlinkConfirmOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [amountType, setAmountType] = useState<"DEPOSIT" | "WITHDRAW">("DEPOSIT");
   const [amount, setAmount] = useState("");
 
@@ -122,12 +125,21 @@ export function AccountCard({ account, profileName, onUnlink }: AccountCardProps
         </div>
       </div>
 
-      {/* Balance Section */}
-      <div className="mb-8">
-        <p className="text-[#b9cbbc] text-[9px] uppercase font-black tracking-[0.2em] opacity-40 mb-1">Saldo Disponível</p>
-        <h6 className="text-3xl font-headline font-black text-[#e5e2e1] italic tracking-tighter uppercase">
-          R$ {formatCurrency(Math.max(0, account.balance ?? 0))}
-        </h6>
+      {/* Balance Section - Clickable for history */}
+      <div 
+        onClick={() => setIsHistoryOpen(true)}
+        className="mb-8 p-4 -mx-4 rounded-[25px] hover:bg-white/[0.03] cursor-pointer transition-all group/balance relative"
+      >
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="text-[#b9cbbc] text-[9px] uppercase font-black tracking-[0.2em] opacity-40 mb-1 italic">Saldo Disponível</p>
+            <h6 className="text-3xl font-headline font-black text-[#e5e2e1] italic tracking-tighter uppercase">
+              R$ {formatCurrency(Math.max(0, account.balance ?? 0))}
+            </h6>
+          </div>
+          <History className="w-4 h-4 text-[#b9cbbc]/20 group-hover/balance:text-[#03D791] transition-colors mt-1" />
+        </div>
+        
         {Number(account.inOperation) > 0 && (
           <p className="text-[10px] text-blue-400 font-bold mt-1 italic uppercase tracking-tighter">
             R$ {formatCurrency(Number(account.inOperation))} em operação
@@ -197,6 +209,12 @@ export function AccountCard({ account, profileName, onUnlink }: AccountCardProps
         confirmLabel="DESVINCULAR"
         cancelLabel="MANTER"
         type="danger"
+      />
+
+      <AccountHistoryModal 
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        account={account}
       />
     </div>
   );

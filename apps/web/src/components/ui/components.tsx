@@ -101,7 +101,7 @@ export function Input({ className, ...props }: InputProps) {
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
@@ -321,9 +321,10 @@ interface CustomDatePickerProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  allowPastDates?: boolean;
 }
 
-export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DATA...", className }: CustomDatePickerProps) {
+export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DATA...", className, allowPastDates = false }: CustomDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [viewDate, setViewDate] = useState(new Date());
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, isBottom: true });
@@ -397,7 +398,7 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (newDate < today) {
+    if (!allowPastDates && newDate < today) {
         toast.error("DATA INVÁLIDA: Não é possível selecionar uma data retroativa");
         return;
     }
@@ -451,7 +452,7 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
     for (let i = startDay - 1; i >= 0; i--) {
         const d = prevMonthDays - i;
         const dObj = new Date(year, month - 1, d);
-        const isPast = dObj < today;
+        const isPast = !allowPastDates && dObj < today;
 
         days.push(
             <button 
@@ -474,7 +475,7 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
     // Current month
     for (let d = 1; d <= totalDays; d++) {
         const dateToCheck = new Date(year, month, d);
-        const isPast = dateToCheck < today;
+        const isPast = !allowPastDates && dateToCheck < today;
         const isSelected = selectedDate?.getDate() === d && 
                          selectedDate?.getMonth() === month && 
                          selectedDate?.getFullYear() === year;
@@ -504,7 +505,7 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
     const remaining = 42 - days.length; // 6 rows of 7
     for (let d = 1; d <= remaining; d++) {
         const dObj = new Date(year, month + 1, d);
-        const isPast = dObj < today;
+        const isPast = !allowPastDates && dObj < today;
 
         days.push(
             <button 

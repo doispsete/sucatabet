@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { NewOperationModal } from "@/components/modals/NewOperationModal";
 
 interface ModalContextType {
-  openNewOperation: (initialData?: any) => void;
+  openNewOperation: (initialData?: any, operationToEdit?: any) => void;
   closeNewOperation: () => void;
 }
 
@@ -12,15 +12,18 @@ const ModalContext = createContext<ModalContextType | undefined>(undefined);
 export function ModalProvider({ children }: { children: React.ReactNode }) {
   const [isNewOpOpen, setIsNewOpOpen] = useState(false);
   const [initialData, setInitialData] = useState<any>(null);
+  const [operationToEdit, setOperationToEdit] = useState<any>(null);
 
-  const openNewOperation = useCallback((data?: any) => {
+  const openNewOperation = useCallback((data?: any, op?: any) => {
     setInitialData(data || null);
+    setOperationToEdit(op || null);
     setIsNewOpOpen(true);
   }, []);
 
   const closeNewOperation = useCallback(() => {
     setIsNewOpOpen(false);
     setInitialData(null);
+    setOperationToEdit(null);
   }, []);
 
   return (
@@ -30,6 +33,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
         isOpen={isNewOpOpen} 
         onClose={closeNewOperation} 
         initialData={initialData}
+        operationToEdit={operationToEdit}
         onSuccess={() => {
           // Dispatch global event for refetching
           if (typeof window !== 'undefined') {

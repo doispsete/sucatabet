@@ -43,6 +43,9 @@ let AccountsController = class AccountsController {
     remove(id, req) {
         return this.accountsService.remove(id, req.user.userId, req.user.role);
     }
+    getHistory(id, req) {
+        return this.accountsService.getHistory(id, req.user.userId, req.user.role);
+    }
 };
 exports.AccountsController = AccountsController;
 __decorate([
@@ -103,6 +106,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], AccountsController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)(':id/history'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], AccountsController.prototype, "getHistory", null);
 exports.AccountsController = AccountsController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('accounts'),

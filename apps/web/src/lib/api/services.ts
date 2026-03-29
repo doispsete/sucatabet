@@ -46,6 +46,7 @@ export const accountsService = {
   delete: (id: string) => api.delete<void>(`/accounts/${id}`),
   deposit: (id: string, amount: number) => api.post<T.Account>(`/accounts/${id}/deposit`, { amount }),
   withdraw: (id: string, amount: number) => api.post<T.Account>(`/accounts/${id}/withdraw`, { amount }),
+  getHistory: (id: string) => api.get<any[]>(`/accounts/${id}/history`),
 };
 
 export const operationsService = {
@@ -54,6 +55,7 @@ export const operationsService = {
     return api.get<T.PaginatedResponse<T.Operation>>(`/operations?${query}`);
   },
   create: (body: unknown) => api.post<T.Operation>('/operations', body),
+  update: (id: string, body: unknown) => api.patch<T.Operation>(`/operations/${id}`, body),
   close: (id: string, body: unknown) => api.patch<T.Operation>(`/operations/${id}/close`, body),
   void: (id: string) => api.patch<T.Operation>(`/operations/${id}/void`),
   delete: (id: string) => api.delete<void>(`/operations/${id}`),

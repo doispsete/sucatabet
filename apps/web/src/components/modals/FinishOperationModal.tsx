@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Check, AlertCircle } from "lucide-react";
+import { Check, AlertCircle, Edit2 } from "lucide-react";
 import { Modal, LoadingButton, toast, CustomSelect, Input } from "@/components/ui/components";
 import { useOperations, useDashboardSummary, useFreebets } from "@/lib/hooks";
 import { OperationStatus, OperationResult, Operation, OperationType } from "@/lib/api/types";
@@ -11,9 +11,10 @@ interface FinishOperationModalProps {
   onClose: () => void;
   operation: Operation | null;
   onSuccess?: () => void;
+  onEdit?: (operation: Operation) => void;
 }
 
-export function FinishOperationModal({ isOpen, onClose, operation, onSuccess }: FinishOperationModalProps) {
+export function FinishOperationModal({ isOpen, onClose, operation, onSuccess, onEdit }: FinishOperationModalProps) {
   const { close: closeOperation, isMutating: isClosing } = useOperations();
   const { refetch: refetchSummary } = useDashboardSummary();
   const { create: createFreebet, refetch: refetchFreebets } = useFreebets();
@@ -227,6 +228,18 @@ export function FinishOperationModal({ isOpen, onClose, operation, onSuccess }: 
       size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Edit Button Area */}
+        <div className="flex justify-end mb-2">
+          <button
+            type="button"
+            onClick={() => operation && onEdit && onEdit(operation)}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-[#03D791]/10 hover:border-[#03D791]/30 text-[#b9cbbc] hover:text-[#03D791] transition-all group/edit"
+          >
+            <Edit2 size={16} className="group-hover/edit:animate-pulse" />
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">Editar Dados da Operação</span>
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1.5">
             <label className="text-[10px] font-black uppercase tracking-widest text-[#b9cbbc]/60 pl-4 italic">Status Final</label>

@@ -42,6 +42,11 @@ export class OperationsController {
     return this.operationsService.create(req.user.userId, createOperationDto);
   }
 
+  @Patch(':id')
+  update(@Param('id') id: string, @Request() req, @Body() updateDto: CreateOperationDto) {
+    return this.operationsService.update(id, req.user.userId, req.user.role, updateDto);
+  }
+
   @Patch(':id/close')
   close(@Param('id') id: string, @Request() req, @Body() closeDto: CloseOperationDto) {
     return this.operationsService.close(id, req.user.userId, req.user.role, closeDto);

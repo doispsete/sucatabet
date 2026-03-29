@@ -44,6 +44,7 @@ export declare class OperationsController {
             result: import("@prisma/client").$Enums.OperationResult | null;
             id: string;
             userId: string;
+            createdAt: Date;
             type: import("@prisma/client").$Enums.OperationType;
             description: string | null;
             status: import("@prisma/client").$Enums.OperationStatus;
@@ -51,7 +52,6 @@ export declare class OperationsController {
             category: import("@prisma/client").$Enums.OperationCategory;
             expectedProfit: import("@prisma/client-runtime-utils").Decimal;
             profitDifference: import("@prisma/client-runtime-utils").Decimal | null;
-            createdAt: Date;
         })[];
         total: number;
         page: number;
@@ -97,6 +97,7 @@ export declare class OperationsController {
         result: import("@prisma/client").$Enums.OperationResult | null;
         id: string;
         userId: string;
+        createdAt: Date;
         type: import("@prisma/client").$Enums.OperationType;
         description: string | null;
         status: import("@prisma/client").$Enums.OperationStatus;
@@ -104,12 +105,12 @@ export declare class OperationsController {
         category: import("@prisma/client").$Enums.OperationCategory;
         expectedProfit: import("@prisma/client-runtime-utils").Decimal;
         profitDifference: import("@prisma/client-runtime-utils").Decimal | null;
-        createdAt: Date;
     }>;
     create(req: any, createOperationDto: CreateOperationDto): Promise<{
         result: import("@prisma/client").$Enums.OperationResult | null;
         id: string;
         userId: string;
+        createdAt: Date;
         type: import("@prisma/client").$Enums.OperationType;
         description: string | null;
         status: import("@prisma/client").$Enums.OperationStatus;
@@ -117,12 +118,25 @@ export declare class OperationsController {
         category: import("@prisma/client").$Enums.OperationCategory;
         expectedProfit: import("@prisma/client-runtime-utils").Decimal;
         profitDifference: import("@prisma/client-runtime-utils").Decimal | null;
+    }>;
+    update(id: string, req: any, updateDto: CreateOperationDto): Promise<{
+        result: import("@prisma/client").$Enums.OperationResult | null;
+        id: string;
+        userId: string;
         createdAt: Date;
+        type: import("@prisma/client").$Enums.OperationType;
+        description: string | null;
+        status: import("@prisma/client").$Enums.OperationStatus;
+        realProfit: import("@prisma/client-runtime-utils").Decimal | null;
+        category: import("@prisma/client").$Enums.OperationCategory;
+        expectedProfit: import("@prisma/client-runtime-utils").Decimal;
+        profitDifference: import("@prisma/client-runtime-utils").Decimal | null;
     }>;
     close(id: string, req: any, closeDto: CloseOperationDto): Promise<{
         result: import("@prisma/client").$Enums.OperationResult | null;
         id: string;
         userId: string;
+        createdAt: Date;
         type: import("@prisma/client").$Enums.OperationType;
         description: string | null;
         status: import("@prisma/client").$Enums.OperationStatus;
@@ -130,12 +144,12 @@ export declare class OperationsController {
         category: import("@prisma/client").$Enums.OperationCategory;
         expectedProfit: import("@prisma/client-runtime-utils").Decimal;
         profitDifference: import("@prisma/client-runtime-utils").Decimal | null;
-        createdAt: Date;
     }>;
     void(id: string, req: any): Promise<{
         result: import("@prisma/client").$Enums.OperationResult | null;
         id: string;
         userId: string;
+        createdAt: Date;
         type: import("@prisma/client").$Enums.OperationType;
         description: string | null;
         status: import("@prisma/client").$Enums.OperationStatus;
@@ -143,12 +157,12 @@ export declare class OperationsController {
         category: import("@prisma/client").$Enums.OperationCategory;
         expectedProfit: import("@prisma/client-runtime-utils").Decimal;
         profitDifference: import("@prisma/client-runtime-utils").Decimal | null;
-        createdAt: Date;
     }>;
     remove(id: string, req: any): Promise<{
         result: import("@prisma/client").$Enums.OperationResult | null;
         id: string;
         userId: string;
+        createdAt: Date;
         type: import("@prisma/client").$Enums.OperationType;
         description: string | null;
         status: import("@prisma/client").$Enums.OperationStatus;
@@ -156,6 +170,5 @@ export declare class OperationsController {
         category: import("@prisma/client").$Enums.OperationCategory;
         expectedProfit: import("@prisma/client-runtime-utils").Decimal;
         profitDifference: import("@prisma/client-runtime-utils").Decimal | null;
-        createdAt: Date;
     }>;
 }

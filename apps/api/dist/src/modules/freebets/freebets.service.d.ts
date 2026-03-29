@@ -33,6 +33,7 @@ export declare class FreebetsService {
             result: import("@prisma/client").$Enums.OperationResult | null;
             id: string;
             userId: string;
+            createdAt: Date;
             type: import("@prisma/client").$Enums.OperationType;
             description: string | null;
             status: import("@prisma/client").$Enums.OperationStatus;
@@ -40,12 +41,11 @@ export declare class FreebetsService {
             category: import("@prisma/client").$Enums.OperationCategory;
             expectedProfit: import("@prisma/client-runtime-utils").Decimal;
             profitDifference: import("@prisma/client-runtime-utils").Decimal | null;
-            createdAt: Date;
         } | null;
         id: string;
         userId: string;
-        accountId: string;
         createdAt: Date;
+        accountId: string;
         operationId: string | null;
         value: import("@prisma/client-runtime-utils").Decimal;
         origin: string;
@@ -78,6 +78,7 @@ export declare class FreebetsService {
             result: import("@prisma/client").$Enums.OperationResult | null;
             id: string;
             userId: string;
+            createdAt: Date;
             type: import("@prisma/client").$Enums.OperationType;
             description: string | null;
             status: import("@prisma/client").$Enums.OperationStatus;
@@ -85,12 +86,11 @@ export declare class FreebetsService {
             category: import("@prisma/client").$Enums.OperationCategory;
             expectedProfit: import("@prisma/client-runtime-utils").Decimal;
             profitDifference: import("@prisma/client-runtime-utils").Decimal | null;
-            createdAt: Date;
         } | null;
         id: string;
         userId: string;
-        accountId: string;
         createdAt: Date;
+        accountId: string;
         operationId: string | null;
         value: import("@prisma/client-runtime-utils").Decimal;
         origin: string;
@@ -101,8 +101,8 @@ export declare class FreebetsService {
         status: string;
         id: string;
         userId: string;
-        accountId: string;
         createdAt: Date;
+        accountId: string;
         operationId: string | null;
         value: import("@prisma/client-runtime-utils").Decimal;
         origin: string;
@@ -113,8 +113,8 @@ export declare class FreebetsService {
         status: string;
         id: string;
         userId: string;
-        accountId: string;
         createdAt: Date;
+        accountId: string;
         operationId: string | null;
         value: import("@prisma/client-runtime-utils").Decimal;
         origin: string;
@@ -124,8 +124,8 @@ export declare class FreebetsService {
     remove(id: string, userId: string, role: UserRole): Promise<{
         id: string;
         userId: string;
-        accountId: string;
         createdAt: Date;
+        accountId: string;
         operationId: string | null;
         value: import("@prisma/client-runtime-utils").Decimal;
         origin: string;

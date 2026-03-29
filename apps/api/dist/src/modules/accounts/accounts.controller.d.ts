@@ -78,4 +78,18 @@ export declare class AccountsController {
         id: string;
         inOperation: import("@prisma/client-runtime-utils").Decimal;
     }>;
+    getHistory(id: string, req: any): Promise<({
+        user: {
+            name: string;
+        };
+    } & {
+        id: string;
+        action: string;
+        entity: string;
+        entityId: string;
+        oldValue: import("@prisma/client/runtime/client").JsonValue | null;
+        newValue: import("@prisma/client/runtime/client").JsonValue | null;
+        executedBy: string;
+        createdAt: Date;
+    })[]>;
 }

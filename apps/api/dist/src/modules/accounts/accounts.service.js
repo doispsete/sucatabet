@@ -125,6 +125,22 @@ let AccountsService = class AccountsService {
         await this.clearUserDashboardCache(userId, role);
         return result;
     }
+    async getHistory(id, userId, role) {
+        await this.findOne(id, userId, role);
+        return this.prisma.auditLog.findMany({
+            where: {
+                entityId: id,
+                entity: 'Account',
+                action: { in: ['DEPOSIT', 'WITHDRAW'] },
+            },
+            orderBy: { createdAt: 'desc' },
+            include: {
+                user: {
+                    select: { name: true }
+                }
+            }
+        });
+    }
 };
 exports.AccountsService = AccountsService;
 exports.AccountsService = AccountsService = __decorate([

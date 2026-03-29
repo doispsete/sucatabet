@@ -84,4 +84,18 @@ export declare class AccountsService {
         id: string;
         inOperation: Prisma.Decimal;
     }>;
+    getHistory(id: string, userId: string, role: UserRole): Promise<({
+        user: {
+            name: string;
+        };
+    } & {
+        id: string;
+        action: string;
+        entity: string;
+        entityId: string;
+        oldValue: Prisma.JsonValue | null;
+        newValue: Prisma.JsonValue | null;
+        executedBy: string;
+        createdAt: Date;
+    })[]>;
 }

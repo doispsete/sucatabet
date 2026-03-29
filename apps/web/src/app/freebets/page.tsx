@@ -53,8 +53,8 @@ export default function FreebetsPage() {
       isOpen: true,
       id,
       action: 'delete',
-      title: "Deletar Registro",
-      message: "Remover permanentemente este registro do hub de freebets?"
+      title: "Deletar Freebet",
+      message: "Remover permanentemente esta freebet da sua conta?"
     });
   };
 
@@ -140,7 +140,7 @@ export default function FreebetsPage() {
   const historyFreebets = useMemo(() => {
     const list = Array.isArray(freebets) ? freebets : [];
     return list.filter(f =>
-      f.status === FreebetStatus.USADA || 
+      f.status === FreebetStatus.USADA ||
       f.status === FreebetStatus.EXPIRADA ||
       new Date(f.expiresAt).getTime() <= Date.now()
     );
@@ -171,8 +171,8 @@ export default function FreebetsPage() {
 
   const totalEmCarteira = useMemo(() => {
     return (Array.isArray(freebets) ? freebets : [])
-      .filter(f => 
-        (f.status === FreebetStatus.PENDENTE || f.status === FreebetStatus.EXPIRANDO) && 
+      .filter(f =>
+        (f.status === FreebetStatus.PENDENTE || f.status === FreebetStatus.EXPIRANDO) &&
         new Date(f.expiresAt).getTime() > Date.now()
       )
       .reduce((acc, f) => acc + Number(f.value), 0);
@@ -224,7 +224,7 @@ export default function FreebetsPage() {
           freebets={freebets || []}
           onAddFreebet={() => setIsModalOpen(true)}
           onUse={handleUse}
-          onExpire={() => {}} // No longer needed
+          onExpire={() => { }} // No longer needed
           onDelete={handleDelete}
           onEdit={handleEditOpen}
         />
@@ -451,11 +451,11 @@ export default function FreebetsPage() {
       <Modal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        title="Ajustar Ativo"
+        title="Ajustar Freebet"
       >
         <form onSubmit={handleUpdateFB} className="space-y-6">
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 italic">Valor do Ativo (R$)</label>
+            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 italic">Valor da Freebet (R$)</label>
             <Input
               type="number"
               step="0.01"

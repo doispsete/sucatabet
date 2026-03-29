@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Modal, LoadingButton, toast, CustomSelect, Input } from "@/components/ui/components";
-import { OperationType } from "@/lib/api/types";
+import { OperationType, Operation } from "@/lib/api/types";
 import { useOperations, useAccounts, useDashboardSummary, useFreebets } from "@/lib/hooks";
 import { formatCurrency } from "@/lib/utils";
 
 interface NewOperationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  operationToEdit?: Operation | null;
   initialData?: {
     type?: OperationType;
     notes?: string;
@@ -25,8 +26,8 @@ interface NewOperationModalProps {
   onSuccess?: () => void;
 }
 
-export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: NewOperationModalProps) {
-  const { create: createOperation, isMutating: isCreating } = useOperations();
+export function NewOperationModal({ isOpen, onClose, operationToEdit, initialData, onSuccess }: NewOperationModalProps) {
+  const { create: createOperation, update: updateOperation, isMutating: isMutatingOps } = useOperations();
   const { create: createFreebet, update: updateFreebet } = useFreebets();
   const { data: accounts, refetch: refetchAccounts } = useAccounts();
   const { refetch: refetchSummary } = useDashboardSummary();
@@ -51,36 +52,49 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
   useEffect(() => {
     if (isOpen) {
       refetchAccounts();
+      
+      if (operationToEdit) {
+        setType(operationToEdit.type as OperationType);
+        setNotes(operationToEdit.description || "");
+        setBets((operationToEdit.bets || []).map((b, i) => ({
+          id: b.id || (Date.now() + i).toString(),
+          accountId: b.accountId,
+          stake: b.stake.toString(),
+          odds: b.odds.toString(),
+          side: b.side as 'BACK' | 'LAY',
+          isBenefit: !!(b.type === 'Freebet' || b.type === 'Aumento' || b.isBenefit),
+          commission: (b as any).commission?.toString() || '0'
+        })));
+        return;
+      }
+
       if (initialData) {
-        setTimeout(() => {
-          if (initialData.type) setType(initialData.type);
-          if (initialData.bets && initialData.bets.length > 0) {
-            setBets(initialData.bets.map((b, i) => ({ 
-              id: Date.now().toString() + i,
-              accountId: b.accountId || '',
-              stake: b.stake,
-              odds: b.odds,
-              side: b.side || 'BACK',
-              isBenefit: b.type === 'Freebet' || b.type === 'Aumento',
-              commission: b.commission?.toString() || '0'
-            })));
-          } else {
-            setBets([{ id: '1', accountId: '', stake: '', odds: '', side: 'BACK', isBenefit: false, commission: '0' }]);
-          }
-          if (initialData.freebetId) {
-            setFreebetId(initialData.freebetId);
-            setType(OperationType.EXTRACAO);
-          }
-        }, 0);
-      } else {
-        setTimeout(() => {
-          setType(OperationType.NORMAL);
-          setGeneratedFbValue("");
+        if (initialData.type) setType(initialData.type);
+        if (initialData.bets && initialData.bets.length > 0) {
+          setBets(initialData.bets.map((b, i) => ({ 
+            id: Date.now().toString() + i,
+            accountId: b.accountId || '',
+            stake: b.stake,
+            odds: b.odds,
+            side: b.side || 'BACK',
+            isBenefit: b.type === 'Freebet' || b.type === 'Aumento',
+            commission: b.commission?.toString() || '0'
+          })));
+        } else {
           setBets([{ id: '1', accountId: '', stake: '', odds: '', side: 'BACK', isBenefit: false, commission: '0' }]);
-        }, 0);
+        }
+        if (initialData.freebetId) {
+          setFreebetId(initialData.freebetId);
+          setType(OperationType.EXTRACAO);
+        }
+      } else {
+        setType(OperationType.NORMAL);
+        setGeneratedFbValue("");
+        setNotes("");
+        setBets([{ id: '1', accountId: '', stake: '', odds: '', side: 'BACK', isBenefit: false, commission: '0' }]);
       }
     }
-  }, [isOpen, initialData]);
+  }, [isOpen, initialData, operationToEdit]);
 
   const handleAddBet = () => {
     if (bets.length < 10) {
@@ -108,7 +122,7 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
     }
 
     try {
-      const operationResponse = await createOperation({
+      const payload = {
         type,
         freebetId: freebetId || undefined,
         description: notes || undefined,
@@ -124,25 +138,30 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
 
           return {
             accountId: b.accountId,
-            stake: parseFloat(s.toFixed(2)), // Enviar stake original (backer), backend calcula liability
+            stake: parseFloat(s.toFixed(2)),
             odds: parseFloat(o.toFixed(2)),
             commission: parseFloat(b.commission) || 0,
             side: b.side,
             type: betType,
+            isBenefit: b.isBenefit
           };
         }),
-      });
+      };
 
-      // Automação: Marcar Freebet como USADA se houver origem
-      // Redundância removida: O backend já faz esse update dentro da transação de criação da operação.
+      let operationResponse;
+      if (operationToEdit) {
+        operationResponse = await updateOperation(operationToEdit.id, payload);
+      } else {
+        operationResponse = await createOperation(payload);
+      }
+
       if (freebetId) {
         refetchFreebets();
       }
       
-      toast.success("Operação criada com sucesso");
+      toast.success(operationToEdit ? "Operação atualizada com sucesso" : "Operação criada com sucesso");
       
-      // Persistir dados de planejamento localmente para o encerramento (Sync)
-      if (type === OperationType.FREEBET_GEN && operationResponse?.id) {
+      if (!operationToEdit && type === OperationType.FREEBET_GEN && operationResponse?.id) {
         localStorage.setItem(`pending_fb_val_${operationResponse.id}`, generatedFbValue);
         localStorage.setItem(`pending_fb_origin_${operationResponse.id}`, notes);
       }
@@ -151,7 +170,7 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
       if (onSuccess) onSuccess();
       onClose();
     } catch (err: unknown) {
-      toast.error((err as Error).message || "Erro ao criar operação");
+      toast.error((err as Error).message || "Erro ao processar operação");
     }
   };
 
@@ -159,7 +178,7 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
     <Modal 
       isOpen={isOpen} 
       onClose={onClose} 
-      title="Cadastrar Nova Operação"
+      title={operationToEdit ? "Editar Operação" : "Cadastrar Nova Operação"}
       size="xl"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -190,7 +209,7 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
               placeholder="EX: JOGO DO FLAMENGO - BRASILEIRÃO"
             />
           </div>
-          {type === OperationType.FREEBET_GEN && (
+          {type === OperationType.FREEBET_GEN && !operationToEdit && (
             <div className={`space-y-3 animate-in fade-in slide-in-from-top-4 duration-500`}>
               <label className="text-[10px] font-black uppercase tracking-[0.3em] text-[#03D791] italic flex items-center gap-2">
                 Valor da Freebet a Gerar (R$)
@@ -345,7 +364,7 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
           {/* Result Summary */}
           <div className="glass-card p-6 rounded-[30px] border-white/5 bg-[#03D791]/5">
             <h6 className="text-[10px] font-black uppercase tracking-widest text-[#03D791] mb-6 italic border-b border-[#03D791]/10 pb-3 flex justify-between items-center">
-              Previsão de Resultados
+              Previsão de Resultados {operationToEdit && <span className="text-[#ffcc00] ml-2">(MODO EDIÇÃO)</span>}
               <span className="text-[8px] opacity-40 lowercase font-normal">Baseado na calculadora</span>
             </h6>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -362,22 +381,15 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
                   return rawO;
                 };
 
-                // Cálculo de Custo Total
                 const stakeTotal = bets.reduce((sum, bet) => {
                   const bs = parseFloat(bet.stake) || 0;
                   const bo = getEffectiveOdd(bet);
                   const bl = bet.side === 'LAY' ? (bo - 1) * bs : 0;
-                  
-                  // Se for Extração e marked, custo é 0
                   if (type === OperationType.EXTRACAO && bet.isBenefit) return sum;
-                  
                   return sum + (bet.side === 'LAY' ? bl : bs);
                 }, 0);
 
-                // Cálculo de Retorno para este cenário i
                 let totalReturn = 0;
-                
-                // Identifica se alguma BACK está vencendo neste cenário
                 const winningBackExistsInScenario = bets.some((_, idx) => {
                   const betObj = bets[idx];
                   return betObj.side === 'BACK' && idx === i;
@@ -390,19 +402,14 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
                   
                   if (otherB.side === 'BACK') {
                     if (i === j) {
-                      // Se for Extração e marked, retorno é S * (O - 1) * (1 - C)
                       if (type === OperationType.EXTRACAO && otherB.isBenefit) {
                         totalReturn += os * (oo - 1) * (1 - oc);
                       } else {
-                        // Retorno = S + (S * O - S) * (1 - C)
                         totalReturn += os + (os * oo - os) * (1 - oc);
                       }
                     }
                   } else {
-                    // Lógica de LAY: 
-                    // Se nenhuma BACK vence (ex: cenário do próprio LAY), o LAY ganha.
                     if (!winningBackExistsInScenario && i === j) {
-                      // Ganha Stake do Backer * (1 - C) + Liability
                       const ol = (oo - 1) * os;
                       totalReturn += (os * (1 - oc)) + ol;
                     }
@@ -425,10 +432,10 @@ export function NewOperationModal({ isOpen, onClose, initialData, onSuccess }: N
 
           <LoadingButton 
             type="submit" 
-            isLoading={isCreating}
-            className="w-full bg-[#03D791] text-[#002110] font-black uppercase tracking-[0.4em] py-6 rounded-[30px] text-[11px] hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_40px_rgba(3,215,145,0.2)] italic"
+            isLoading={isMutatingOps}
+            className={`w-full ${operationToEdit ? 'bg-[#ffcc00]' : 'bg-[#03D791]'} text-[#002110] font-black uppercase tracking-[0.4em] py-6 rounded-[30px] text-[11px] hover:scale-[1.02] active:scale-95 transition-all shadow-lg italic`}
           >
-            CONFIRMAR OPERAÇÃO
+            {operationToEdit ? 'SALVAR ALTERAÇÕES' : 'CONFIRMAR OPERAÇÃO'}
           </LoadingButton>
         </div>
       </form>

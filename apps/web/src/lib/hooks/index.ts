@@ -48,19 +48,31 @@ export function useOperations(params?: { status?: string; page?: number; limit?:
     () => refetch()
   );
 
+  const { mutate: update, isMutating: isUpdating, mutationError: updateError, clearError: clearUpdateError } = useMutation(
+    ({ id, body }: { id: string, body: unknown }) => services.operationsService.update(id, body),
+    () => refetch()
+  );
+
   const { mutate: remove, isMutating: isRemoving, mutationError: removeError, clearError: clearRemoveError } = useMutation(
     (id: string) => services.operationsService.delete(id),
     () => refetch()
   );
 
-  const isMutating = isCreating || isClosing || isVoiding || isRemoving;
-  const mutationError = createError || closeError || voidError || removeError;
-  const clearError = () => { clearCreateError(); clearCloseError(); clearVoidError(); clearRemoveError(); };
+  const isMutating = isCreating || isUpdating || isClosing || isVoiding || isRemoving;
+  const mutationError = createError || updateError || closeError || voidError || removeError;
+  const clearError = () => { 
+    clearCreateError(); 
+    clearUpdateError(); 
+    clearCloseError(); 
+    clearVoidError(); 
+    clearRemoveError(); 
+  };
 
   return { 
     data, isLoading, error, refetch, 
     isMutating, mutationError, clearError, 
     create, 
+    update: (id: string, body: unknown) => update({ id, body }),
     close: (id: string, result: unknown) => close({ id, result }), 
     void: voidOp, 
     remove 
@@ -110,6 +122,14 @@ export function useAccounts() {
     deposit: (id: string, a: number) => deposit({ id, a }),
     withdraw: (id: string, a: number) => withdraw({ id, a }),
   };
+}
+
+export function useAccountHistory(accountId?: string) {
+  const { data, isLoading, error, refetch } = useFetch(
+    () => accountId ? services.accountsService.getHistory(accountId) : Promise.resolve([]),
+    [accountId]
+  );
+  return { data: data || [], isLoading, error, refetch };
 }
 
 // 4. Other Hooks

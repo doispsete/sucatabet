@@ -42,4 +42,9 @@ export class AccountsController {
   remove(@Param('id') id: string, @Request() req) {
     return this.accountsService.remove(id, req.user.userId, req.user.role);
   }
+
+  @Get(':id/history')
+  getHistory(@Param('id') id: string, @Request() req) {
+    return this.accountsService.getHistory(id, req.user.userId, req.user.role);
+  }
 }
