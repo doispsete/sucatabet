@@ -20,6 +20,8 @@ COPY apps/web/postcss.config.mjs ./apps/web/
 
 # Realiza o build do projeto (Next.js Standalone)
 # Note: Necessário NEXT_PUBLIC_API_URL no momento do build se houver valores estáticos dependentes
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm run build -w web
 
 # STAGE 2: Runner
