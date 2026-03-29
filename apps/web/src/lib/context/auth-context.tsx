@@ -28,12 +28,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Se não houver, a API retornará 401 e o catch tratará.
         const me = await authService.me();
         setUser(me);
-      } catch (error) {
+      } catch {
+        // O middleware.ts é o único responsável por redirecionar para /login.
         setUser(null);
-        // Só redireciona se não estiver na página de login e se não estiver carregando
-        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-          // Opcional: router.push('/login');
-        }
       } finally {
         setIsLoading(false);
       }
