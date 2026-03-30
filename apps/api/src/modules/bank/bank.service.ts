@@ -13,6 +13,7 @@ export class BankService {
     });
 
     if (!bank) {
+      console.log(`[BankService] Criando nova conta bancária para usuário: ${userId}`);
       bank = await this.prisma.bankAccount.create({
         data: { userId },
       });
@@ -22,7 +23,9 @@ export class BankService {
   }
 
   async getSummary(userId: string, query?: { startDate?: string, endDate?: string }) {
+    console.log(`[BankService] Buscando sumário bancário - Usuário: ${userId}, Query:`, query);
     const now = new Date();
+    // Forçar UTC para evitar discrepâncias em ambientes Alpine Linux
     const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
 
     const bank = await this.getOrCreateBank(userId);
