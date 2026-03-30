@@ -9,7 +9,10 @@ import {
   ShieldCheck, 
   Plus, 
   Settings,
-  LogOut
+  LogOut,
+  Wallet,
+  Calculator,
+  Bell
 } from "lucide-react";
 import { useAuth } from "@/lib/context/auth-context";
 import { useModal } from "@/lib/context/modal-context";
@@ -34,6 +37,9 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
     { label: "Dashboard", href: "/", icon: LayoutDashboard },
     { label: "Operações", href: "/operacoes", icon: Banknote },
     { label: "Freebets", href: "/freebets", icon: Ticket },
+    { label: "Banco", href: "/banco", icon: Wallet },
+    { label: "Alertas", href: "/alertas", icon: Bell },
+    { label: "Calculadora", href: "/calculadora", icon: Calculator },
     { label: "Contas", href: "/contas", icon: Users },
     ...(isAdmin ? [{ label: "Admin", href: "/admin", icon: ShieldCheck }] : []),
   ];

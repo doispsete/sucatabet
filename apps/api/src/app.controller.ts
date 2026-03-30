@@ -22,7 +22,7 @@ export class AppController {
   @Get('fix-db')
   async fixDb() {
     try {
-      // 1. Criar Enums se não existirem (Usando nomes sincronizados com schema.prisma em português)
+      // 1. Criar Enums se não existirem
       await this.prisma.$executeRawUnsafe(`
         DO $$ 
         BEGIN 
@@ -95,7 +95,21 @@ export class AppController {
       await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "remainingOccurrences" INTEGER;');
       await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "lastPaidAt" TIMESTAMP(3);');
 
-      return { status: 'success', message: 'Correção completa aplicada (v2).' };
+      // 6. Garantir BankAccount para todos (v3)
+      await this.prisma.$executeRawUnsafe(\`
+        INSERT INTO "BankAccount" ("id", "userId", "balance", "monthlyGoal", "createdAt", "updatedAt")
+        SELECT 
+            'acc_' || md5(random()::text || clock_timestamp()::text), 
+            u."id", 
+            0, 
+            0, 
+            NOW(), 
+            NOW()
+        FROM "User" u
+        WHERE NOT EXISTS (SELECT 1 FROM "BankAccount" b WHERE b."userId" = u."id");
+      \`);
+
+      return { status: 'success', message: 'Correção completa aplicada (v3 - BankAccount Injector).' };
     } catch (error) {
       return { status: 'error', message: error.message };
     }
