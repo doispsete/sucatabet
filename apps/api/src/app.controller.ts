@@ -22,30 +22,31 @@ export class AppController {
   @Get('fix-db')
   async fixDb() {
     try {
-      // 1. Criar Enum se não existir
+      // 1. Criar Enums se não existirem (Usando nomes sincronizados com schema.prisma em português)
       await this.prisma.$executeRawUnsafe(`
         DO $$ 
         BEGIN 
             IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'UserStatus') THEN 
                 CREATE TYPE "UserStatus" AS ENUM ('PENDING', 'ACTIVE', 'REJECTED', 'SUSPENDED'); 
             END IF; 
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'BankTransactionType') THEN 
+                CREATE TYPE "BankTransactionType" AS ENUM ('DEPOSIT', 'WITHDRAW', 'ACCOUNT_DEPOSIT', 'ACCOUNT_WITHDRAW', 'EXPENSE_PAYMENT', 'INCOME'); 
+            END IF; 
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ExpenseType') THEN 
+                CREATE TYPE "ExpenseType" AS ENUM ('OPERACIONAL', 'PESSOAL'); 
+            END IF; 
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ExpenseStatus') THEN 
+                CREATE TYPE "ExpenseStatus" AS ENUM ('PENDING', 'PAID', 'OVERDUE'); 
+            END IF; 
         END $$;
       `);
 
-      // 2. Adicionar colunas se não existirem
-      await this.prisma.$executeRawUnsafe(`
-        ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "status" "UserStatus" NOT NULL DEFAULT 'PENDING';
-      `);
-      await this.prisma.$executeRawUnsafe(`
-        ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "approvedAt" TIMESTAMP(3);
-      `);
+      // 2. Tabela User
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "status" "UserStatus" NOT NULL DEFAULT \'PENDING\';');
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "approvedAt" TIMESTAMP(3);');
+      await this.prisma.$executeRawUnsafe('UPDATE "User" SET "status" = \'ACTIVE\' WHERE "status" = \'PENDING\';');
 
-      // 3. Ativar usuários existentes
-      await this.prisma.$executeRawUnsafe(`
-        UPDATE "User" SET "status" = 'ACTIVE' WHERE "status" = 'PENDING';
-      `);
-
-      // 4. Criar tabelas BankAccount, BankTransaction e Expense se não existirem
+      // 3. Tabela BankAccount
       await this.prisma.$executeRawUnsafe(`
         CREATE TABLE IF NOT EXISTS "BankAccount" (
             "id" TEXT NOT NULL,
@@ -56,12 +57,13 @@ export class AppController {
             CONSTRAINT "BankAccount_pkey" PRIMARY KEY ("id")
         );
       `);
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "BankAccount" ADD COLUMN IF NOT EXISTS "monthlyGoal" DECIMAL(65,30) NOT NULL DEFAULT 0;');
 
+      // 4. Tabela BankTransaction
       await this.prisma.$executeRawUnsafe(`
         CREATE TABLE IF NOT EXISTS "BankTransaction" (
             "id" TEXT NOT NULL,
             "bankAccountId" TEXT NOT NULL,
-            "type" TEXT NOT NULL,
             "amount" DECIMAL(65,30) NOT NULL,
             "description" TEXT NOT NULL,
             "referenceId" TEXT,
@@ -70,26 +72,30 @@ export class AppController {
             CONSTRAINT "BankTransaction_pkey" PRIMARY KEY ("id")
         );
       `);
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "BankTransaction" ADD COLUMN IF NOT EXISTS "type" "BankTransactionType";');
 
+      // 5. Tabela Expense
       await this.prisma.$executeRawUnsafe(`
         CREATE TABLE IF NOT EXISTS "Expense" (
             "id" TEXT NOT NULL,
             "bankAccountId" TEXT NOT NULL,
             "name" TEXT NOT NULL,
-            "type" TEXT NOT NULL,
             "amount" DECIMAL(65,30) NOT NULL,
             "dueDay" INTEGER NOT NULL,
             "recurring" BOOLEAN NOT NULL DEFAULT true,
-            "lastPaidAt" TIMESTAMP(3),
             "nextDueAt" TIMESTAMP(3) NOT NULL,
-            "status" TEXT NOT NULL DEFAULT 'PENDING',
             "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
             "updatedAt" TIMESTAMP(3) NOT NULL,
             CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
         );
       `);
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "type" "ExpenseType";');
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "status" "ExpenseStatus" NOT NULL DEFAULT \'PENDING\';');
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "totalOccurrences" INTEGER;');
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "remainingOccurrences" INTEGER;');
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "lastPaidAt" TIMESTAMP(3);');
 
-      return { status: 'success', message: 'Banco de dados corrigido manualmente com todas as tabelas.' };
+      return { status: 'success', message: 'Correção completa aplicada (v2).' };
     } catch (error) {
       return { status: 'error', message: error.message };
     }
