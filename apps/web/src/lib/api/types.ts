@@ -151,6 +151,7 @@ export interface DashboardSummary {
     monthly: { label: string, value: number }[];
     yearly: { label: string, value: number }[];
   };
+  distribuicaoPorResultado?: Record<string, number>;
 }
 
 export interface DashboardClub {
