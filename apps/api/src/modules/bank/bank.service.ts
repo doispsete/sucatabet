@@ -66,24 +66,18 @@ export class BankService {
         
         let label = '';
         if (daysDiffTotal <= 1.1) {
-          // Usar locale string para garantir UTC-3 (America/Sao_Paulo)
-          label = bStart.toLocaleTimeString('pt-BR', { 
-            timeZone: 'America/Sao_Paulo', 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: false 
-          });
+          // Fallback manual for UTC-3 if Intl fails or behaves oddly
+          const dateBR = new Date(bStart.getTime() - (3 * 60 * 60 * 1000));
+          label = `${String(dateBR.getUTCHours()).padStart(2, '0')}:${String(dateBR.getUTCMinutes()).padStart(2, '0')}`;
         } else if (daysDiffTotal <= 31) {
-          label = bStart.toLocaleDateString('pt-BR', {
-            timeZone: 'America/Sao_Paulo',
-            day: '2-digit',
-            month: '2-digit'
-          });
+          const dateBR = new Date(bStart.getTime() - (3 * 60 * 60 * 1000));
+          label = `${String(dateBR.getUTCDate()).padStart(2, '0')}/${String(dateBR.getUTCMonth() + 1).padStart(2, '0')}`;
         } else if (daysDiffTotal <= 400) {
-          label = monthsShort[new Date(bStart.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' })).getMonth()];
+          const dateBR = new Date(bStart.getTime() - (3 * 60 * 60 * 1000));
+          label = monthsShort[dateBR.getUTCMonth()];
         } else {
-          const dBR = new Date(bStart.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-          label = `${monthsShort[dBR.getMonth()]}/${String(dBR.getFullYear()).slice(-2)}`;
+          const dateBR = new Date(bStart.getTime() - (3 * 60 * 60 * 1000));
+          label = `${monthsShort[dateBR.getUTCMonth()]}/${String(dateBR.getUTCFullYear()).slice(-2)}`;
         }
 
         const bucketTxs = periodTransactions.filter(tx => {

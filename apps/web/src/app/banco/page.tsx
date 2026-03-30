@@ -20,7 +20,8 @@ import {
   ChevronRight,
   ArrowDown,
   ArrowUp,
-  Calendar
+  Calendar,
+  AlertCircle
 } from "lucide-react";
 import { useBankSummary, useExpenses, useBankTransactions } from "@/lib/hooks";
 import { formatCurrency } from "@/lib/utils";
@@ -220,16 +221,35 @@ export default function BancoPage() {
   if (isBankLoading && !bankSummary) {
     return (
       <div className="space-y-8 px-6">
-        <div className="h-20 w-48 bg-white/5 animate-pulse rounded-2xl" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1,2,3].map(i => <div key={i} className="h-32 glass-card animate-pulse rounded-[32px]" />)}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8">
+            <div className="glass-card rounded-[40px] p-8 h-[400px] animate-pulse bg-white/5" />
+          </div>
+          <div className="lg:col-span-4">
+            <div className="glass-card rounded-[40px] p-8 h-[400px] animate-pulse bg-white/5" />
+          </div>
         </div>
       </div>
     );
   }
 
-  // Safety check to ensure bankSummary exists for the rest of the render
-  if (!bankSummary) return null;
+  // Error state
+  if (!bankSummary) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5" />
+          <p className="text-sm font-bold uppercase tracking-tight">Erro ao carregar dados bancários. Tente novamente mais tarde.</p>
+        </div>
+        <button
+          onClick={() => refetchBank()}
+          className="px-6 py-2 bg-white/5 hover:bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest transition-all"
+        >
+          Tentar Novamente
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 px-3 md:px-6 animate-in fade-in duration-500 pb-20">

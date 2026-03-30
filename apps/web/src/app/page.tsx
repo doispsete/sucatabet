@@ -190,49 +190,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
         {/* Coluna Esquerda: Banca + Meta */}
         <div className="md:col-span-2 lg:col-span-5 flex flex-col gap-6 h-full">
-          {/* CARD 1 — BANCA (Unificado) */}
-          <div className="glass-card rounded-[32px] p-8 group relative overflow-hidden flex flex-col border-l border-primary/20 flex-1">
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-[0.2em] mb-2 italic opacity-40">BANCA TOTAL</p>
-                  <h3 className="text-4xl font-black text-white italic tracking-tighter">R$ {formatCurrency(summary?.bancaTotal ?? 0)}</h3>
-                </div>
-                <div className="flex gap-2">
-                  <Link href="/operacoes" className="text-[#b9cbbc]/40 hover:text-primary transition-all p-2.5 bg-white/5 hover:bg-primary/10 rounded-2xl border border-white/5 hover:border-primary/20">
-                    <History className="w-5 h-5 cursor-pointer" />
-                  </Link>
-                </div>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t border-white/5">
-                <div className="grid grid-cols-2 gap-y-4 gap-x-6">
-                  <div className="space-y-1">
-                    <p className="text-[9px] font-black text-[#00ff88] uppercase italic opacity-40">Disponível</p>
-                    <p className="text-xl font-black text-[#00ff88] italic">R$ {formatCurrency(summary?.disponivel ?? 0)}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[9px] font-black text-white uppercase italic opacity-40">Em Operação</p>
-                    <p className="text-xl font-black text-white/60 italic">R$ {formatCurrency(summary?.emOperacao ?? 0)}</p>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden flex">
-                    <div
-                      className="h-full bg-[#00ff88] transition-all duration-1000 ease-out shadow-[0_0_10px_#00ff88]"
-                      style={{ width: `${(summary.disponivel / (summary.bancaTotal || 1)) * 100}%` }}
-                    />
-                    <div
-                      className="h-full bg-white transition-all duration-1000 ease-out"
-                      style={{ width: `${(summary.emOperacao / (summary.bancaTotal || 1)) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <CircleDollarSign className="absolute -bottom-6 -right-6 w-32 h-32 text-white/5 pointer-events-none opacity-20 group-hover:scale-110 transition-transform duration-700" />
-          </div>
+          <BankSummaryCard 
+            onDeposit={() => { setTxMode('deposit'); setIsTxModalOpen(true); }}
+            onWithdraw={() => { setTxMode('withdraw'); setIsTxModalOpen(true); }}
+          />
 
           {/* NOVO CARD — META DO MÊS */}
           <div className="glass-card rounded-[32px] p-8 group relative overflow-hidden border-l border-primary/20 flex-1">
