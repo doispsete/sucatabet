@@ -19,7 +19,8 @@ jobs:
           port: 22
           script: |
             cd /var/www/sucatabet
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             chmod +x scripts/backup-db.sh
             bash scripts/backup-db.sh
             docker compose -f docker-compose.prod.yml build --no-cache --build-arg NEXT_PUBLIC_API_URL=https://sucatabet.com.br/api
