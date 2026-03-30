@@ -95,7 +95,7 @@ export class AppController {
       await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "remainingOccurrences" INTEGER;');
       await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "lastPaidAt" TIMESTAMP(3);');
 
-      // 6. Garantir BankAccount para todos (v3)
+      // 6. Garantir BankAccount para todos (v4)
       await this.prisma.$executeRawUnsafe(\`
         INSERT INTO "BankAccount" ("id", "userId", "balance", "monthlyGoal", "createdAt", "updatedAt")
         SELECT 
@@ -109,7 +109,7 @@ export class AppController {
         WHERE NOT EXISTS (SELECT 1 FROM "BankAccount" b WHERE b."userId" = u."id");
       \`);
 
-      return { status: 'success', message: 'Correção completa aplicada (v3 - BankAccount Injector).' };
+      return { status: 'success', message: 'Correção completa aplicada (v4 - Auto-BankAccount & Sidebar Fix).' };
     } catch (error) {
       return { status: 'error', message: error.message };
     }

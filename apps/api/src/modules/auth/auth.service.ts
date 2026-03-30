@@ -30,6 +30,12 @@ export class AuthService {
         password: hashedPassword,
         role: UserRole.OPERATOR,
         status: UserStatus.PENDING,
+        bankAccount: {
+          create: {
+            balance: 0,
+            monthlyGoal: 0,
+          },
+        },
       },
     });
 

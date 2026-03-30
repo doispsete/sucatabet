@@ -26,6 +26,12 @@ export class UsersService {
         ...createUserDto,
         password: hashedPassword,
         status: UserStatus.ACTIVE, // Admin creation defaults to ACTIVE
+        bankAccount: {
+          create: {
+            balance: 0,
+            monthlyGoal: 0,
+          },
+        },
       },
       select: {
         id: true,
