@@ -190,10 +190,46 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
         {/* Coluna Esquerda: Banca + Meta */}
         <div className="md:col-span-2 lg:col-span-5 flex flex-col gap-6 h-full">
-          <BankSummaryCard 
-            onDeposit={() => { setTxMode('deposit'); setIsTxModalOpen(true); }}
-            onWithdraw={() => { setTxMode('withdraw'); setIsTxModalOpen(true); }}
-          />
+          {/* NOVO CARD — BANCA TOTAL */}
+          <div className="glass-card rounded-[32px] p-8 border-l border-primary/20 flex flex-col justify-between group overflow-hidden relative">
+            <div className="relative z-10">
+              <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-40 mb-2 italic">PATRIMÔNIO TOTAL</p>
+              <h3 className="text-4xl font-black text-white italic tracking-tighter">
+                R$ {formatCurrency((summary.bancaTotal || 0) + (summary.saldoBanco || 0))}
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-6 mt-8">
+                <div>
+                  <p className="text-[9px] font-black text-white/30 uppercase mb-1">GESTÃO BANCA</p>
+                  <p className="text-lg font-black italic text-[#00ff88]">
+                    R$ {formatCurrency(summary.bancaTotal || 0)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[9px] font-black text-white/30 uppercase mb-1">SALDO BANCO</p>
+                  <p className="text-lg font-black italic text-white/70">
+                    R$ {formatCurrency(summary.saldoBanco || 0)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6 mt-4 pt-4 border-t border-white/5">
+                <div>
+                  <p className="text-[8px] font-black text-white/20 uppercase mb-1">DISPONÍVEL</p>
+                  <p className="text-xs font-black italic text-white/40">
+                    R$ {formatCurrency(summary.disponivel || 0)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[8px] font-black text-white/20 uppercase mb-1">EM OPERAÇÃO</p>
+                  <p className="text-xs font-black italic text-white/40">
+                    R$ {formatCurrency(summary.emOperacao || 0)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <Wallet className="absolute -bottom-6 -right-6 w-32 h-32 text-primary/5 pointer-events-none opacity-20 group-hover:rotate-12 transition-all duration-700" />
+          </div>
 
           {/* NOVO CARD — META DO MÊS */}
           <div className="glass-card rounded-[32px] p-8 group relative overflow-hidden border-l border-primary/20 flex-1">

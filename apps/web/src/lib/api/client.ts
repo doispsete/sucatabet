@@ -28,13 +28,18 @@ function getTokenFromCookie(): string | null {
 async function request<T>(path: string, options: RequestInit & { retries?: number; _retryCount?: number } = {}): Promise<T> {
   const { retries = 2, _retryCount = 0, ...fetchOptions } = options;
   const url = `${API_URL}${path}`;
+  const token = typeof window !== 'undefined'
+    ? localStorage.getItem('access_token')
+    : null;
 
-  const token = getTokenFromCookie();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...fetchOptions.headers as Record<string, string>,
   };
-  if (token) {
+
+  const isAuthLogin = path === '/auth/login';
+
+  if (token && !isAuthLogin) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 

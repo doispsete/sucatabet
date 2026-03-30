@@ -254,10 +254,13 @@ export default function BancoPage() {
   return (
     <div className="space-y-8 px-3 md:px-6 animate-in fade-in duration-500 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase">Gestão Financeira</h1>
+          <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase flex items-center gap-4">
+            Gestão Financeira
+            {isBankLoading && bankSummary && (
+              <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+            )}
+          </h1>
           <p className="text-[10px] text-[#b9cbbc]/40 font-black uppercase tracking-[0.2em] italic">Controle de banca, despesas e patrimônio</p>
-        </div>
       </div>
 
       {/* Stats Quick View */}

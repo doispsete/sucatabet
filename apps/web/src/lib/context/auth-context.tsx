@@ -43,8 +43,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await authService.login({ email, password }) as any;
       
-      // Armazena o token via cookie para persistência e uso pelo middleware
+      // Armazena o token via localStorage para o client.ts e cookie para o middleware
       if (response.access_token) {
+        localStorage.setItem('access_token', response.access_token);
         document.cookie = `access_token=${response.access_token}; path=/; max-age=28800; SameSite=Lax`;
       }
       
@@ -63,7 +64,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await authService.logout().catch(() => {}); // Final logout attempt
     } finally {
       setUser(null);
-      // Remove o token do cookie
+      // Remove o token
+      localStorage.removeItem('access_token');
       document.cookie = `access_token=; path=/; max-age=0`;
       router.push('/login');
     }

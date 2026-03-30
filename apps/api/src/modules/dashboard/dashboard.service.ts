@@ -198,22 +198,31 @@ export class DashboardService {
     }
 
 
+    const monthsShort = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+    const weekdaysShort = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+
     // Weekly
     const lastMonday = new Date(now);
     lastMonday.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
     lastMonday.setHours(0,0,0,0);
-    const weekly = processGroup(allOps, d => d >= lastMonday, d => d.toLocaleDateString('pt-BR', { weekday: 'short' }), d => d.setDate(d.getDate() + 1), lastMonday, now, d => d.toISOString().split('T')[0]);
+    const weekly = processGroup(allOps, d => d >= lastMonday, d => {
+        const dBR = new Date(d.getTime() - (3 * 60 * 60 * 1000));
+        return weekdaysShort[dBR.getUTCDay()];
+    }, d => d.setDate(d.getDate() + 1), lastMonday, now, d => d.toISOString().split('T')[0]);
 
     // Monthly
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthly = processGroup(allOps, d => d >= monthStart, d => d.toLocaleDateString('pt-BR', { day: '2-digit' }), d => d.setDate(d.getDate() + 1), monthStart, new Date(now.getFullYear(), now.getMonth() + 1, 0), d => d.toISOString().split('T')[0]);
+    const monthly = processGroup(allOps, d => d >= monthStart, d => {
+        const dBR = new Date(d.getTime() - (3 * 60 * 60 * 1000));
+        return String(dBR.getUTCDate()).padStart(2, '0');
+    }, d => d.setDate(d.getDate() + 1), monthStart, new Date(now.getFullYear(), now.getMonth() + 1, 0), d => d.toISOString().split('T')[0]);
 
     // Yearly (Bi-monthly)
     const yearly: any[] = [];
     for (let i = 0; i < 6; i++) {
       const m1 = i * 2;
       const m2 = i * 2 + 1;
-      const label = new Date(now.getFullYear(), m1).toLocaleDateString('pt-BR', { month: 'short' }) + '-' + new Date(now.getFullYear(), m2).toLocaleDateString('pt-BR', { month: 'short' });
+      const label = `${monthsShort[m1]}-${monthsShort[m2]}`;
       const biOps = allOps.filter(op => op.createdAt.getMonth() === m1 || op.createdAt.getMonth() === m2);
       yearly.push({
         label,
