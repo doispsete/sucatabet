@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../../prisma.service';
+import { getStartOfWeekBR } from '../../common/utils/date-utils';
 import { OperationStatus, OperationCategory, OperationResult, UserRole } from '@prisma/client';
 
 @Injectable()
@@ -20,9 +21,7 @@ export class DashboardService {
 
     // 1. Fetch accounts and operations in parallel
     const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
-    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfWeek = getStartOfWeekBR(now);
 
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     startOfMonth.setHours(0, 0, 0, 0);
@@ -129,6 +128,7 @@ export class DashboardService {
       bancaTotal, disponivel, emOperacao,
       lucroSemana, lucroMes, lucroPeriodo,
       freebetsExpirando, atividadeRecente, performance, alerts,
+      distribuicaoPorResultado,
     };
 
     await this.cacheManager.set(cacheKey, result, 60); // Increased to 60s
@@ -232,10 +232,7 @@ export class DashboardService {
       include: { bettingHouse: true, cpfProfile: true }
     });
 
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
-    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfWeek = getStartOfWeekBR();
 
     // Single Query for ALL weekly club progress (N+1 Fix)
     const activities = await this.prisma.weeklyClub.findMany({

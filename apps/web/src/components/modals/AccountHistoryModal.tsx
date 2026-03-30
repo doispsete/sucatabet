@@ -94,7 +94,7 @@ export function AccountHistoryModal({ isOpen, onClose, account }: AccountHistory
             <span className="text-[9px] text-[#b9cbbc]/40 font-bold italic">{filteredHistory.length} registros</span>
           </div>
 
-          <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar lg:no-scrollbar pb-4">
+          <div className="space-y-3 max-h-[400px] overflow-y-auto pt-2 px-2 pr-2 custom-scrollbar lg:no-scrollbar pb-4">
             {isLoading ? (
               <div className="py-20 text-center">
                 <div className="w-10 h-10 border-4 border-[#03D791]/20 border-t-[#03D791] rounded-full animate-spin mx-auto mb-4"></div>

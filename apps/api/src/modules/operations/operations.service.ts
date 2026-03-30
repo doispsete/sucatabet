@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, ForbiddenException,
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../../prisma.service';
+import { getStartOfWeekBR } from '../../common/utils/date-utils';
 import { CreateOperationDto, CloseOperationDto } from './dto/operation.dto';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
 import { OperationType, OperationCategory, OperationStatus, OperationResult, UserRole, Prisma } from '@prisma/client';
@@ -275,9 +276,7 @@ export class OperationsService {
 
       // Weekly Club progress: Optimized Grouping (2B Fix)
       const now = new Date();
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
-      startOfWeek.setHours(0, 0, 0, 0);
+      const startOfWeek = getStartOfWeekBR(now);
 
       const stakesByAccount: Record<string, Prisma.Decimal> = {};
       for (const bet of betsToCreate) {
@@ -482,9 +481,7 @@ export class OperationsService {
     
     return this.prisma.$transaction(async (tx) => {
       const now = new Date();
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
-      startOfWeek.setHours(0, 0, 0, 0);
+      const startOfWeek = getStartOfWeekBR(now);
 
       for (const bet of operation.bets) {
         // Reverter impacto no saldo da conta
@@ -538,9 +535,7 @@ export class OperationsService {
 
     return this.prisma.$transaction(async (tx) => {
       const now = new Date();
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
-      startOfWeek.setHours(0, 0, 0, 0);
+      const startOfWeek = getStartOfWeekBR(now);
 
       // 1. Reverter impactos de saldo e WeeklyClub das bets antigas
       for (const bet of existingOperation.bets) {

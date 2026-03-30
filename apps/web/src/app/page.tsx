@@ -30,6 +30,7 @@ export default function DashboardPage() {
   const [endDate, setEndDate] = useState<string | null>(new Date().toISOString());
   const [selectedPoint, setSelectedPoint] = useState<any>(null);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [settlementDrillDown, setSettlementDrillDown] = useState<string | null>(null);
   const [detailOperation, setDetailOperation] = useState<any>(null);
   const [perfPeriod, setPerfPeriod] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
 
@@ -128,10 +129,11 @@ export default function DashboardPage() {
     const days = data.length;
     let targetPoints;
 
-    if (days <= 10) targetPoints = days; // 1 to 10 points
-    else if (days <= 32) targetPoints = 10; // ~Monthly: 10 points
-    else if (days <= 65) targetPoints = 15; // ~2 Months: 15 points
-    else targetPoints = 20; // Longer periods: 20 points
+    if (days <= 15) targetPoints = days; // 1 to 15 points
+    else if (days <= 35) targetPoints = 15; // ~Monthly: 15 points
+    else if (days <= 65) targetPoints = 20; // ~2 Months: 20 points
+    else if (days <= 95) targetPoints = 25; // ~3 Months: 25 points
+    else targetPoints = 30; // Longer periods: 30 points (e.g. 120 days)
 
     // Ensure we don't have more points than days
     if (targetPoints > days) targetPoints = days;
@@ -239,7 +241,7 @@ export default function DashboardPage() {
       {/* Second Row — Performance & Clube365 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
         {/* Performance KPI (SVG Area Chart) */}
-        <div className="md:col-span-2 lg:col-span-5 glass-card rounded-[40px] p-8 border-l border-[#00d1ff]/10 relative overflow-hidden group">
+        <div className="md:col-span-2 lg:col-span-6 glass-card rounded-[40px] p-8 border-l border-[#00d1ff]/10 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#00d1ff]/5 blur-[80px] rounded-full -mr-16 -mt-16 group-hover:bg-[#00d1ff]/10 transition-all duration-700"></div>
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8 relative z-10">
             <div>
@@ -360,6 +362,42 @@ export default function DashboardPage() {
           <p className="text-[10px] text-[#b9cbbc] uppercase font-bold tracking-widest opacity-40 italic">Performance de Lucros em Tempo Real</p>
         </div>
 
+        {/* New Row — Settlement Types (Now inside Second Row) */}
+        <div 
+          className="md:col-span-1 lg:col-span-3 glass-card rounded-[40px] p-6 border-l border-[#fbbf24]/10 flex flex-col items-center justify-between group hover:bg-white/[0.02] transition-all cursor-pointer overflow-hidden"
+          onClick={() => setSettlementDrillDown('ALL')}
+        >
+          <div className="w-full flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-[#fbbf24]/10 rounded-lg">
+                <PieChart className="w-3.5 h-3.5 text-[#fbbf24]" />
+              </div>
+              <h3 className="text-xs font-black italic uppercase tracking-tight leading-none text-white/80">Encerramentos</h3>
+            </div>
+            <ArrowUpRight className="w-3 h-3 text-[#fbbf24] opacity-20 group-hover:opacity-100 transition-all" />
+          </div>
+
+          <div className="relative py-2">
+            <SettlementDonutChart data={summary.distribuicaoPorResultado || {}} compact />
+          </div>
+
+          <div className="space-y-1 w-full pt-3 border-t border-white/5">
+            {[
+              { label: 'Normal', value: summary.distribuicaoPorResultado?.NORMAL || 0, color: '#00ff88' },
+              { label: 'Proteção', value: summary.distribuicaoPorResultado?.PROTECAO || 0, color: '#00d1ff' },
+              { label: 'Duplo', value: summary.distribuicaoPorResultado?.DUPLO || 0, color: '#fbbf24' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-sm" style={{ backgroundColor: item.color }} />
+                  <p className="text-[9px] font-black text-[#b9cbbc] uppercase opacity-40 italic">{item.label}</p>
+                </div>
+                <p className="text-[10px] font-black text-white italic">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Clube365 Progress */}
         <Link
           href="/alertas"
@@ -443,7 +481,7 @@ export default function DashboardPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6 relative">
-                      <p className="text-xs font-black text-[#e5e2e1] uppercase tracking-[0.1em] italic">{op.type.replace('_', ' ')}</p>
+                    <p className="text-xs font-black text-[#e5e2e1] uppercase tracking-[0.1em] italic pr-1">{op.type.replace('_', ' ')}</p>
                     </td>
                     <td className="px-8 py-6 relative">
                       <span className={`px-4 py-1.5 text-[9px] font-black tracking-widest rounded-lg uppercase border shadow-sm ${op.status === 'FINISHED' ? 'bg-[#00ff88]/5 text-[#00ff88] border-[#00ff88]/20 shadow-[#00ff88]/5' :
@@ -525,7 +563,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-4 custom-scrollbar">
+              <div className="space-y-3 max-h-[300px] overflow-y-auto pt-2 px-2 pr-4 custom-scrollbar">
                 {selectedPoint.items?.map((item: any, idx: number) => (
                   <div
                     key={idx}
@@ -580,12 +618,232 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {settlementDrillDown && (
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setSettlementDrillDown(null)} />
+          <SettlementDrillDown 
+            type={settlementDrillDown} 
+            startDate={startDate}
+            endDate={endDate}
+            onClose={() => setSettlementDrillDown(null)} 
+            onSelectOperation={(op) => setDetailOperation(op)} 
+          />
+        </div>
+      )}
+
       <OperationDetailsModal
         isOpen={!!detailOperation}
         onClose={() => setDetailOperation(null)}
         operation={detailOperation}
         primaryColor="#00d1ff"
       />
+    </div>
+  );
+}
+
+function SettlementDonutChart({ data, compact }: { data: Record<string, number>, compact?: boolean }) {
+  const total = Object.values(data).reduce((a, b) => a + b, 0) || 1;
+  const slices = [
+    { label: 'Normal', value: data['NORMAL'] || 0, color: '#00ff88' },
+    { label: 'Proteção', value: data['PROTECAO'] || 0, color: '#00d1ff' },
+    { label: 'Duplo', value: data['DUPLO'] || 0, color: '#fbbf24' },
+  ].filter(s => s.value >= 0);
+
+  let cumulativePercent = 0;
+
+  function getCoordinatesForPercent(percent: number) {
+    const x = Math.cos(2 * Math.PI * percent);
+    const y = Math.sin(2 * Math.PI * percent);
+    return [x, y];
+  }
+
+  const sizeClass = compact ? "w-28 h-28" : "w-48 h-48";
+
+  return (
+    <div className={`relative ${sizeClass} group/donut`}>
+      <svg viewBox="-1 -1 2 2" className="transform -rotate-90 w-full h-full drop-shadow-2xl transition-transform duration-700 group-hover/donut:rotate-0">
+        {slices.map((slice, i) => {
+          if (slice.value === 0) return null;
+          const [startX, startY] = getCoordinatesForPercent(cumulativePercent);
+          cumulativePercent += slice.value / total;
+          const [endX, endY] = getCoordinatesForPercent(cumulativePercent);
+          const largeArcFlag = slice.value / total > 0.5 ? 1 : 0;
+          const pathData = [
+            `M ${startX} ${startY}`,
+            `A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+            `L 0 0`,
+          ].join(' ');
+          return (
+            <path 
+              key={i} 
+              d={pathData} 
+              fill={slice.color} 
+              className="transition-all duration-300 hover:opacity-80 cursor-pointer"
+            >
+              <title>{`${slice.label}: ${slice.value}`}</title>
+            </path>
+          );
+        })}
+        {/* Simple check for empty data */}
+        {Object.values(data).every(v => v === 0) && (
+          <circle r="1" fill="rgba(255,255,255,0.05)" />
+        )}
+        <circle r="0.75" fill="#0b0c0d" /> 
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        {compact ? (
+           <span className="text-xl font-black text-white italic tracking-tighter">{total === 1 && Object.values(data).every(v => v === 0) ? 0 : total}</span>
+        ) : (
+          <>
+            <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] italic mb-1">Encerradas</span>
+            <span className="text-3xl font-black text-white italic tracking-tighter">{total === 1 && Object.values(data).every(v => v === 0) ? 0 : total}</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SettlementDrillDown({ type, startDate, endDate, onClose, onSelectOperation }: { type: string, startDate: string | null, endDate: string | null, onClose: () => void, onSelectOperation: (op: any) => void }) {
+  const [filter, setFilter] = useState<string>(type);
+  const { data: opsData, isLoading } = useOperations({
+    startDate: startDate?.split('T')[0],
+    endDate: endDate?.split('T')[0],
+    status: 'FINISHED',
+    limit: 100
+  });
+
+  const filteredOps = useMemo(() => {
+    if (!opsData?.data) return [];
+    if (filter === 'ALL') return opsData.data;
+    return opsData.data.filter((op: any) => op.result === filter);
+  }, [opsData, filter]);
+
+  const stats = useMemo(() => {
+    return {
+      total: filteredOps.length,
+      lucro: filteredOps.reduce((acc: number, op: any) => acc + Number(op.realProfit || 0), 0),
+      volume: filteredOps.reduce((acc: number, op: any) => acc + (op.bets?.reduce((s: number, b: any) => s + Number(b.stake || 0), 0) || 0), 0)
+    };
+  }, [filteredOps]);
+
+  return (
+    <div className="glass-card w-full max-w-2xl rounded-[40px] overflow-hidden border border-white/10 relative z-10 shadow-2xl animate-in zoom-in-95 duration-300 bg-[#0b0c0d]">
+      <div className="p-8 border-b border-white/5 bg-gradient-to-br from-[#fbbf24]/5 to-transparent">
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <p className="text-[10px] font-black text-[#fbbf24] uppercase tracking-[0.3em] mb-1 italic">Detalhes de Encerramento</p>
+            <h4 className="text-3xl font-black text-white italic uppercase tracking-tighter">
+              Relatório Geral
+            </h4>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full text-white/40 hover:text-white transition-all">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="flex gap-2 mb-8 p-1 bg-white/5 rounded-2xl w-fit">
+          {[
+            { id: 'ALL', label: 'Todos' },
+            { id: 'NORMAL', label: 'Normal' },
+            { id: 'PROTECAO', label: 'Proteção' },
+            { id: 'DUPLO', label: 'Duplo' }
+          ].map(btn => (
+            <button
+              key={btn.id}
+              onClick={() => setFilter(btn.id)}
+              className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                filter === btn.id 
+                  ? 'bg-[#fbbf24] text-black shadow-[0_0_20px_rgba(251,191,36,0.3)]' 
+                  : 'text-[#b9cbbc]/40 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-3 gap-6">
+          <div className="space-y-1">
+            <p className="text-[9px] font-bold text-[#b9cbbc] uppercase opacity-40">Operações</p>
+            <p className="text-xl font-black text-white italic">{stats.total}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[9px] font-bold text-[#b9cbbc] uppercase opacity-40">Volume</p>
+            <p className="text-xl font-black text-white italic">R$ {formatCurrency(stats.volume)}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[9px] font-bold text-[#b9cbbc] uppercase opacity-40">Lucro</p>
+            <p className={`text-xl font-black italic ${stats.lucro >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+              R$ {formatCurrency(stats.lucro)}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-6 max-h-[400px] overflow-y-auto pt-2 px-2 custom-scrollbar space-y-3 bg-[#0b0c0d]">
+        {isLoading ? (
+          <div className="py-20 text-center opacity-20 animate-pulse">
+            <History className="w-8 h-8 mx-auto mb-2" />
+            <p className="text-[10px] font-black uppercase tracking-widest">Carregando...</p>
+          </div>
+        ) : filteredOps.length === 0 ? (
+          <div className="py-20 text-center opacity-20">
+            <History className="w-8 h-8 mx-auto mb-2" />
+            <p className="text-[10px] font-black uppercase tracking-widest">Nenhuma operação encontrada</p>
+          </div>
+        ) : (
+          filteredOps.map((op: any) => (
+            <div
+              key={op.id}
+              className="flex items-center justify-between p-4 bg-white/[0.02] hover:bg-white/[0.05] rounded-[24px] border border-white/5 transition-all group cursor-pointer active:scale-98"
+              onClick={() => onSelectOperation(op)}
+            >
+              <div className="flex items-center gap-4">
+                <div className="flex -space-x-2">
+                  {op.bets?.slice(0, 2).map((bet: any, bi: number) => (
+                    <div key={bi} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-lg group-hover:border-[#fbbf24]/30 transition-all">
+                      <img
+                        src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=64`}
+                        className="w-5 h-5 grayscale group-hover:grayscale-0 transition-all"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-black text-white italic uppercase tracking-tight group-hover:text-[#fbbf24] transition-colors line-clamp-1 pr-1.5">
+                      {op.type.replace('_', ' ')}
+                    </p>
+                    <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-sm uppercase italic border ${
+                      op.result === 'NORMAL' ? 'bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20' :
+                      op.result === 'PROTECAO' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border-[#00d1ff]/20' :
+                      'bg-[#fbbf24]/10 text-[#fbbf24] border-[#fbbf24]/20'
+                    }`}>
+                      {op.result}
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-[#b9cbbc]/40 font-black uppercase tracking-widest italic leading-none">#{op.id.substring(0, 8)} • {new Date(op.createdAt).toLocaleDateString('pt-BR')}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className={`text-base font-black italic tracking-tighter ${Number(op.realProfit) > 0 ? 'text-[#00ff88]' : Number(op.realProfit) < 0 ? 'text-red-500' : 'text-[#b9cbbc]/20'}`}>
+                  {Number(op.realProfit) > 0 ? '+' : ''} R$ {formatCurrency(op.realProfit || 0)}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="p-6 bg-white/[0.01] border-t border-white/5">
+        <button
+          onClick={onClose}
+          className="w-full py-4 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all border border-white/5"
+        >
+          FECHAR RELATÓRIO
+        </button>
+      </div>
     </div>
   );
 }
@@ -639,7 +897,7 @@ function DayDetails({ date, onClose, onSelectOperation }: { date: string, onClos
         </div>
       </div>
 
-      <div className="p-6 max-h-[400px] overflow-y-auto custom-scrollbar space-y-3">
+      <div className="p-6 max-h-[400px] overflow-y-auto pt-2 px-2 custom-scrollbar space-y-3">
         {isLoading ? (
           <div className="py-20 text-center opacity-20 animate-pulse">
             <History className="w-8 h-8 mx-auto mb-2" />
@@ -669,7 +927,7 @@ function DayDetails({ date, onClose, onSelectOperation }: { date: string, onClos
                   ))}
                 </div>
                 <div>
-                  <p className="text-sm font-black text-white italic uppercase tracking-tight line-clamp-1 group-hover:text-[#00d1ff] transition-colors">
+                  <p className="text-sm font-black text-white italic uppercase tracking-tight line-clamp-1 group-hover:text-[#00d1ff] transition-colors pr-1.5">
                     {op.type.replace('_', ' ')}
                   </p>
                   <p className="text-[9px] text-[#b9cbbc]/40 font-black uppercase tracking-widest italic leading-none">ID: #{op.id.substring(0, 8)}</p>

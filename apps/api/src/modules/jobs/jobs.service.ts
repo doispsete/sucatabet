@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../../prisma.service';
+import { getStartOfWeekBR } from '../../common/utils/date-utils';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
 
 @Injectable()
@@ -12,14 +13,13 @@ export class JobsService {
     private auditLogs: AuditLogsService,
   ) {}
 
-  // 1. Reset Semanal do Clube - Segunda-feira às 00:00
-  @Cron('0 0 * * 1')
+  // 1. Reset Semanal do Clube - Segunda-feira às 00:00 BRT (03:00 UTC)
+  @Cron('0 3 * * 1')
   async handleWeeklyReset() {
     this.logger.log('Iniciando Reset Semanal do Clube...');
     
     const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfWeek = getStartOfWeekBR(now);
 
     const accounts = await this.prisma.account.findMany();
 
