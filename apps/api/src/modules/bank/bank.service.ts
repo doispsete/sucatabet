@@ -327,4 +327,46 @@ export class BankService {
       data: { monthlyGoal: goal },
     });
   }
+
+  async getDebugStatus(userId: string) {
+    const status: any = {
+      timestamp: new Date().toISOString(),
+      userId,
+      checks: {}
+    };
+
+    try {
+      // 1. Check User
+      const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true } });
+      status.checks.user = user ? { exists: true, email: user.email } : { exists: false };
+
+      // 2. Check BankAccount
+      const bank = await this.prisma.bankAccount.findUnique({ where: { userId } });
+      status.checks.bankAccount = bank ? { exists: true, id: bank.id, balance: bank.balance } : { exists: false };
+
+      if (bank) {
+        // 3. Count Transactions
+        const txCount = await this.prisma.bankTransaction.count({ where: { bankAccountId: bank.id } });
+        status.checks.transactions = { count: txCount };
+        
+        // 4. Test Summary Call
+        try {
+          const summary = await this.getSummary(userId);
+          status.checks.summaryTest = { success: true, balance: summary.balance, compassBuckets: summary.compassData.monthly.length };
+        } catch (e) {
+          status.checks.summaryTest = { success: false, error: e.message, stack: e.stack?.split('\n').slice(0, 3) };
+        }
+      }
+
+      // 5. Check Betting Accounts
+      const accountsCount = await this.prisma.account.count({ where: { cpfProfile: { userId } } });
+      status.checks.bettingAccounts = { count: accountsCount };
+
+    } catch (e) {
+      status.error = e.message;
+      status.stack = e.stack?.split('\n').slice(0, 5);
+    }
+
+    return status;
+  }
 }

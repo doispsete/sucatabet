@@ -37,4 +37,9 @@ export class BankController {
   updateGoal(@Request() req, @Body('goal') goal: number) {
     return this.bankService.updateGoal(req.user.userId, goal);
   }
+
+  @Get('debug-status')
+  async getDebugStatus(@Request() req) {
+    return this.bankService.getDebugStatus(req.user.userId);
+  }
 }
