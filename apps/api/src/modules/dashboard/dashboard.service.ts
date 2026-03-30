@@ -31,7 +31,7 @@ export class DashboardService {
     if (startDate) dateFilter.gte = new Date(startDate);
     if (endDate) dateFilter.lte = new Date(endDate);
 
-    const [accounts, allFinishedOps, freebetsExpirando] = await Promise.all([
+    const [accounts, allFinishedOps, freebetsExpirando, bank] = await Promise.all([
       this.prisma.account.findMany({
         where: accountFilter,
         select: { balance: true, inOperation: true },
@@ -56,13 +56,21 @@ export class DashboardService {
         },
         include: { account: { include: { bettingHouse: true } } },
         take: 5,
+      }),
+      this.prisma.bankAccount.findUnique({
+        where: { userId },
+        select: { balance: true, monthlyGoal: true },
       })
     ]);
+
+    const bankBalance = Number(bank?.balance || 0);
+    const monthlyGoal = Number(bank?.monthlyGoal || 0);
 
     // 2. Process Stats in Memory (Redundancy Fix)
     const disponivel = accounts.reduce((acc, curr) => acc + Number(curr.balance), 0);
     const emOperacao = accounts.reduce((acc, curr) => acc + Number(curr.inOperation), 0);
     const bancaTotal = disponivel + emOperacao;
+    const saldoBanco = bankBalance;
 
     // Filter closedOps for the specific requested period if dates provided
     const periodOps = startDate || endDate 
@@ -125,10 +133,10 @@ export class DashboardService {
     }
 
     const result = {
-      bancaTotal, disponivel, emOperacao,
+      bancaTotal, disponivel, emOperacao, saldoBanco,
       lucroSemana, lucroMes, lucroPeriodo,
       freebetsExpirando, atividadeRecente, performance, alerts,
-      distribuicaoPorResultado,
+      distribuicaoPorResultado, monthlyGoal
     };
 
     await this.cacheManager.set(cacheKey, result, 60); // Increased to 60s

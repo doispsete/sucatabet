@@ -4,12 +4,13 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('access_token')?.value;
   const { pathname } = request.nextUrl;
-  const isLoginPage = pathname === '/login';
+  // Simplifica as verificações de rota
+  const isPublicPage = pathname === '/login' || pathname === '/cadastro' || 
+                       pathname === '/login/' || pathname === '/cadastro/';
   const isApiRoute = pathname.startsWith('/api');
 
-  // Proteção de rotas: se não houver token, redireciona para login
-  // (Ignora páginas de login, arquivos estáticos e chamadas de API)
-  if (!token && !isLoginPage && !isApiRoute) {
+  // Proteção de rotas: se não houver token e não for pública nem API, redireciona
+  if (!token && !isPublicPage && !isApiRoute) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 

@@ -37,8 +37,9 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
 
   const isDashboard = pathname === "/";
   const isLogin = pathname === "/login";
+  const isRegister = pathname === "/cadastro";
 
-  if (isLogin) {
+  if (isLogin || isRegister) {
     return <>{children}</>;
   }
 

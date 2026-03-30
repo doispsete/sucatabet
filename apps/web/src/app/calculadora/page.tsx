@@ -475,9 +475,7 @@ export default function CalculadoraPage() {
         </div>
       </div>
 
-      <button className="fixed bottom-8 right-8 w-14 h-14 bg-[#03d791] text-black rounded-full shadow-[0_0_30px_rgba(3,215,145,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
-        <HelpCircle className="w-6 h-6" />
-      </button>
+
 
       <NewOperationModal
         isOpen={isModalOpen}

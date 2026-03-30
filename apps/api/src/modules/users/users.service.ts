@@ -4,6 +4,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 
+import { UserStatus } from '@prisma/client';
+
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -23,23 +25,47 @@ export class UsersService {
       data: {
         ...createUserDto,
         password: hashedPassword,
+        status: UserStatus.ACTIVE, // Admin creation defaults to ACTIVE
       },
       select: {
         id: true,
         email: true,
         name: true,
         role: true,
+        status: true,
       },
     });
   }
 
-  async findAll() {
+  async findAll(status?: UserStatus) {
     return this.prisma.user.findMany({
+      where: status ? { status } : {},
       select: {
         id: true,
         email: true,
         name: true,
         role: true,
+        status: true,
+        approvedAt: true,
+      },
+    });
+  }
+
+  async updateStatus(id: string, status: UserStatus) {
+    const data: any = { status };
+    if (status === UserStatus.ACTIVE) {
+      data.approvedAt = new Date();
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        status: true,
       },
     });
   }

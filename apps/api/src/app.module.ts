@@ -17,6 +17,8 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { BankModule } from './modules/bank/bank.module';
+import { ExpensesModule } from './modules/expenses/expenses.module';
 
 @Module({
   imports: [
@@ -43,7 +45,9 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     FreebetsModule, 
     DashboardModule, 
     ReportsModule, 
-    JobsModule
+    JobsModule,
+    BankModule,
+    ExpensesModule,
   ],
   controllers: [AppController],
   providers: [

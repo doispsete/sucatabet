@@ -41,16 +41,26 @@ enum OperationResult {
   PROTECAO
 }
 
+enum UserStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+  SUSPENDED
+}
+
 model User {
   id          String       @id @default(uuid())
   email       String       @unique
   password    String       // hash
   name        String
   role        UserRole     @default(OPERATOR)
+  status      UserStatus   @default(PENDING)
+  approvedAt  DateTime?
   cpfProfiles CpfProfile[]
   operations  Operation[]
   logs        AuditLog[]
   freebets    Freebet[]
+  bankAccount BankAccount?
 }
 
 model CpfProfile {
@@ -172,4 +182,66 @@ model WeeklyClub {
   @@index([accountId])
   @@index([weekStart])
   @@unique([accountId, weekStart])
+}
+
+enum BankTransactionType {
+  DEPOSIT
+  WITHDRAW
+  ACCOUNT_DEPOSIT
+  ACCOUNT_WITHDRAW
+  EXPENSE_PAYMENT
+  INCOME
+}
+
+enum ExpenseType {
+  OPERACIONAL
+  PESSOAL
+}
+
+enum ExpenseStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+model BankAccount {
+  id           String            @id @default(uuid())
+  userId       String            @unique
+  user         User              @relation(fields: [userId], references: [id])
+  balance      Decimal           @default(0)
+  monthlyGoal  Decimal           @default(0)
+  transactions BankTransaction[]
+  expenses     Expense[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model BankTransaction {
+  id            String              @id @default(uuid())
+  bankAccountId String
+  bankAccount   BankAccount         @relation(fields: [bankAccountId], references: [id])
+  type          BankTransactionType
+  amount        Decimal
+  description   String
+  referenceId   String?
+  referenceType String?             // "account_deposit", "account_withdraw", "expense", "manual"
+  createdAt     DateTime            @default(now())
+}
+
+model Expense {
+  id                   String        @id @default(uuid())
+  bankAccountId        String
+  bankAccount          BankAccount   @relation(fields: [bankAccountId], references: [id])
+  name                 String
+  type                 ExpenseType
+  amount               Decimal
+  dueDay               Int
+  recurring            Boolean       @default(true)
+  totalOccurrences     Int?
+  remainingOccurrences Int?
+  lastPaidAt           DateTime?
+  nextDueAt            DateTime
+  status               ExpenseStatus @default(PENDING)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 }

@@ -641,15 +641,19 @@ export function CustomDateRangePicker({
   endDate, 
   onChange, 
   placeholder = "SELECIONAR PERÍODO",
-  className = ""
+  className = "",
+  customTrigger,
+  isOpenByDefault = false
 }: { 
   startDate: string | null;
   endDate: string | null;
   onChange: (start: string | null, end: string | null) => void; 
   placeholder?: string;
   className?: string;
+  customTrigger?: (open: () => void) => React.ReactNode;
+  isOpenByDefault?: boolean;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(isOpenByDefault);
   
   // Local states to avoid constant parent re-renders while choosing
   const [localStart, setLocalStart] = useState<string | null>(startDate);
@@ -906,33 +910,35 @@ export function CustomDateRangePicker({
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-        <div 
-            onClick={() => setIsOpen(true)}
-            className="flex items-center bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-white/20 transition-all cursor-text overflow-hidden"
-        >
-            <div className="flex items-center justify-center w-10 h-10 border-r border-white/10 bg-white/5 group-hover:bg-white/10 transition-colors">
-                <CalendarIcon size={14} className="text-[#00d1ff] animate-pulse" />
-            </div>
-            <div className="flex items-center gap-1 px-2">
-                <input 
-                    type="text" 
-                    value={inputValue1}
-                    placeholder="INÍCIO"
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => handleManualInput(e.target.value, 'start')}
-                    className="w-20 bg-transparent border-none focus:ring-0 text-[10px] font-black text-white placeholder:text-white/10 uppercase tracking-tighter"
-                />
-                <span className="text-white/10 font-bold">-</span>
-                <input 
-                    type="text" 
-                    value={inputValue2}
-                    placeholder="FIM"
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => handleManualInput(e.target.value, 'end')}
-                    className="w-20 bg-transparent border-none focus:ring-0 text-[10px] font-black text-white placeholder:text-white/10 uppercase tracking-tighter"
-                />
-            </div>
-        </div>
+        {customTrigger ? customTrigger(() => setIsOpen(true)) : (
+          <div 
+              onClick={() => setIsOpen(true)}
+              className="flex items-center bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-white/20 transition-all cursor-text overflow-hidden"
+          >
+              <div className="flex items-center justify-center w-10 h-10 border-r border-white/10 bg-white/5 group-hover:bg-white/10 transition-colors">
+                  <CalendarIcon size={14} className="text-[#00d1ff] animate-pulse" />
+              </div>
+              <div className="flex items-center gap-1 px-2">
+                  <input 
+                      type="text" 
+                      value={inputValue1}
+                      placeholder="INÍCIO"
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => handleManualInput(e.target.value, 'start')}
+                      className="w-20 bg-transparent border-none focus:ring-0 text-[10px] font-black text-white placeholder:text-white/10 uppercase tracking-tighter"
+                  />
+                  <span className="text-white/10 font-bold">-</span>
+                  <input 
+                      type="text" 
+                      value={inputValue2}
+                      placeholder="FIM"
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => handleManualInput(e.target.value, 'end')}
+                      className="w-20 bg-transparent border-none focus:ring-0 text-[10px] font-black text-white placeholder:text-white/10 uppercase tracking-tighter"
+                  />
+              </div>
+          </div>
+        )}
 
       {isOpen && typeof document !== 'undefined' && createPortal(
             calendar, 

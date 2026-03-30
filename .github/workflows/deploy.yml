@@ -24,4 +24,5 @@ jobs:
             bash scripts/backup-db.sh
             docker compose -f docker-compose.prod.yml build --no-cache --build-arg NEXT_PUBLIC_API_URL=https://sucatabet.com.br/api
             docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml exec -T api npx prisma migrate deploy --schema=apps/api/prisma/schema.prisma
             docker image prune -f

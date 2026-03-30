@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../../prisma.service';
 import { getStartOfWeekBR } from '../../common/utils/date-utils';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
+import { ExpenseStatus } from '@prisma/client';
 
 @Injectable()
 export class JobsService {
@@ -24,8 +25,10 @@ export class JobsService {
     const accounts = await this.prisma.account.findMany();
 
     for (const account of accounts) {
-      await this.prisma.weeklyClub.create({
-        data: {
+      await this.prisma.weeklyClub.upsert({
+        where: { accountId_weekStart: { accountId: account.id, weekStart: startOfWeek } },
+        update: {},
+        create: {
           accountId: account.id,
           weekStart: startOfWeek,
           totalStake: 0,
@@ -70,10 +73,10 @@ export class JobsService {
   // 3. Alerta Meta Semanal - Domingo às 20:00
   @Cron('0 20 * * 0')
   async handleWeeklyGoalAlerts() {
-    this.logger.log('Verificando metas semanais...');
-    
+    const startOfWeek = getStartOfWeekBR();
     const clubs = await this.prisma.weeklyClub.findMany({
       where: {
+        weekStart: startOfWeek,
         totalStake: { lt: 1500 },
       },
       include: {
@@ -89,5 +92,23 @@ export class JobsService {
       this.logger.warn(`Conta ${club.accountId} (${club.account.cpfProfile.name}) abaixo da meta: ${club.totalStake}/1500`);
       // No spec, isso é consumido pelo dashboard.
     }
+  }
+  
+  // 4. Reset Mensal de Despesas - Dia 1 às 00:00
+  @Cron('0 0 1 * *')
+  async handleMonthlyExpenseReset() {
+    this.logger.log('Iniciando Reset Mensal de Despesas...');
+    
+    const result = await this.prisma.expense.updateMany({
+      where: {
+        recurring: true,
+        status: ExpenseStatus.PAID,
+      },
+      data: {
+        status: ExpenseStatus.PENDING,
+      },
+    });
+
+    this.logger.log(`Reset Mensal concluído. ${result.count} despesas voltaram para PENDENTE.`);
   }
 }

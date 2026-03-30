@@ -14,13 +14,18 @@ import {
   CircleDollarSign,
   ArrowRight,
   BarChart3,
-  X
+  X,
+  Pencil,
+  Check,
+  Target as TargetIcon
 } from "lucide-react";
 import Link from "next/link";
-import { useDashboardSummary, useDashboardClub, useOperations } from "@/lib/hooks";
+import { useDashboardSummary, useDashboardClub, useOperations, useUpdateBankGoal } from "@/lib/hooks";
 import { SkeletonCard, CustomDatePicker, CustomDateRangePicker } from "@/components/ui/components";
 import { OperationDetailsModal } from "@/components/modals/OperationDetailsModal";
 import { formatCurrency } from "@/lib/utils";
+import { BankSummaryCard } from "@/components/BankSummaryCard";
+import { DepositWithdrawModal } from "@/components/modals/DepositWithdrawModal";
 
 export default function DashboardPage() {
   const [startDate, setStartDate] = useState<string | null>(() => {
@@ -33,6 +38,12 @@ export default function DashboardPage() {
   const [settlementDrillDown, setSettlementDrillDown] = useState<string | null>(null);
   const [detailOperation, setDetailOperation] = useState<any>(null);
   const [perfPeriod, setPerfPeriod] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [isTxModalOpen, setIsTxModalOpen] = useState(false);
+  const [txMode, setTxMode] = useState<'deposit' | 'withdraw'>('deposit');
+  const [isEditingGoal, setIsEditingGoal] = useState(false);
+  const [goalInput, setGoalInput] = useState("");
+
+  const updateGoal = useUpdateBankGoal();
 
   const { data: summary, isLoading: isSummaryLoading, error: errorSummary, refetch: refetchSummary } = useDashboardSummary({
     startDate: startDate || undefined,
@@ -177,71 +188,171 @@ export default function DashboardPage() {
     <div className="space-y-8 px-3 md:px-6">
       {/* Top Row — KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
-        {/* Banca Total */}
-        <div className="md:col-span-2 lg:col-span-4 glass-card rounded-[32px] p-8 h-full group relative overflow-hidden">
-          <div className="flex justify-between items-start mb-8 relative z-10">
-            <div>
-              <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-[0.2em] mb-2 italic opacity-60">BANCA TOTAL</p>
-              <h3 className="text-4xl font-black text-white italic tracking-tighter">R$ {formatCurrency(summary?.bancaTotal ?? 0)}</h3>
-            </div>
-            <div className="flex gap-3">
-              <Link href="/operacoes" className="text-[#b9cbbc]/40 hover:text-primary transition-all p-2 hover:bg-white/5 rounded-full">
-                <History className="w-5 h-5 cursor-pointer" />
-              </Link>
-            </div>
-          </div>
-          <div className="bg-white/5 backdrop-blur-md rounded-lg px-3 py-1.5 inline-flex items-center gap-1.5 mb-2 relative z-10 border border-white/5">
-            <span className="text-xs font-black text-[#00ff88]">+{((summary?.lucroMes / (summary?.bancaTotal || 1)) * 100).toFixed(1)}%</span>
-            <span className="text-[10px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-40">rendimento mensal</span>
-          </div>
-          <CircleDollarSign className="absolute -bottom-6 -right-6 w-32 h-32 text-white/5 pointer-events-none opacity-20 group-hover:scale-110 transition-transform duration-700" />
-        </div>
-
-        {/* Gestão de Ativos */}
-        <div className="md:col-span-1 lg:col-span-4 glass-card rounded-[32px] p-7 h-full flex flex-col justify-between group overflow-hidden relative">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-40 mb-1">GESTÃO DE BANCA</p>
-              <div className="flex flex-col gap-1">
-                <div className="flex justify-between items-end gap-4">
-                  <span className="text-[9px] font-black text-[#00ff88] uppercase italic opacity-60">DISPONÍVEL</span>
-                  <h3 className="text-xl font-black text-[#00ff88] italic">R$ {formatCurrency(summary?.disponivel ?? 0)}</h3>
+        {/* Coluna Esquerda: Banca + Meta */}
+        <div className="md:col-span-2 lg:col-span-5 flex flex-col gap-6 h-full">
+          {/* CARD 1 — BANCA (Unificado) */}
+          <div className="glass-card rounded-[32px] p-8 group relative overflow-hidden flex flex-col border-l border-primary/20 flex-1">
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-[0.2em] mb-2 italic opacity-40">BANCA TOTAL</p>
+                  <h3 className="text-4xl font-black text-white italic tracking-tighter">R$ {formatCurrency(summary?.bancaTotal ?? 0)}</h3>
                 </div>
-                <div className="flex justify-between items-end gap-4">
-                  <span className="text-[9px] font-black text-white uppercase italic opacity-60">EM OPERAÇÃO</span>
-                  <h3 className="text-xl font-black text-[#e5e2e1] italic">R$ {formatCurrency(summary?.emOperacao ?? 0)}</h3>
+                <div className="flex gap-2">
+                  <Link href="/operacoes" className="text-[#b9cbbc]/40 hover:text-primary transition-all p-2.5 bg-white/5 hover:bg-primary/10 rounded-2xl border border-white/5 hover:border-primary/20">
+                    <History className="w-5 h-5 cursor-pointer" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-white/5">
+                <div className="grid grid-cols-2 gap-y-4 gap-x-6">
+                  <div className="space-y-1">
+                    <p className="text-[9px] font-black text-[#00ff88] uppercase italic opacity-40">Disponível</p>
+                    <p className="text-xl font-black text-[#00ff88] italic">R$ {formatCurrency(summary?.disponivel ?? 0)}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[9px] font-black text-white uppercase italic opacity-40">Em Operação</p>
+                    <p className="text-xl font-black text-white/60 italic">R$ {formatCurrency(summary?.emOperacao ?? 0)}</p>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden flex">
+                    <div
+                      className="h-full bg-[#00ff88] transition-all duration-1000 ease-out shadow-[0_0_10px_#00ff88]"
+                      style={{ width: `${(summary.disponivel / (summary.bancaTotal || 1)) * 100}%` }}
+                    />
+                    <div
+                      className="h-full bg-white transition-all duration-1000 ease-out"
+                      style={{ width: `${(summary.emOperacao / (summary.bancaTotal || 1)) * 100}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
+            <CircleDollarSign className="absolute -bottom-6 -right-6 w-32 h-32 text-white/5 pointer-events-none opacity-20 group-hover:scale-110 transition-transform duration-700" />
           </div>
 
-          <div className="mt-4 relative">
-            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden flex border border-white/5">
-              <div
-                className="h-full bg-[#00ff88] transition-all duration-1000 ease-out"
-                style={{ width: `${(summary.disponivel / (summary.bancaTotal || 1)) * 100}%` }}
-              />
-              <div
-                className="h-full bg-white transition-all duration-1000 ease-out"
-                style={{ width: `${(summary.emOperacao / (summary.bancaTotal || 1)) * 100}%` }}
-              />
-            </div>
-            <div className="flex justify-between mt-1.5 opacity-40">
-              <span className="text-[7px] font-black text-[#00ff88] uppercase italic">DISPONÍVEL</span>
-              <span className="text-[7px] font-black text-white uppercase italic text-right">OPERANDO</span>
-            </div>
-          </div>
+          {/* NOVO CARD — META DO MÊS */}
+          <div className="glass-card rounded-[32px] p-8 group relative overflow-hidden border-l border-primary/20 flex-1">
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              {summary.monthlyGoal && summary.monthlyGoal > 0 ? (
+                <>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-end">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <TargetIcon className="w-3 h-3 text-primary" />
+                          <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-40 italic">META DO MÊS</p>
+                          <button
+                            onClick={() => {
+                              setGoalInput(summary.monthlyGoal.toString());
+                              setIsEditingGoal(true);
+                            }}
+                            className="p-1 hover:bg-white/5 rounded transition-all opacity-0 group-hover:opacity-100"
+                          >
+                            <Pencil className="w-2.5 h-2.5 text-white/40" />
+                          </button>
+                        </div>
+                        <p className="text-2xl font-black text-white italic tracking-tight">
+                          R$ {formatCurrency(summary.monthlyGoal)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[9px] font-black text-white/30 uppercase mb-1 tracking-widest">PROGRESSO</p>
+                        <p className="text-base font-black italic text-primary">
+                          {((summary.lucroMes / summary.monthlyGoal) * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
 
-          <Wallet className="absolute -bottom-2 -right-2 w-16 h-16 text-[#00ff88]/5 pointer-events-none" />
+                    <div className="space-y-2">
+                      <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                        <div
+                          className={`h-full transition-all duration-1000 ease-out ${(summary.lucroMes / summary.monthlyGoal) >= 1 ? 'bg-[#00ff88] shadow-[0_0_15px_#00ff88]' :
+                            (summary.lucroMes / summary.monthlyGoal) >= 0.5 ? 'bg-[#03D791]' :
+                              (summary.lucroMes / summary.monthlyGoal) >= 0.25 ? 'bg-amber-500' :
+                                'bg-red-500'
+                            }`}
+                          style={{ width: `${Math.min((summary.lucroMes / summary.monthlyGoal) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-black italic uppercase">
+                        <span className="text-white/40">R$ {formatCurrency(summary.lucroMes)} ATUAL</span>
+                        {(summary.lucroMes / summary.monthlyGoal) >= 1 && (
+                          <span className="text-[#00ff88] animate-pulse">🎯 META ATINGIDA!</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="h-full flex items-center justify-center">
+                  <div className="w-full py-6 px-6 bg-white/[0.02] border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-3 group/goal">
+                    {!isEditingGoal ? (
+                      <>
+                        <p className="text-[10px] font-black text-white/20 uppercase tracking-widest italic">Nenhuma meta definida</p>
+                        <button
+                          onClick={() => {
+                            setGoalInput("");
+                            setIsEditingGoal(true);
+                          }}
+                          className="px-6 py-2 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-xl text-[9px] font-black text-primary uppercase tracking-widest transition-all active:scale-95"
+                        >
+                          DEFINIR META
+                        </button>
+                      </>
+                    ) : (
+                      <div className="w-full flex items-center gap-2">
+                        <div className="flex-1 relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/20 italic">R$</span>
+                          <input
+                            type="number"
+                            autoFocus
+                            value={goalInput}
+                            onChange={(e) => setGoalInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && updateGoal.updateGoal(Number(goalInput)).then(() => setIsEditingGoal(false))}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-8 py-2 text-sm font-black italic outline-none focus:border-primary/50 transition-all font-mono"
+                            placeholder="0,00"
+                          />
+                        </div>
+                        <button
+                          disabled={updateGoal.isMutating}
+                          onClick={() => updateGoal.updateGoal(Number(goalInput)).then(() => setIsEditingGoal(false))}
+                          className="p-2.5 bg-primary/20 hover:bg-primary/30 text-primary rounded-xl transition-all border border-primary/20"
+                        >
+                          <Check className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setIsEditingGoal(false)}
+                          className="p-2.5 bg-white/5 hover:bg-white/10 text-white/40 rounded-xl transition-all border border-white/5"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            <TargetIcon className="absolute -bottom-6 -right-6 w-32 h-32 text-primary/5 pointer-events-none opacity-20 group-hover:rotate-12 transition-transform duration-700" />
+          </div>
         </div>
 
-
+        {/* CARD 2 — ASSISTENTE FINANCEIRO (Módulo Banco Summary) */}
+        <div className="lg:col-span-7 h-full">
+          <BankSummaryCard
+            onDeposit={() => { setTxMode('deposit'); setIsTxModalOpen(true); }}
+            onWithdraw={() => { setTxMode('withdraw'); setIsTxModalOpen(true); }}
+          />
+        </div>
       </div>
 
       {/* Second Row — Performance & Clube365 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
         {/* Performance KPI (SVG Area Chart) */}
-        <div className="md:col-span-2 lg:col-span-6 glass-card rounded-[40px] p-8 border-l border-[#00d1ff]/10 relative overflow-hidden group">
+        <div className="md:col-span-2 lg:col-span-6 glass-card rounded-[40px] p-8 border-l border-[#00d1ff]/10 relative overflow-visible group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#00d1ff]/5 blur-[80px] rounded-full -mr-16 -mt-16 group-hover:bg-[#00d1ff]/10 transition-all duration-700"></div>
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8 relative z-10">
             <div>
@@ -363,8 +474,8 @@ export default function DashboardPage() {
         </div>
 
         {/* New Row — Settlement Types (Now inside Second Row) */}
-        <div 
-          className="md:col-span-1 lg:col-span-3 glass-card rounded-[40px] p-6 border-l border-[#fbbf24]/10 flex flex-col items-center justify-between group hover:bg-white/[0.02] transition-all cursor-pointer overflow-hidden"
+        <div
+          className="md:col-span-1 lg:col-span-3 glass-card rounded-[40px] p-6 border-l border-[#fbbf24]/10 flex flex-col items-center justify-between group hover:bg-white/[0.02] transition-all cursor-pointer overflow-visible"
           onClick={() => setSettlementDrillDown('ALL')}
         >
           <div className="w-full flex items-center justify-between mb-2">
@@ -372,7 +483,7 @@ export default function DashboardPage() {
               <div className="p-1.5 bg-[#fbbf24]/10 rounded-lg">
                 <PieChart className="w-3.5 h-3.5 text-[#fbbf24]" />
               </div>
-              <h3 className="text-xs font-black italic uppercase tracking-tight leading-none text-white/80">Encerramentos</h3>
+              <h3 className="text-xs font-black italic uppercase tracking-tight leading-none text-white/80">Modos de finalização</h3>
             </div>
             <ArrowUpRight className="w-3 h-3 text-[#fbbf24] opacity-20 group-hover:opacity-100 transition-all" />
           </div>
@@ -440,7 +551,7 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      <section className="glass-card rounded-[40px] border border-white/5 overflow-hidden shadow-2xl group/table">
+      <section className="glass-card rounded-[40px] border border-white/5 overflow-visible shadow-2xl group/table">
         <div className="p-8 flex justify-between items-center border-b border-white/5 bg-white/[0.02]">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-[#00ff88]/10 rounded-xl">
@@ -481,7 +592,7 @@ export default function DashboardPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6 relative">
-                    <p className="text-xs font-black text-[#e5e2e1] uppercase tracking-[0.1em] italic pr-1">{op.type.replace('_', ' ')}</p>
+                      <p className="text-xs font-black text-[#e5e2e1] uppercase tracking-[0.1em] italic pr-1">{op.type.replace('_', ' ')}</p>
                     </td>
                     <td className="px-8 py-6 relative">
                       <span className={`px-4 py-1.5 text-[9px] font-black tracking-widest rounded-lg uppercase border shadow-sm ${op.status === 'FINISHED' ? 'bg-[#00ff88]/5 text-[#00ff88] border-[#00ff88]/20 shadow-[#00ff88]/5' :
@@ -621,12 +732,12 @@ export default function DashboardPage() {
       {settlementDrillDown && (
         <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setSettlementDrillDown(null)} />
-          <SettlementDrillDown 
-            type={settlementDrillDown} 
+          <SettlementDrillDown
+            type={settlementDrillDown}
             startDate={startDate}
             endDate={endDate}
-            onClose={() => setSettlementDrillDown(null)} 
-            onSelectOperation={(op) => setDetailOperation(op)} 
+            onClose={() => setSettlementDrillDown(null)}
+            onSelectOperation={(op) => setDetailOperation(op)}
           />
         </div>
       )}
@@ -636,6 +747,16 @@ export default function DashboardPage() {
         onClose={() => setDetailOperation(null)}
         operation={detailOperation}
         primaryColor="#00d1ff"
+      />
+
+      <DepositWithdrawModal
+        isOpen={isTxModalOpen}
+        onClose={() => setIsTxModalOpen(false)}
+        mode={txMode}
+        onSuccess={() => {
+          refetchSummary();
+          refetchClub();
+        }}
       />
     </div>
   );
@@ -674,10 +795,10 @@ function SettlementDonutChart({ data, compact }: { data: Record<string, number>,
             `L 0 0`,
           ].join(' ');
           return (
-            <path 
-              key={i} 
-              d={pathData} 
-              fill={slice.color} 
+            <path
+              key={i}
+              d={pathData}
+              fill={slice.color}
               className="transition-all duration-300 hover:opacity-80 cursor-pointer"
             >
               <title>{`${slice.label}: ${slice.value}`}</title>
@@ -688,11 +809,11 @@ function SettlementDonutChart({ data, compact }: { data: Record<string, number>,
         {Object.values(data).every(v => v === 0) && (
           <circle r="1" fill="rgba(255,255,255,0.05)" />
         )}
-        <circle r="0.75" fill="#0b0c0d" /> 
+        <circle r="0.75" fill="#0b0c0d" />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
         {compact ? (
-           <span className="text-xl font-black text-white italic tracking-tighter">{total === 1 && Object.values(data).every(v => v === 0) ? 0 : total}</span>
+          <span className="text-xl font-black text-white italic tracking-tighter">{total === 1 && Object.values(data).every(v => v === 0) ? 0 : total}</span>
         ) : (
           <>
             <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] italic mb-1">Encerradas</span>
@@ -732,7 +853,7 @@ function SettlementDrillDown({ type, startDate, endDate, onClose, onSelectOperat
       <div className="p-8 border-b border-white/5 bg-gradient-to-br from-[#fbbf24]/5 to-transparent">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <p className="text-[10px] font-black text-[#fbbf24] uppercase tracking-[0.3em] mb-1 italic">Detalhes de Encerramento</p>
+            <p className="text-[10px] font-black text-[#fbbf24] uppercase tracking-[0.3em] mb-1 italic">Detalhes do modo de finalização</p>
             <h4 className="text-3xl font-black text-white italic uppercase tracking-tighter">
               Relatório Geral
             </h4>
@@ -752,11 +873,10 @@ function SettlementDrillDown({ type, startDate, endDate, onClose, onSelectOperat
             <button
               key={btn.id}
               onClick={() => setFilter(btn.id)}
-              className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                filter === btn.id 
-                  ? 'bg-[#fbbf24] text-black shadow-[0_0_20px_rgba(251,191,36,0.3)]' 
-                  : 'text-[#b9cbbc]/40 hover:text-white hover:bg-white/5'
-              }`}
+              className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === btn.id
+                ? 'bg-[#fbbf24] text-black shadow-[0_0_20px_rgba(251,191,36,0.3)]'
+                : 'text-[#b9cbbc]/40 hover:text-white hover:bg-white/5'
+                }`}
             >
               {btn.label}
             </button>
@@ -815,11 +935,10 @@ function SettlementDrillDown({ type, startDate, endDate, onClose, onSelectOperat
                     <p className="text-sm font-black text-white italic uppercase tracking-tight group-hover:text-[#fbbf24] transition-colors line-clamp-1 pr-1.5">
                       {op.type.replace('_', ' ')}
                     </p>
-                    <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-sm uppercase italic border ${
-                      op.result === 'NORMAL' ? 'bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20' :
+                    <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-sm uppercase italic border ${op.result === 'NORMAL' ? 'bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20' :
                       op.result === 'PROTECAO' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border-[#00d1ff]/20' :
-                      'bg-[#fbbf24]/10 text-[#fbbf24] border-[#fbbf24]/20'
-                    }`}>
+                        'bg-[#fbbf24]/10 text-[#fbbf24] border-[#fbbf24]/20'
+                      }`}>
                       {op.result}
                     </span>
                   </div>

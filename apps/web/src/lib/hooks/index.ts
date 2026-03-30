@@ -214,10 +214,17 @@ export function useFreebets() {
   };
 }
 
-export function useUsers() {
+export function useRegister() {
+  const { mutate: register, isMutating, mutationError, clearError } = useMutation(
+    services.authService.register
+  );
+  return { register, isMutating, mutationError, clearError };
+}
+
+export function useUsers(status?: string) {
   const { data, isLoading, error, refetch } = useFetch(
-    services.usersService.list,
-    []
+    () => services.usersService.list(status),
+    [status]
   );
 
   const { mutate: create, isMutating: isCreating } = useMutation(
@@ -230,14 +237,86 @@ export function useUsers() {
     () => refetch()
   );
 
+  const { mutate: updateStatus, isMutating: isUpdatingStatus } = useMutation(
+    ({ id, status }: { id: string, status: string }) => services.usersService.updateStatus(id, status),
+    () => refetch()
+  );
+
   const { mutate: remove, isMutating: isRemoving } = useMutation(
     (id: string) => services.usersService.delete(id),
     () => refetch()
   );
 
-  const isMutating = isCreating || isUpdating || isRemoving;
+  const isMutating = isCreating || isUpdating || isUpdatingStatus || isRemoving;
 
-  return { data, isLoading, error, refetch, isMutating, create, update: (id: string, p: unknown) => update({ id, p }), remove };
+  return { 
+    data: data || [], 
+    isLoading, error, refetch, 
+    isMutating, create, 
+    update: (id: string, p: unknown) => update({ id, p }), 
+    updateStatus: (id: string, s: string) => updateStatus({ id, status: s }),
+    remove 
+  };
+}
+
+export function useUpdateUserStatus() {
+  const { mutate: updateStatus, isMutating, mutationError } = useMutation(
+    ({ id, status }: { id: string, status: string }) => services.usersService.updateStatus(id, status)
+  );
+  return { updateStatus, isMutating, mutationError };
+}
+export function useBankSummary(params?: { startDate?: string; endDate?: string }) {
+  const { data, isLoading, error, refetch } = useFetch(
+    () => services.bankService.getSummary(params),
+    [params?.startDate, params?.endDate],
+    { polling: 10000 }
+  );
+  return { data, isLoading, error, refetch };
+}
+
+export function useExpenses() {
+  const { data, isLoading, error, refetch } = useFetch(
+    services.expensesService.list,
+    []
+  );
+
+  const { mutate: create, isMutating: isCreating } = useMutation(
+    services.expensesService.create, 
+    () => refetch()
+  );
+  
+  const { mutate: update, isMutating: isUpdating } = useMutation(
+    ({ id, body }: { id: string, body: unknown }) => services.expensesService.update(id, body), 
+    () => refetch()
+  );
+  
+  const { mutate: remove, isMutating: isRemoving } = useMutation(
+    (id: string) => services.expensesService.delete(id), 
+    () => refetch()
+  );
+  
+  const { mutate: pay, isMutating: isPaying } = useMutation(
+    (id: string) => services.expensesService.pay(id), 
+    () => refetch()
+  );
+
+  const isMutating = isCreating || isUpdating || isRemoving || isPaying;
+
+  return { 
+    data: data || [], isLoading, error, refetch, isMutating,
+    create, 
+    update: (id: string, body: unknown) => update({ id, body }), 
+    remove, 
+    pay 
+  };
+}
+
+export function useBankTransactions(params?: Record<string, any>) {
+  const { data, isLoading, error, refetch } = useFetch(
+    () => services.bankService.getTransactions(params),
+    [JSON.stringify(params)]
+  );
+  return { data: data || [], isLoading, error, refetch };
 }
 
 export function useProfile() {
@@ -249,4 +328,13 @@ export function useProfile() {
   );
 
   return { user, updateProfile, isMutating, mutationError };
+}
+export function useUpdateBankGoal() {
+  const { refetch } = useDashboardSummary();
+  const { mutate, isMutating, mutationError } = useMutation(
+    services.bankService.updateGoal,
+    () => refetch()
+  );
+
+  return { updateGoal: mutate, isMutating, mutationError };
 }

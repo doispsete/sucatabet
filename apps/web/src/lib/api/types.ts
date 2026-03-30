@@ -3,6 +3,13 @@ export enum UserRole {
   OPERATOR = 'OPERATOR',
 }
 
+export enum UserStatus {
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  REJECTED = 'REJECTED',
+  SUSPENDED = 'SUSPENDED',
+}
+
 export enum OperationType {
   NORMAL = 'NORMAL',
   FREEBET_GEN = 'FREEBET_GEN',
@@ -45,6 +52,8 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
+  status: UserStatus;
+  approvedAt?: string;
   createdAt: string;
 }
 
@@ -140,9 +149,11 @@ export interface DashboardSummary {
   bancaTotal: number;
   disponivel: number;
   emOperacao: number;
+  saldoBanco: number;
   lucroSemana: number;
   lucroMes: number;
   lucroPeriodo: number;
+  monthlyGoal: number;
   freebetsExpirando: Freebet[];
   atividadeRecente: Operation[];
   alerts?: { type: 'URGENT' | 'INFO', message: string }[];
@@ -187,3 +198,70 @@ export interface Report {
 }
 
 export type ReportGroupBy = 'day' | 'week' | 'month' | 'category' | 'type';
+
+export enum BankTransactionType {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
+  ACCOUNT_DEPOSIT = 'ACCOUNT_DEPOSIT',
+  ACCOUNT_WITHDRAW = 'ACCOUNT_WITHDRAW',
+  EXPENSE_PAYMENT = 'EXPENSE_PAYMENT',
+  INCOME = 'INCOME',
+}
+
+export enum ExpenseType {
+  OPERACIONAL = 'OPERACIONAL',
+  PESSOAL = 'PESSOAL',
+}
+
+export enum ExpenseStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  OVERDUE = 'OVERDUE',
+}
+
+export interface BankAccount {
+  id: string;
+  userId: string;
+  balance: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BankTransaction {
+  id: string;
+  bankAccountId: string;
+  type: BankTransactionType;
+  amount: number;
+  description: string;
+  referenceId?: string;
+  referenceType?: string;
+  createdAt: string;
+}
+
+export interface Expense {
+  id: string;
+  bankAccountId: string;
+  name: string;
+  type: ExpenseType;
+  amount: number;
+  dueDay: number;
+  recurring: boolean;
+  totalOccurrences?: number | null;
+  remainingOccurrences?: number | null;
+  lastPaidAt?: string;
+  nextDueAt: string;
+  status: ExpenseStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BankSummary {
+  balance: number;
+  totalInAccounts: number;
+  totalPatrimony: number;
+  monthlyGrossProfit: number;
+  monthlyExpenses: number;
+  monthlyNetProfit: number;
+  nextExpenses: Expense[];
+  recentTransactions: BankTransaction[];
+}

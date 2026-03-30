@@ -48,10 +48,13 @@ async function request<T>(path: string, options: RequestInit & { retries?: numbe
     const response = await fetch(url, defaultOptions);
 
     if (response.status === 401) {
-      const isLoginPath = typeof window !== 'undefined' && window.location.pathname === '/login';
+      const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+      const isLoginPath = pathname === '/login' || pathname === '/login/';
+      const isRegisterPath = pathname === '/cadastro' || pathname === '/cadastro/';
       const isLogoutPath = path === '/auth/logout';
       const isMePath = path === '/auth/me';
-      if (typeof window !== 'undefined' && !isLoginPath && !isLogoutPath && !isMePath) {
+      
+      if (typeof window !== 'undefined' && !isLoginPath && !isRegisterPath && !isLogoutPath && !isMePath) {
         document.cookie = 'access_token=; path=/; max-age=0';
         window.location.href = '/login';
       }

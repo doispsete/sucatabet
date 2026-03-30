@@ -29,6 +29,11 @@ export class AuthController {
     };
   }
 
+  @Post('register')
+  async register(@Body() data: any) {
+    return this.authService.register(data);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('refresh')
   async refresh(@Request() req) {

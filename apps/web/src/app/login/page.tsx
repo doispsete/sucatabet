@@ -128,6 +128,12 @@ export default function LoginPage() {
                 </div>
               )}
             </button>
+
+            <div className="text-center mt-6">
+              <Link href="/cadastro" className="text-[10px] font-black text-[#B9CBBC] opacity-40 uppercase tracking-[0.3em] italic hover:text-[#03d791] hover:opacity-100 transition-all">
+                Não tem conta? <span className="text-[#03d791]">Cadastrar</span>
+              </Link>
+            </div>
           </form>
         </div>
 

@@ -3,6 +3,7 @@ import * as T from './types';
 
 export const authService = {
   login: (body: unknown) => api.post<T.AuthUser>('/auth/login', body),
+  register: (body: unknown) => api.post<{ message: string }>('/auth/register', body),
   logout: () => api.post('/auth/logout'),
   me: () => api.get<T.AuthUser>('/auth/me'),
   refresh: () => api.post<T.AuthUser>('/auth/refresh'),
@@ -17,9 +18,10 @@ export const dashboardService = {
 };
 
 export const usersService = {
-  list: () => api.get<T.User[]>('/users'),
+  list: (status?: string) => api.get<T.User[]>(`/users${status ? `?status=${status}` : ''}`),
   create: (body: unknown) => api.post<T.User>('/users', body),
   update: (id: string, body: unknown) => api.patch<T.User>(`/users/${id}`, body),
+  updateStatus: (id: string, status: string) => api.patch<T.User>(`/users/${id}/status`, { status }),
   delete: (id: string) => api.delete(`/users/${id}`),
   updateProfile: (body: unknown) => api.patch<T.User>('/users/profile', body),
 };
@@ -73,4 +75,27 @@ export const reportsService = {
     const query = new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)])).toString();
     return api.get<T.Report[]>(`/reports?${query}`);
   },
+};
+
+export const bankService = {
+  getBank: () => api.get<T.BankAccount>('/bank'),
+  getSummary: (params?: { startDate?: string; endDate?: string }) => {
+    const query = new URLSearchParams(Object.entries(params || {}).filter(([_, v]) => v != null && v !== '').map(([k, v]) => [k, String(v)])).toString();
+    return api.get<T.BankSummary>(`/bank/summary${query ? `?${query}` : ''}`);
+  },
+  getTransactions: (params?: Record<string, any>) => {
+    const query = new URLSearchParams(Object.entries(params || {}).filter(([_, v]) => v != null && v !== '').map(([k, v]) => [k, String(v)])).toString();
+    return api.get<T.BankTransaction[]>(`/bank/transactions${query ? `?${query}` : ''}`);
+  },
+  deposit: (body: { amount: number; description: string }) => api.post<T.BankTransaction>('/bank/deposit', body),
+  withdraw: (body: { amount: number; description: string }) => api.post<T.BankTransaction>('/bank/withdraw', body),
+  updateGoal: (goal: number) => api.patch<void>('/bank/goal', { goal }),
+};
+
+export const expensesService = {
+  list: () => api.get<T.Expense[]>('/expenses'),
+  create: (body: unknown) => api.post<T.Expense>('/expenses', body),
+  update: (id: string, body: unknown) => api.patch<T.Expense>(`/expenses/${id}`, body),
+  delete: (id: string) => api.delete<void>(`/expenses/${id}`),
+  pay: (id: string) => api.post<T.Expense>(`/expenses/${id}/pay`),
 };
