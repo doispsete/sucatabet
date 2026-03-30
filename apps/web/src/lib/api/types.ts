@@ -264,4 +264,8 @@ export interface BankSummary {
   monthlyNetProfit: number;
   nextExpenses: Expense[];
   recentTransactions: BankTransaction[];
+  compassData: {
+    monthly: any[];
+    categories: any[];
+  }
 }
