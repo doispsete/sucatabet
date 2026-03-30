@@ -59,7 +59,7 @@ EXPOSE 3006
 
 # Healthcheck apontando para a rota de saúde correta
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:3006/api/health || exit 1
+  CMD curl -f http://localhost:3006/health || exit 1
 
 # Comando para iniciar a aplicação (dist/src/main conforme lição de deploy)
 CMD ["node", "apps/api/dist/src/main"]
