@@ -195,7 +195,11 @@ export class BankService {
     const nextExpenses = await this.prisma.expense.findMany({
       where: { 
         bankAccountId: bank.id,
-        status: { in: [ExpenseStatus.PENDING, ExpenseStatus.OVERDUE, ExpenseStatus.PAID] }
+        OR: [
+          { status: 'PENDING' as any },
+          { status: 'OVERDUE' as any },
+          { status: 'PAID' as any }
+        ]
       },
       orderBy: { nextDueAt: 'asc' },
       take: 20
