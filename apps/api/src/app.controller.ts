@@ -96,7 +96,7 @@ export class AppController {
       await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "lastPaidAt" TIMESTAMP(3);');
 
       // 6. Garantir BankAccount para todos (v4)
-      await this.prisma.$executeRawUnsafe(\`
+      await this.prisma.$executeRawUnsafe(`
         INSERT INTO "BankAccount" ("id", "userId", "balance", "monthlyGoal", "createdAt", "updatedAt")
         SELECT 
             'acc_' || md5(random()::text || clock_timestamp()::text), 
@@ -107,7 +107,7 @@ export class AppController {
             NOW()
         FROM "User" u
         WHERE NOT EXISTS (SELECT 1 FROM "BankAccount" b WHERE b."userId" = u."id");
-      \`);
+      `);
 
       return { status: 'success', message: 'Correção completa aplicada (v4 - Auto-BankAccount & Sidebar Fix).' };
     } catch (error) {
