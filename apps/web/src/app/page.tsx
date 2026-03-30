@@ -23,7 +23,7 @@ import Link from "next/link";
 import { useDashboardSummary, useDashboardClub, useOperations, useUpdateBankGoal } from "@/lib/hooks";
 import { SkeletonCard, CustomDatePicker, CustomDateRangePicker } from "@/components/ui/components";
 import { OperationDetailsModal } from "@/components/modals/OperationDetailsModal";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import { BankSummaryCard } from "@/components/BankSummaryCard";
 import { DepositWithdrawModal } from "@/components/modals/DepositWithdrawModal";
 
@@ -584,7 +584,7 @@ export default function DashboardPage() {
                     <td className="px-8 py-6">
                       <Link href={`/operacoes?id=${op.id}`} className="absolute inset-0 z-10" />
                       <div className="relative z-0">
-                        <p className="text-sm font-black text-[#e5e2e1] italic">{new Date(op.createdAt).toLocaleDateString('pt-BR')}</p>
+                        <p className="text-sm font-black text-[#e5e2e1] italic">{formatDate(op.createdAt)}</p>
                         <p className="text-[10px] text-[#b9cbbc]/40 font-black uppercase tracking-widest">#{op.id.substring(0, 8)}</p>
                       </div>
                     </td>

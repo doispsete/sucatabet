@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Modal, Input, CustomSelect, CustomDatePicker } from "@/components/ui/components";
 import { useAccountHistory } from "@/lib/hooks";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 
 interface AccountHistoryModalProps {
   isOpen: boolean;
@@ -126,7 +126,7 @@ export function AccountHistoryModal({ isOpen, onClose, account }: AccountHistory
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-[9px] font-black text-[#b9cbbc]/30 uppercase tracking-widest flex items-center gap-1.5 italic">
                           <Calendar className="w-3 h-3" />
-                          {new Date(item.createdAt).toLocaleDateString('pt-BR')} às {new Date(item.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                          {formatDate(item.createdAt)} às {formatTime(item.createdAt)}
                         </span>
                         <span className="text-[9px] font-black text-[#b9cbbc]/20 uppercase tracking-widest italic">• Por {item.user?.name || 'Sistema'}</span>
                       </div>

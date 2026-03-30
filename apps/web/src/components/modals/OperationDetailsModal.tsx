@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Modal } from "@/components/ui/components";
 import { Operation, OperationStatus, OperationResult } from "@/lib/api/types";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 
 interface OperationDetailsModalProps {
   isOpen: boolean;
@@ -227,7 +227,7 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
         <div className="pt-6 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-6 px-4 opacity-20 group">
           <div className="flex items-center gap-2 text-[9px] font-black text-white uppercase tracking-widest italic">
             <Calendar size={14} style={{ color: primaryColor }} />
-            <span>{new Date(operation.createdAt).toLocaleDateString('pt-BR')}</span>
+            <span>{formatDate(operation.createdAt)}</span>
           </div>
           <div className="flex items-center gap-2 text-[9px] font-black text-white uppercase tracking-widest italic">
             <Receipt size={14} style={{ color: primaryColor }} />

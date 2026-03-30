@@ -20,7 +20,7 @@ import { NewOperationModal } from "@/components/modals/NewOperationModal";
 import { FinishOperationModal } from "@/components/modals/FinishOperationModal";
 import { OperationDetailsModal } from "@/components/modals/OperationDetailsModal";
 import { useModal } from "@/lib/context/modal-context";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 
 function OperationsContent() {
@@ -242,8 +242,8 @@ function OperationsContent() {
                   className="grid grid-cols-12 px-8 py-6 items-center hover:bg-white/[0.02] transition-all cursor-pointer group"
                 >
                   <div className="col-span-4 lg:col-span-2 flex flex-col">
-                    <span className="text-sm font-black text-white italic tracking-tighter uppercase">{new Date(op.createdAt).toLocaleDateString('pt-BR')}</span>
-                    <span className="text-[9px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-30">{new Date(op.createdAt).toLocaleTimeString('pt-BR')}</span>
+                    <span className="text-sm font-black text-white italic tracking-tighter uppercase">{formatDate(op.createdAt)}</span>
+                    <span className="text-[9px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-30">{formatTime(op.createdAt)}</span>
                   </div>
                   <div className="col-span-4 lg:col-span-2 flex flex-col gap-1">
                     <div className="flex -space-x-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity">

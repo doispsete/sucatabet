@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, CheckCircle, AlertCircle, Loader2, ChevronDown, HelpCircle, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, ChevronUp } from 'lucide-react';
+import { formatDate, formatTime } from '@/lib/utils';
 
 // --- TOAST ---
 interface ToastProps {
@@ -538,7 +539,7 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
         <div className="flex items-center gap-3">
             <CalendarIcon size={16} className="text-[#00ff88] animate-pulse" />
             <span className="truncate italic">
-                {selectedDate ? selectedDate.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : placeholder}
+                {selectedDate ? `${formatDate(selectedDate)} ${formatTime(selectedDate)}` : placeholder}
             </span>
         </div>
         <ChevronDown className={`w-5 h-5 text-[#b9cbbc] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
@@ -677,9 +678,9 @@ export function CustomDateRangePicker({
   }, [startDate, endDate, isOpen]);
 
   useEffect(() => {
-    if (localStart) setInputValue1(new Date(localStart).toLocaleDateString('pt-BR'));
+    if (localStart) setInputValue1(formatDate(localStart));
     else setInputValue1("");
-    if (localEnd) setInputValue2(new Date(localEnd).toLocaleDateString('pt-BR'));
+    if (localEnd) setInputValue2(formatDate(localEnd));
     else setInputValue2("");
   }, [localStart, localEnd]);
 

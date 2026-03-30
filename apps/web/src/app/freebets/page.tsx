@@ -17,7 +17,7 @@ import { useFreebets, useDashboardSummary, useAccounts, useOperations } from "@/
 import { SkeletonCard, EmptyState, Modal, LoadingButton, toast, CustomSelect, ConfirmDialog, Input, CustomDatePicker } from "@/components/ui/components";
 import * as T from "@/lib/api/types";
 import { FreebetStatus } from "@/lib/api/types";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 
 export default function FreebetsPage() {
   const {
@@ -311,10 +311,10 @@ export default function FreebetsPage() {
                       <tr key={fb.id} className="hover:bg-white/[0.02] transition-colors group">
                         <td className="px-8 py-6">
                           <p className="text-[11px] font-black text-white italic tracking-tighter">
-                            {new Date(fb.usedAt || fb.expiresAt).toLocaleDateString('pt-BR')}
+                            {formatDate(fb.usedAt || fb.expiresAt)}
                           </p>
                           <p className="text-[9px] text-[#b9cbbc]/40 font-bold uppercase tracking-widest">
-                            {new Date(fb.usedAt || fb.expiresAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                            {formatTime(fb.usedAt || fb.expiresAt)}
                           </p>
                         </td>
                         <td className="px-8 py-6">

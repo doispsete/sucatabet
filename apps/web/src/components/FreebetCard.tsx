@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as T from "@/lib/api/types";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 
 interface FreebetCardProps {
   freebet: T.Freebet;
@@ -123,7 +123,7 @@ export function FreebetCard({ freebet, onUse, onExpire, onDelete, onEdit }: Free
           R$ {formatCurrency(freebet.value)}
         </h6>
         <p className="text-[10px] text-[#b9cbbc]/40 font-bold mt-1 italic uppercase tracking-tighter">
-          Válido até {new Date(freebet.expiresAt).toLocaleDateString('pt-BR')} às {new Date(freebet.expiresAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+          Válido até {formatDate(freebet.expiresAt)} às {formatTime(freebet.expiresAt)}
         </p>
       </div>
 

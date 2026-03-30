@@ -10,7 +10,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useBankSummary } from "@/lib/hooks";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDateShort, formatMonthAbbr } from "@/lib/utils";
 import Link from "next/link";
 
 interface BankSummaryCardProps {
@@ -208,7 +208,7 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
                         <div className="flex items-center gap-1.5 text-white/20">
                           <Clock size={10} />
                           <span className="text-[10px] font-black italic tracking-wider">
-                            {new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).toUpperCase()}
+                            {formatDateShort(date).toUpperCase()}
                           </span>
                         </div>
                         <p className="text-xs font-black text-white italic">

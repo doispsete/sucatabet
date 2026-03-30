@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Modal, Input, CustomSelect, CustomDateRangePicker } from "@/components/ui/components";
 import { useBankTransactions } from "@/lib/hooks";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 
 const typeMap: Record<string, { label: string, color: string }> = {
   'DEPOSIT': { label: 'Depósito Manual', color: 'primary' },
@@ -181,10 +181,10 @@ export function BankHistoryModal({ isOpen, onClose, initialCategory = '' }: Bank
                           <td className="px-8 py-6">
                             <div className="flex flex-col">
                               <span className="text-[11px] font-black text-white italic">
-                                {new Date(tx.createdAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
+                                {formatDate(tx.createdAt)}
                               </span>
                               <span className="text-[9px] font-bold text-[#b9cbbc]/40 uppercase tracking-widest">
-                                {new Date(tx.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })}
+                                {formatTime(tx.createdAt)}
                               </span>
                             </div>
                           </td>

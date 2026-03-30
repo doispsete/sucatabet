@@ -24,7 +24,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useBankSummary, useExpenses, useBankTransactions } from "@/lib/hooks";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate, formatDateShort, formatTime } from "@/lib/utils";
 import { SkeletonCard, CustomSelect, CustomDateRangePicker } from "@/components/ui/components";
 import { ExpenseModal } from "@/components/modals/ExpenseModal";
 import { DepositWithdrawModal } from "@/components/modals/DepositWithdrawModal";
@@ -114,8 +114,8 @@ function NextExpenses({ summary, onAction }: { summary: any, onAction: () => voi
                 </div>
                 <p className={`text-[10px] font-bold uppercase mt-1 ${urgency.pulse ? 'text-red-500/60' : 'text-[#b9cbbc]/40'}`}>
                   {exp.status === 'PAID' 
-                    ? `Pago em ${new Date(exp.lastPaidAt).toLocaleDateString()} | Próximo: ${new Date(exp.nextDueAt).toLocaleDateString()}` 
-                    : 'Vence ' + new Date(exp.nextDueAt).toLocaleDateString()}
+                    ? `Pago em ${formatDate(exp.lastPaidAt)} | Próximo: ${formatDate(exp.nextDueAt)}` 
+                    : 'Vence ' + formatDate(exp.nextDueAt)}
                 </p>
               </div>
               <p className={`text-sm font-black italic tracking-tight whitespace-nowrap ${urgency.text}`}>
@@ -493,7 +493,7 @@ function OverviewTab({ summary, filters, onFilterChange, onCategoryClick }: {
   const markers = useMemo(() => {
     return [maxVal, maxVal * 0.8, maxVal * 0.6, maxVal * 0.4, maxVal * 0.2, 0].map(v => {
       if (v >= 1000) return `${(v / 1000).toFixed(1)}k`;
-      return Math.round(v).toLocaleString('pt-BR');
+      return Math.round(v).toString();
     });
   }, [maxVal]);
 
