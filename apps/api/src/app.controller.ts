@@ -45,7 +45,51 @@ export class AppController {
         UPDATE "User" SET "status" = 'ACTIVE' WHERE "status" = 'PENDING';
       `);
 
-      return { status: 'success', message: 'Banco de dados corrigido manualmente.' };
+      // 4. Criar tabelas BankAccount, BankTransaction e Expense se não existirem
+      await this.prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "BankAccount" (
+            "id" TEXT NOT NULL,
+            "userId" TEXT NOT NULL,
+            "balance" DECIMAL(65,30) NOT NULL DEFAULT 0,
+            "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            "updatedAt" TIMESTAMP(3) NOT NULL,
+            CONSTRAINT "BankAccount_pkey" PRIMARY KEY ("id")
+        );
+      `);
+
+      await this.prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "BankTransaction" (
+            "id" TEXT NOT NULL,
+            "bankAccountId" TEXT NOT NULL,
+            "type" TEXT NOT NULL,
+            "amount" DECIMAL(65,30) NOT NULL,
+            "description" TEXT NOT NULL,
+            "referenceId" TEXT,
+            "referenceType" TEXT,
+            "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT "BankTransaction_pkey" PRIMARY KEY ("id")
+        );
+      `);
+
+      await this.prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "Expense" (
+            "id" TEXT NOT NULL,
+            "bankAccountId" TEXT NOT NULL,
+            "name" TEXT NOT NULL,
+            "type" TEXT NOT NULL,
+            "amount" DECIMAL(65,30) NOT NULL,
+            "dueDay" INTEGER NOT NULL,
+            "recurring" BOOLEAN NOT NULL DEFAULT true,
+            "lastPaidAt" TIMESTAMP(3),
+            "nextDueAt" TIMESTAMP(3) NOT NULL,
+            "status" TEXT NOT NULL DEFAULT 'PENDING',
+            "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            "updatedAt" TIMESTAMP(3) NOT NULL,
+            CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
+        );
+      `);
+
+      return { status: 'success', message: 'Banco de dados corrigido manualmente com todas as tabelas.' };
     } catch (error) {
       return { status: 'error', message: error.message };
     }
