@@ -25,7 +25,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       message: isInternalError 
-        ? 'Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.' 
+        ? `Erro Interno: ${exception instanceof Error ? exception.message : JSON.stringify(exception)}` 
         : (typeof message === 'object' && (message as any).message ? (message as any).message : message),
     };
 
