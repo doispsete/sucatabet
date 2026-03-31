@@ -28,22 +28,18 @@ export class CpfProfilesService {
       });
 
       if (existing) {
-        // Se existir e estiver deletado, nós "restauramos" ele limpando o deletedAt
-        if (existing.deletedAt) {
-          const result = await this.prisma.cpfProfile.update({
-            where: { id: existing.id },
-            data: {
-              ...createCpfProfileDto,
-              deletedAt: null,
-              userId: userId, // Revincula ao usuário que está tentando criar agora
-            },
-          });
-          await this.clearUserDashboardCache(userId, UserRole.OPERATOR);
-          return result;
-        }
-
-        // Se existir e NÃO estiver deletado, aí sim é um conflito real
-        throw new ConflictException('Este CPF já está cadastrado no sistema.');
+        // Se já existe (deletado ou ativo), "recuperamos" para o usuário atual
+        // Isso resolve o problema de CPFs que ficaram presos em contas antigas ou deletadas
+        const result = await this.prisma.cpfProfile.update({
+          where: { id: existing.id },
+          data: {
+            ...createCpfProfileDto,
+            deletedAt: null,
+            userId: userId,
+          } as any,
+        });
+        await this.clearUserDashboardCache(userId, UserRole.OPERATOR);
+        return result;
       }
 
       // 2. Se não existir nada, cria normalmente

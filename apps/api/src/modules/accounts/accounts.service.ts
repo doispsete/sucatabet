@@ -65,7 +65,20 @@ export class AccountsService {
         },
       },
     });
+
     if (existing) {
+      if (existing.status === 'CANCELLED') {
+        // Restaurar conta cancelada ao invés de criar nove
+        const restored = await this.prisma.account.update({
+          where: { id: existing.id },
+          data: { 
+            status: 'ACTIVE',
+            balance: createAccountDto.balance 
+          },
+        });
+        await this.clearUserDashboardCache(userId, UserRole.OPERATOR);
+        return restored;
+      }
       throw new BadRequestException('Este CPF já possui uma conta vinculada nesta casa');
     }
 
