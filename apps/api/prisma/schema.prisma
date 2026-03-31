@@ -12,6 +12,12 @@ enum UserRole {
   OPERATOR
 }
 
+enum AccountStatus {
+  ACTIVE
+  LIMITED
+  CANCELLED
+}
+
 enum OperationType {
   NORMAL
   FREEBET_GEN
@@ -71,6 +77,9 @@ model CpfProfile {
   userId    String
   user      User      @relation(fields: [userId], references: [id])
   accounts  Account[]
+  deletedAt DateTime?
+
+  @@index([deletedAt])
 }
 
 model BettingHouse {
@@ -93,8 +102,11 @@ model Account {
   freebets       Freebet[]
   weeklyClubs    WeeklyClub[] 
 
+  status         AccountStatus @default(ACTIVE)
+
   @@index([cpfProfileId])
   @@index([bettingHouseId])
+  @@index([status])
   @@unique([cpfProfileId, bettingHouseId])
 }
 

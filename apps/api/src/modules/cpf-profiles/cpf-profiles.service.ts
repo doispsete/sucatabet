@@ -34,9 +34,10 @@ export class CpfProfilesService {
     const filterUserId = (role === UserRole.ADMIN && targetUserId) ? targetUserId : userId;
     
     return this.prisma.cpfProfile.findMany({
-      where: { userId: filterUserId },
+      where: { userId: filterUserId, deletedAt: null },
       include: {
         accounts: {
+          where: { status: { not: 'CANCELLED' } },
           include: {
             bettingHouse: true,
           },
@@ -46,8 +47,8 @@ export class CpfProfilesService {
   }
 
   async findOne(id: string, userId: string, role: UserRole) {
-    const profile = await this.prisma.cpfProfile.findUnique({
-      where: { id },
+    const profile = await this.prisma.cpfProfile.findFirst({
+      where: { id, deletedAt: null },
       include: {
         accounts: {
           include: {
@@ -79,8 +80,20 @@ export class CpfProfilesService {
   }
 
   async remove(id: string, userId: string, role: UserRole) {
-    await this.findOne(id, userId, role);
-    const result = await this.prisma.cpfProfile.delete({ where: { id } });
+    const result = await this.prisma.$transaction(async (tx) => {
+      // 1. Marcar contas do CPF como CANCELADAS
+      await tx.account.updateMany({
+        where: { cpfProfileId: id },
+        data: { status: 'CANCELLED' }
+      });
+
+      // 2. Marcar o perfil como excluído (mantemos deletedAt para CPF por enquanto)
+      return tx.cpfProfile.update({
+        where: { id },
+        data: { deletedAt: new Date() }
+      });
+    });
+    
     await this.clearUserDashboardCache(userId, role);
     return result;
   }

@@ -21,7 +21,7 @@ export class AccountsService {
 
   async findAll(userId: string, role: UserRole) {
     return this.prisma.account.findMany({
-      where: { cpfProfile: { userId } },
+      where: { cpfProfile: { userId }, status: { not: 'CANCELLED' } },
       include: {
         cpfProfile: true,
         bettingHouse: true,
@@ -30,8 +30,8 @@ export class AccountsService {
   }
 
   async findOne(id: string, userId: string, role: UserRole) {
-    const account = await this.prisma.account.findUnique({
-      where: { id },
+    const account = await this.prisma.account.findFirst({
+      where: { id, status: { not: 'CANCELLED' } },
       include: {
         cpfProfile: true,
         bettingHouse: true,
@@ -208,8 +208,8 @@ export class AccountsService {
         'Account',
         id,
         userId,
-        { balance: Number(account.balance) },
-        { balance: Number(updated.balance) },
+        { status: account.status, balance: Number(account.balance) },
+        { status: updated.status, balance: Number(updated.balance) },
         tx,
       );
 
@@ -231,7 +231,10 @@ export class AccountsService {
       null,
     );
 
-    const result = await this.prisma.account.delete({ where: { id } });
+    const result = await this.prisma.account.update({ 
+      where: { id },
+      data: { status: 'CANCELLED' }
+    });
     await this.clearUserDashboardCache(userId, role);
     return result;
   }

@@ -125,7 +125,7 @@ export class BankService {
 
     // 1. Total nas casas (Betting Accounts)
     const accounts = await this.prisma.account.findMany({
-      where: { cpfProfile: { userId } },
+      where: { cpfProfile: { userId }, status: { not: 'CANCELLED' } },
       select: { balance: true, inOperation: true },
     });
 
@@ -363,7 +363,9 @@ export class BankService {
       }
 
       // 5. Check Betting Accounts
-      const accountsCount = await this.prisma.account.count({ where: { cpfProfile: { userId } } });
+      const accountsCount = await this.prisma.account.count({ 
+        where: { cpfProfile: { userId }, status: { not: 'CANCELLED' } } 
+      });
       status.checks.bettingAccounts = { count: accountsCount };
 
     } catch (e) {

@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { 
   MoreVertical, 
   Circle,
-  Trash2
+  Trash2,
+  AlertTriangle
 } from "lucide-react";
 import * as T from "@/lib/api/types";
 import { useAccounts } from "@/lib/hooks";
@@ -25,7 +26,7 @@ export function AccountCard({ account, profileName, onUnlink }: AccountCardProps
   const [amountType, setAmountType] = useState<"DEPOSIT" | "WITHDRAW">("DEPOSIT");
   const [amount, setAmount] = useState("");
 
-  const { remove: removeAccount, deposit, withdraw, isMutating } = useAccounts();
+  const { remove: removeAccount, deposit, withdraw, update: updateAccount, isMutating } = useAccounts();
   const houseName = account.bettingHouse?.name || "Desconhecida";
 
   const handleAmountSubmit = async (e: React.FormEvent) => {
@@ -55,13 +56,25 @@ export function AccountCard({ account, profileName, onUnlink }: AccountCardProps
   const handleUnlink = async () => {
     try {
       await removeAccount(account.id);
-      toast.success("Conta desvinculada com sucesso");
+      toast.success("Conta encerrada com sucesso");
       if (onUnlink) onUnlink();
     } catch (err: any) {
-      toast.error(err.message || "Erro ao desvincular conta");
+      toast.error(err.message || "Erro ao encerrar conta");
     } finally {
       setIsMenuOpen(false);
       setIsUnlinkConfirmOpen(false);
+    }
+  };
+
+  const handleLimit = async () => {
+    try {
+      await updateAccount(account.id, { status: T.AccountStatus.LIMITED });
+      toast.success("Conta marcada como limitada");
+      if (onUnlink) onUnlink();
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao limitar conta");
+    } finally {
+      setIsMenuOpen(false);
     }
   };
   
@@ -91,8 +104,22 @@ export function AccountCard({ account, profileName, onUnlink }: AccountCardProps
           <div className="flex flex-col">
             <p className="text-[#e5e2e1] font-bold text-sm font-headline tracking-tight">{houseName}</p>
             <span className="text-[9px] text-[#00ff88] font-black uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
-              <Circle className="w-1.5 h-1.5 fill-[#00ff88] animate-pulse" />
-              Ativa
+              {account.status === T.AccountStatus.ACTIVE ? (
+                <>
+                  <Circle className="w-1.5 h-1.5 fill-[#00ff88] animate-pulse" />
+                  Ativa
+                </>
+              ) : account.status === T.AccountStatus.LIMITED ? (
+                <>
+                  <Circle className="w-1.5 h-1.5 fill-yellow-400" />
+                  Limitada
+                </>
+              ) : (
+                <>
+                  <Circle className="w-1.5 h-1.5 fill-gray-500" />
+                  Cancelada
+                </>
+              )}
             </span>
           </div>
         </div>
@@ -111,13 +138,23 @@ export function AccountCard({ account, profileName, onUnlink }: AccountCardProps
                 onClick={() => setIsMenuOpen(false)}
               />
               <div className="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl z-20 py-1 animate-in fade-in zoom-in-95 duration-150">
+                {account.status === T.AccountStatus.ACTIVE && (
+                  <button
+                    onClick={handleLimit}
+                    disabled={isMutating}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-yellow-500 hover:bg-yellow-500/10 transition-colors text-left"
+                  >
+                    <AlertTriangle className="w-4 h-4" />
+                    LIMITAR CONTA
+                  </button>
+                )}
                 <button
                   onClick={() => setIsUnlinkConfirmOpen(true)}
                   disabled={isMutating}
                   className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors text-left"
                 >
                   <Trash2 className="w-4 h-4" />
-                  {isMutating ? "DESVINCULANDO..." : "DESVINCULAR DO CPF"}
+                  {isMutating ? "ENCERRANDO..." : "ENCERRAR CONTA"}
                 </button>
               </div>
             </>
@@ -204,9 +241,9 @@ export function AccountCard({ account, profileName, onUnlink }: AccountCardProps
         isOpen={isUnlinkConfirmOpen}
         onClose={() => setIsUnlinkConfirmOpen(false)}
         onConfirm={handleUnlink}
-        title="Desvincular Conta"
-        message={`Tem certeza que deseja desvincular a conta da ${houseName} do perfil ${profileName}? Esta ação pode afetar estatísticas em andamento.`}
-        confirmLabel="DESVINCULAR"
+        title="Encerrar Conta"
+        message={`Tem certeza que deseja encerrar a conta da ${houseName}? Esta ação mudará o status para CANCELADA, mas manterá o histórico de lucros.`}
+        confirmLabel="ENCERRAR"
         cancelLabel="MANTER"
         type="danger"
       />

@@ -47,6 +47,12 @@ export enum FreebetStatus {
   EXPIRANDO = 'EXPIRANDO',
 }
 
+export enum AccountStatus {
+  ACTIVE = 'ACTIVE',
+  LIMITED = 'LIMITED',
+  CANCELLED = 'CANCELLED',
+}
+
 export interface User {
   id: string;
   email: string;
@@ -80,6 +86,7 @@ export interface Account {
   inOperation: number;
   cpfProfileId: string;
   bettingHouseId: string;
+  status: AccountStatus;
   cpfProfile?: CpfProfile;
   bettingHouse?: BettingHouse;
 }
