@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException, ForbiddenException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject, ConflictException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../../prisma.service';
 import { CreateCpfProfileDto } from './dto/create-cpf-profile.dto';
 import { UpdateCpfProfileDto } from './dto/update-cpf-profile.dto';
-import { UserRole } from '@prisma/client';
+import { UserRole, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CpfProfilesService {
@@ -19,15 +19,53 @@ export class CpfProfilesService {
   }
 
   async create(userId: string, createCpfProfileDto: CreateCpfProfileDto) {
-    const result = await this.prisma.cpfProfile.create({
-      data: {
-        ...createCpfProfileDto,
-        userId: userId,
-      },
-    });
-    
-    await this.clearUserDashboardCache(userId, UserRole.OPERATOR);
-    return result;
+    try {
+      // 1. Procurar por um perfil já existente (ativo ou soft-deleted)
+      const existing = await this.prisma.cpfProfile.findFirst({
+        where: {
+          cpf: createCpfProfileDto.cpf,
+        },
+      });
+
+      if (existing) {
+        // Se existir e estiver deletado, nós "restauramos" ele limpando o deletedAt
+        if (existing.deletedAt) {
+          const result = await this.prisma.cpfProfile.update({
+            where: { id: existing.id },
+            data: {
+              ...createCpfProfileDto,
+              deletedAt: null,
+              userId: userId, // Revincula ao usuário que está tentando criar agora
+            },
+          });
+          await this.clearUserDashboardCache(userId, UserRole.OPERATOR);
+          return result;
+        }
+
+        // Se existir e NÃO estiver deletado, aí sim é um conflito real
+        throw new ConflictException('Este CPF já está cadastrado no sistema.');
+      }
+
+      // 2. Se não existir nada, cria normalmente
+      const result = await this.prisma.cpfProfile.create({
+        data: {
+          ...createCpfProfileDto,
+          userId: userId,
+        },
+      });
+      
+      await this.clearUserDashboardCache(userId, UserRole.OPERATOR);
+      return result;
+    } catch (error) {
+      if (error instanceof ConflictException) throw error;
+      
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException('Este CPF já está cadastrado no sistema.');
+        }
+      }
+      throw error;
+    }
   }
 
   async findAll(userId: string, role: UserRole, targetUserId?: string) {

@@ -17,7 +17,11 @@ export class CreateAccountDto {
 export class UpdateAccountDto {
   @IsNumber()
   @Min(0)
-  balance: number;
+  balance?: number;
+
+  @IsString()
+  @IsNotEmpty()
+  status?: string;
 }
 
 export class AmountDto {
