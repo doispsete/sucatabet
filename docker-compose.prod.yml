@@ -43,6 +43,7 @@ services:
       # DATABASE_URL e outros secrets já vêm do .env via env_file
       PORT: 3006
       NODE_ENV: production
+      TZ: America/Sao_Paulo
     depends_on:
       postgres:
         condition: service_healthy
@@ -59,6 +60,7 @@ services:
     environment:
       # Secrets como NEXTAUTH_SECRET já vêm do .env via env_file
       NODE_ENV: production
+      TZ: America/Sao_Paulo
     depends_on:
       - api
     restart: unless-stopped

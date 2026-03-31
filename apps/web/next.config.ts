@@ -4,6 +4,9 @@ const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  env: {
+    TZ: 'America/Sao_Paulo',
+  },
   ...(!isProd && {
     turbopack: {
       root: __dirname,

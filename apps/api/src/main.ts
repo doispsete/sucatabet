@@ -1,3 +1,4 @@
+process.env.TZ = 'America/Sao_Paulo';
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
@@ -39,7 +40,7 @@ async function bootstrap() {
         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "http://localhost:3000", "http://localhost:3006"],
+        connectSrc: ["'self'", process.env.FRONTEND_URL].filter(Boolean) as string[],
       },
     },
   }));
