@@ -1,4 +1,5 @@
-import { IsNumber, IsNotEmpty, Min, IsUUID, IsString } from 'class-validator';
+import { IsNumber, IsNotEmpty, Min, IsUUID, IsString, IsEnum, IsOptional } from 'class-validator';
+import { AccountStatus } from '@prisma/client';
 
 export class CreateAccountDto {
   @IsNotEmpty()
@@ -15,13 +16,14 @@ export class CreateAccountDto {
 }
 
 export class UpdateAccountDto {
+  @IsOptional()
   @IsNumber()
   @Min(0)
   balance?: number;
 
-  @IsString()
-  @IsNotEmpty()
-  status?: string;
+  @IsOptional()
+  @IsEnum(AccountStatus)
+  status?: AccountStatus;
 }
 
 export class AmountDto {

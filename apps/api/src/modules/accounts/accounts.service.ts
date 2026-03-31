@@ -202,7 +202,7 @@ export class AccountsService {
     return this.prisma.$transaction(async (tx) => {
       const updated = await tx.account.update({
         where: { id },
-        data: updateAccountDto,
+        data: updateAccountDto as any,
       });
 
       await this.auditLogs.log(
