@@ -193,36 +193,40 @@ export default function DashboardPage() {
           {/* NOVO CARD — BANCA TOTAL */}
           <div className="glass-card rounded-[32px] p-8 border-l border-primary/20 flex flex-col justify-between group overflow-hidden relative">
             <div className="relative z-10">
-              <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-40 mb-2 italic">PATRIMÔNIO TOTAL</p>
+              <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-40 mb-2 italic">BANCA TOTAL</p>
               <h3 className="text-4xl font-black text-white italic tracking-tighter">
-                R$ {formatCurrency((summary.bancaTotal || 0) + (summary.saldoBanco || 0))}
+                R$ {formatCurrency((summary.disponivel || 0) + (summary.emOperacao || 0))}
               </h3>
               
-              <div className="grid grid-cols-2 gap-6 mt-8">
-                <div>
-                  <p className="text-[9px] font-black text-white/30 uppercase mb-1">GESTÃO BANCA</p>
-                  <p className="text-lg font-black italic text-[#00ff88]">
-                    R$ {formatCurrency(summary.bancaTotal || 0)}
-                  </p>
+              <div className="mt-6 mb-8">
+                <div className="w-full h-2.5 bg-white/5 rounded-full overflow-hidden border border-white/5 flex">
+                  <div 
+                    className="h-full bg-[#00ff88] transition-all duration-1000 ease-out"
+                    style={{ width: `${((summary.disponivel || 0) / ((summary.disponivel || 0) + (summary.emOperacao || 0) || 1)) * 100}%` }}
+                    title={`Disponível: R$ ${formatCurrency(summary.disponivel || 0)}`}
+                  />
+                  <div 
+                    className="h-full bg-white transition-all duration-1000 ease-out"
+                    style={{ width: `${((summary.emOperacao || 0) / ((summary.disponivel || 0) + (summary.emOperacao || 0) || 1)) * 100}%` }}
+                    title={`Em Operação: R$ ${formatCurrency(summary.emOperacao || 0)}`}
+                  />
                 </div>
-                <div>
-                  <p className="text-[9px] font-black text-white/30 uppercase mb-1">SALDO BANCO</p>
-                  <p className="text-lg font-black italic text-white/70">
-                    R$ {formatCurrency(summary.saldoBanco || 0)}
-                  </p>
+                <div className="flex justify-between items-center mt-2 px-1">
+                  <span className="text-[8px] font-black text-[#00ff88] uppercase italic">DISPONÍVEL</span>
+                  <span className="text-[8px] font-black text-white uppercase italic">EM OPERAÇÃO</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 mt-4 pt-4 border-t border-white/5">
+              <div className="grid grid-cols-2 gap-6 pt-4 border-t border-white/5">
                 <div>
-                  <p className="text-[8px] font-black text-white/20 uppercase mb-1">DISPONÍVEL</p>
-                  <p className="text-xs font-black italic text-white/40">
+                  <p className="text-[8px] font-black text-white/20 uppercase mb-1 italic">DISPONÍVEL</p>
+                  <p className="text-sm font-black italic text-[#00ff88]">
                     R$ {formatCurrency(summary.disponivel || 0)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[8px] font-black text-white/20 uppercase mb-1">EM OPERAÇÃO</p>
-                  <p className="text-xs font-black italic text-white/40">
+                  <p className="text-[8px] font-black text-white/20 uppercase mb-1 italic">EM OPERAÇÃO</p>
+                  <p className="text-sm font-black italic text-white/70">
                     R$ {formatCurrency(summary.emOperacao || 0)}
                   </p>
                 </div>

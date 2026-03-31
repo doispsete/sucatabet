@@ -116,30 +116,24 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
           </div>
 
           <div className="bg-white/5 rounded-3xl p-5 border border-white/5 relative overflow-hidden">
-            <div className="relative z-10">
-              <div className="flex justify-between items-center mb-1">
-                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest italic font-black">PATRIMÔNIO TOTAL</p>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#00ff88]/10 border border-[#00ff88]/20 rounded-full">
-                  <span className="text-[9px] font-black text-[#00ff88] italic">+{lucroPct.toFixed(1)}% LUCRO</span>
+            <div className="relative z-10 flex flex-col gap-4">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-white/40 uppercase tracking-widest italic font-black">PATRIMÔNIO TOTAL</p>
+                  <p className="text-3xl font-black text-white italic tracking-tight">
+                    R$ {formatCurrency(patrimonioTotal)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-[#00ff88]/10 border border-[#00ff88]/20 rounded-full">
+                  <span className="text-[10px] font-black text-[#00ff88] italic">+{lucroPct.toFixed(1)}%</span>
                 </div>
               </div>
-              <p className="text-2xl font-black text-white/90 italic tracking-tight">
-                R$ {formatCurrency(patrimonioTotal)}
-              </p>
               
-              <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-white/5">
-                <div>
-                  <p className="text-[8px] font-black text-white/30 uppercase mb-1">GESTÃO BANCA</p>
-                  <p className="text-sm font-black italic text-white/70">
-                    R$ {formatCurrency(bancaTotal)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[8px] font-black text-white/30 uppercase mb-1">LUCRO MÊS</p>
-                  <p className="text-sm font-black italic text-[#00ff88]">
-                    +R$ {formatCurrency(lucroMes)}
-                  </p>
-                </div>
+              <div className="pt-4 border-t border-white/5">
+                <p className="text-[9px] font-black text-white/30 uppercase mb-1 italic">LUCRO DESSE MÊS</p>
+                <p className="text-xl font-black italic text-[#00ff88]">
+                  +R$ {formatCurrency(lucroMes)}
+                </p>
               </div>
             </div>
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#00ff88]/5 blur-3xl rounded-full -mr-16 -mt-16" />

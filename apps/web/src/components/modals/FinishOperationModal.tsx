@@ -85,7 +85,7 @@ export function FinishOperationModal({ isOpen, onClose, operation, onSuccess, on
     const oo = getEffectiveOdd(bet);
     const commStr = localCommissions[bet.id] || bet.commission?.toString() || '0';
     const oc = parseFloat(commStr) / 100;
-    const isF = bet.type === 'Freebet' || bet.isBenefit;
+    const isF = bet.type === 'Freebet';
     const SIDE = (bet.side || 'BACK').toUpperCase();
     const stake = parseFloat(bet.stake?.toString() || '0');
     const cost = parseFloat(bet.cost?.toString() || '0');
@@ -108,7 +108,7 @@ export function FinishOperationModal({ isOpen, onClose, operation, onSuccess, on
 
     // Cálculo do Custo Real da Operação
     const totalCostValue = (operation.bets || []).reduce((sum, bet) => {
-      const isF = bet.type === 'Freebet' || bet.isBenefit;
+      const isF = bet.type === 'Freebet';
       if (isF) return sum;
       return sum + (parseFloat(bet.cost?.toString() || bet.stake?.toString() || '0'));
     }, 0);
@@ -209,7 +209,7 @@ export function FinishOperationModal({ isOpen, onClose, operation, onSuccess, on
   if (!operation) return null;
 
   const totalCostValue = (operation.bets || []).reduce((sum, bet) => {
-    const isF = bet.type === 'Freebet' || bet.isBenefit;
+    const isF = bet.type === 'Freebet';
     if (isF) return sum;
     return sum + (parseFloat(bet.cost?.toString() || bet.stake?.toString() || '0'));
   }, 0);

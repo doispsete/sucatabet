@@ -218,7 +218,7 @@ export class OperationsService {
           // Lucro Líquido na Casa = (Odd_Eff - 1) * Stake * (1 - Comm)
           betWinNet = effOdds.minus(1).mul(stake).mul(new Prisma.Decimal(1).minus(comm));
           // Custo = 0 se for Freebet ou se estiver marcado como Benefício (ex: Extração)
-          const isFree = betDto.type === 'Freebet' || betDto.isBenefit;
+          const isFree = betDto.type === 'Freebet';
           cost = isFree ? new Prisma.Decimal(0) : stake;
           betReturn = cost.plus(betWinNet);
         }
@@ -589,7 +589,7 @@ export class OperationsService {
           betReturn = cost.plus(betWinNet);
         } else {
           betWinNet = effOdds.minus(1).mul(stake).mul(new Prisma.Decimal(1).minus(comm));
-          const isFree = betDto.type === 'Freebet' || betDto.isBenefit;
+          const isFree = betDto.type === 'Freebet';
           cost = isFree ? new Prisma.Decimal(0) : stake;
           betReturn = cost.plus(betWinNet);
         }
