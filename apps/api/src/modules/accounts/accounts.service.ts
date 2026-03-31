@@ -15,7 +15,9 @@ export class AccountsService {
   ) {}
 
   private async clearUserDashboardCache(userId: string, role: UserRole) {
+    // Clear legacy and vFinal summaries
     await this.cacheManager.del(`dashboard:summary:${userId}:${role}`);
+    await this.cacheManager.del(`dashboard:vFinal:summary:${userId}:${role}:none:none`);
     await this.cacheManager.del(`dashboard:club:${userId}:${role}`);
   }
 

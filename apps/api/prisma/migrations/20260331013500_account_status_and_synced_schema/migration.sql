@@ -1,4 +1,4 @@
--- TOTAL DB SAFETY NET & RECONCILIATION MIGRATION
+-- TOTAL DB SAFETY NET & RECONCILIATION MIGRATION (V2)
 -- This script ensures all required tables, enums and columns exist regardless of previous drift/failures.
 
 -- 1. ENUMS (Safe Creation via DO blocks)
@@ -60,6 +60,13 @@ CREATE TABLE IF NOT EXISTS "Expense" (
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS "WeeklyClub" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "accountId" TEXT NOT NULL,
+    "weekStart" TIMESTAMP(3) NOT NULL,
+    "totalStake" DECIMAL(65,30) NOT NULL DEFAULT 0.0
+);
+
 -- 3. COLUMN UPDATES (Safe ADD/DROP)
 -- Account Table
 ALTER TABLE "Account" DROP COLUMN IF EXISTS "deletedAt";
@@ -82,6 +89,10 @@ DO $$ BEGIN
     ALTER TABLE "Expense" ADD CONSTRAINT "Expense_bankAccountId_fkey" FOREIGN KEY ("bankAccountId") REFERENCES "BankAccount"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
+DO $$ BEGIN
+    ALTER TABLE "WeeklyClub" ADD CONSTRAINT "WeeklyClub_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
 -- 5. DATA MIGRATIONS & CLEANUP
 -- Active existing users
 UPDATE "User" SET "status" = 'ACTIVE' WHERE "status"::text = 'PENDING';
@@ -95,3 +106,8 @@ CREATE INDEX IF NOT EXISTS "Account_status_idx" ON "Account"("status");
 CREATE INDEX IF NOT EXISTS "BankAccount_userId_idx" ON "BankAccount"("userId");
 CREATE INDEX IF NOT EXISTS "BankTransaction_bankAccountId_idx" ON "BankTransaction"("bankAccountId");
 CREATE INDEX IF NOT EXISTS "Expense_bankAccountId_idx" ON "Expense"("bankAccountId");
+CREATE INDEX IF NOT EXISTS "WeeklyClub_accountId_idx" ON "WeeklyClub"("accountId");
+CREATE INDEX IF NOT EXISTS "WeeklyClub_weekStart_idx" ON "WeeklyClub"("weekStart");
+DO $$ BEGIN
+    CREATE UNIQUE INDEX "WeeklyClub_accountId_weekStart_key" ON "WeeklyClub"("accountId", "weekStart");
+EXCEPTION WHEN duplicate_table OR duplicate_object THEN null; END $$;

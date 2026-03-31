@@ -236,49 +236,59 @@ export class DashboardService {
   }
 
   async getClubProgress(userId: string, role: UserRole) {
-    const cacheKey = `dashboard:club:${userId}:${role}`;
-    const cached = await this.cacheManager.get(cacheKey);
-    if (cached) return cached;
+    try {
+      const cacheKey = `dashboard:club:${userId}:${role}`;
+      const cached = await this.cacheManager.get(cacheKey);
+      if (cached) return cached;
 
-    const userFilter = { userId };
-    const accounts = await this.prisma.account.findMany({
-      where: { 
-        cpfProfile: { ...userFilter, deletedAt: null },
-        bettingHouse: { name: { contains: '365', mode: 'insensitive' } },
-        status: { not: 'CANCELLED' }
-      },
-      include: { bettingHouse: true, cpfProfile: true }
-    });
+      const userFilter = { userId };
+      const accounts = await this.prisma.account.findMany({
+        where: { 
+          cpfProfile: { ...userFilter, deletedAt: null },
+          bettingHouse: { name: { contains: '365', mode: 'insensitive' } },
+          status: { not: 'CANCELLED' }
+        },
+        include: { bettingHouse: true, cpfProfile: true }
+      });
 
-    const startOfWeek = getStartOfWeekBR();
+      const startOfWeek = getStartOfWeekBR();
 
-    // Single Query for ALL weekly club progress (N+1 Fix)
-    const activities = await this.prisma.weeklyClub.findMany({
-      where: { 
-        weekStart: startOfWeek,
-        accountId: { in: accounts.map(a => a.id) }
-      }
-    });
+      // Single Query for ALL weekly club progress (N+1 Fix)
+      const activities = await this.prisma.weeklyClub.findMany({
+        where: { 
+          weekStart: startOfWeek,
+          accountId: { in: accounts.map(a => a.id) }
+        }
+      });
 
-    const items = accounts.map(acc => {
-      const clubEntry = activities.find(a => a.accountId === acc.id);
-      const stakValue = Number(clubEntry?.totalStake || 0);
-      return {
-        accountId: acc.id,
-        accountName: acc.bettingHouse.name,
-        profileName: acc.cpfProfile.name,
-        meta: 1500,
-        atual: stakValue,
-        percentual: Math.min((stakValue / 1500) * 100, 100),
+      const items = accounts.map(acc => {
+        const clubEntry = activities.find(a => a.accountId === acc.id);
+        const stakValue = Number(clubEntry?.totalStake || 0);
+        return {
+          accountId: acc.id,
+          accountName: acc.bettingHouse.name,
+          profileName: acc.cpfProfile.name,
+          meta: 1500,
+          atual: stakValue,
+          percentual: Math.min((stakValue / 1500) * 100, 100),
+        };
+      });
+
+      const result = {
+        items: items.sort((a, b) => b.percentual - a.percentual),
+        stats: { completed: items.filter(i => i.percentual === 100).length, total: items.length }
       };
-    });
 
-    const result = {
-      items: items.sort((a, b) => b.percentual - a.percentual),
-      stats: { completed: items.filter(i => i.percentual === 100).length, total: items.length }
-    };
-
-    await this.cacheManager.set(cacheKey, result, 60); 
-    return result;
+      await this.cacheManager.set(cacheKey, result, 60); 
+      return result;
+    } catch (error) {
+      console.error(`[DashboardService] Erro ao buscar progresso do clube para usuário ${userId}:`, error);
+      // Return a safe empty state to avoid 500 error in the dashboard
+      return {
+        items: [],
+        stats: { completed: 0, total: 0 },
+        error: "Erro temporário ao carregar Clube365"
+      };
+    }
   }
 }
