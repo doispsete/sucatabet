@@ -9,6 +9,9 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  // Confiar no proxy reverso (Nginx) para identificar o IP real do cliente
+  (app.getHttpAdapter().getInstance() as any).set('trust proxy', 1);
 
   // Global Exception Filter
   app.useGlobalFilters(new AllExceptionsFilter());
