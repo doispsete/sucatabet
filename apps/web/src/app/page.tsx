@@ -596,17 +596,28 @@ export default function DashboardPage() {
                       <p className="text-xs font-black text-[#e5e2e1] uppercase tracking-[0.1em] italic pr-1">{op.type.replace('_', ' ')}</p>
                     </td>
                     <td className="px-8 py-6 relative">
-                      <span className={`px-4 py-1.5 text-[9px] font-black tracking-widest rounded-lg uppercase border shadow-sm ${op.status === 'FINISHED' ? 'bg-[#00ff88]/5 text-[#00ff88] border-[#00ff88]/20 shadow-[#00ff88]/5' :
-                        op.status === 'CASHOUT' ? 'bg-amber-500/5 text-amber-500 border-amber-500/20 shadow-amber-500/5' :
-                          op.status === 'VOID' ? 'bg-red-500/5 text-red-500 border-red-500/20 shadow-red-500/5' :
-                            'bg-white/5 text-[#b9cbbc] border-white/10'
+                      <span className={`px-4 py-1.5 text-[9px] font-black tracking-widest rounded-lg uppercase border shadow-sm ${
+                        op.status === 'FINISHED' 
+                          ? (op.realProfit > 0 
+                              ? 'bg-[#00ff88]/5 text-[#00ff88] border-[#00ff88]/20 shadow-[#00ff88]/5' 
+                              : op.realProfit < 0 
+                                ? 'bg-red-500/5 text-red-500 border-red-500/20 shadow-red-500/5'
+                                : 'bg-white/5 text-[#b9cbbc] border-white/10')
+                          : op.status === 'CASHOUT' ? 'bg-amber-500/5 text-amber-500 border-amber-500/20 shadow-amber-500/5' :
+                            op.status === 'VOID' ? 'bg-red-500/5 text-red-500 border-red-500/20 shadow-red-500/5' :
+                            'bg-amber-500/5 text-amber-500 border-amber-500/20 shadow-amber-500/5'
                         }`}>
                         {op.status === 'FINISHED' ? 'Finalizada' : op.status === 'CASHOUT' ? 'Cashout' : op.status === 'VOID' ? 'Anulada' : 'Pendente'}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right relative">
-                      <span className={`text-base font-black italic tracking-tighter ${op.realProfit && op.realProfit > 0 ? 'text-[#00ff88]' : 'text-[#e5e2e1]/40'}`}>
-                        {op.realProfit != null ? `+ R$ ${formatCurrency(op.realProfit)}` : '—'}
+                      <span className={`text-base font-black italic tracking-tighter ${
+                        op.realProfit > 0 ? 'text-[#00ff88]' : 
+                        op.realProfit < 0 ? 'text-red-500' : 'text-[#e5e2e1]/40'
+                      }`}>
+                        {op.realProfit != null 
+                          ? `${op.realProfit >= 0 ? '+ ' : '- '} R$ ${formatCurrency(Math.abs(op.realProfit))}` 
+                          : '—'}
                       </span>
                     </td>
                   </tr>

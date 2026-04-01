@@ -131,8 +131,8 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
               
               <div className="pt-4 border-t border-white/5">
                 <p className="text-[9px] font-black text-white/30 uppercase mb-1 italic">LUCRO DESSE MÊS</p>
-                <p className="text-xl font-black italic text-[#00ff88]">
-                  +R$ {formatCurrency(lucroMes)}
+                <p className={`text-xl font-black italic ${lucroMes >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+                  {lucroMes >= 0 ? '+' : '-'}R$ {formatCurrency(Math.abs(lucroMes))}
                 </p>
               </div>
             </div>

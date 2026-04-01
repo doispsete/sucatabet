@@ -31,7 +31,7 @@ export class DashboardService {
     if (startDate) dateFilter.gte = new Date(startDate);
     if (endDate) dateFilter.lte = new Date(endDate);
 
-    const [accounts, allFinishedOps, freebetsExpirando, bank] = await Promise.all([
+    const [accounts, allFinishedOps, freebetsExpirando, bank, expenses] = await Promise.all([
       this.prisma.account.findMany({
         where: { ...accountFilter, status: { not: 'CANCELLED' } },
         select: { balance: true, inOperation: true },
@@ -59,7 +59,17 @@ export class DashboardService {
       }),
       this.prisma.bankAccount.findUnique({
         where: { userId },
-        select: { balance: true, monthlyGoal: true },
+        select: { id: true, balance: true, monthlyGoal: true },
+      }),
+      this.prisma.expense.findMany({
+        where: {
+          bankAccount: { userId },
+          OR: [
+            { createdAt: { gte: startDate ? new Date(startDate) : startOfMonth } },
+            { lastPaidAt: { gte: startDate ? new Date(startDate) : startOfMonth } }
+          ]
+        },
+        select: { amount: true, createdAt: true, lastPaidAt: true }
       })
     ]);
 
@@ -81,13 +91,35 @@ export class DashboardService {
         })
       : allFinishedOps;
 
-    const lucroPeriodo = periodOps.reduce((acc, curr) => acc + Number(curr.realProfit || 0), 0);
-    const lucroSemana = allFinishedOps
+    const lucroOperacoesPeriodo = periodOps.reduce((acc, curr) => acc + Number(curr.realProfit || 0), 0);
+    const lucroOperacoesSemana = allFinishedOps
       .filter(op => op.createdAt >= startOfWeek)
       .reduce((acc, curr) => acc + Number(curr.realProfit || 0), 0);
-    const lucroMes = allFinishedOps
+    const lucroOperacoesMes = allFinishedOps
       .filter(op => op.createdAt >= startOfMonth)
       .reduce((acc, curr) => acc + Number(curr.realProfit || 0), 0);
+
+    // Calculate Expenses for the same ranges
+    const despesasPeriodo = expenses
+      .filter(e => {
+        const d = (e.lastPaidAt || e.createdAt).getTime();
+        return (!dateFilter.gte || d >= dateFilter.gte.getTime()) && 
+               (!dateFilter.lte || d <= dateFilter.lte.getTime());
+      })
+      .reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
+
+    const despesasSemana = expenses
+      .filter(e => (e.lastPaidAt || e.createdAt) >= startOfWeek)
+      .reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
+
+    const despesasMes = expenses
+      .filter(e => (e.lastPaidAt || e.createdAt) >= startOfMonth)
+      .reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
+
+    // NET PROFIT (Operações - Despesas)
+    const lucroPeriodo = lucroOperacoesPeriodo - despesasPeriodo;
+    const lucroSemana = lucroOperacoesSemana - despesasSemana;
+    const lucroMes = lucroOperacoesMes - despesasMes;
 
     const lucroPorCategoria = periodOps.reduce((acc, curr) => {
       const cat = curr.category;
