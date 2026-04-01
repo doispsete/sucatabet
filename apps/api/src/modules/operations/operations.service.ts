@@ -325,7 +325,7 @@ export class OperationsService {
 
     return this.prisma.$transaction(async (tx) => {
       const totalStaked = operation.bets.reduce((acc, b) => {
-        const isF = b.type === 'Freebet' || (b as any).isBenefit;
+        const isF = b.type === 'Freebet';
         if (isF) return acc;
         return acc.plus(new Prisma.Decimal(b.cost));
       }, new Prisma.Decimal(0));
@@ -342,7 +342,7 @@ export class OperationsService {
             const os = new Prisma.Decimal(bet.stake);
             const oc = new Prisma.Decimal((bet as any).commission || 0).div(100);
             const cost = new Prisma.Decimal(bet.cost);
-            const isF = bet.type === 'Freebet' || (bet as any).isBenefit;
+            const isF = bet.type === 'Freebet';
 
             if (bet.side?.toUpperCase() === 'BACK') {
                 if (isF) {
@@ -381,7 +381,7 @@ export class OperationsService {
             const os = new Prisma.Decimal(b.stake);
             const oo = this.getEffectiveOdds(operation.type, b.type, new Prisma.Decimal(b.odds));
             const oc = new Prisma.Decimal((b as any).commission || 0).div(100);
-            const isF = b.type === 'Freebet' || (b as any).isBenefit;
+            const isF = b.type === 'Freebet';
             const cost = new Prisma.Decimal(b.cost);
 
             let br = new Prisma.Decimal(0);
