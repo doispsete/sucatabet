@@ -100,7 +100,7 @@ export class AccountsService {
         data: { balance: { increment: amountDto.amount } },
       });
 
-      // 2. Localizar/Criar banco do usuário
+      // 2. Localizar/Criar banco do usuário (Opcional para registro de transação se existir)
       let bankAccount = await tx.bankAccount.findUnique({
         where: { userId: account.cpfProfile.userId },
       });
@@ -111,18 +111,7 @@ export class AccountsService {
         });
       }
 
-      // 3. Verificar saldo no banco (Não permitimos depósito se não houver saldo no banco central)
-      if (Number(bankAccount.balance) < amountDto.amount) {
-        throw new BadRequestException('Saldo insuficiente no Banco Central para realizar esta transferência');
-      }
-
-      // 4. Decrementar saldo do banco
-      await tx.bankAccount.update({
-        where: { id: bankAccount.id },
-        data: { balance: { decrement: amountDto.amount } },
-      });
-
-      // 5. Registrar transação bancária
+      // 4. Registrar transação bancária se o banco existir
       await tx.bankTransaction.create({
         data: {
           bankAccountId: bankAccount.id,
