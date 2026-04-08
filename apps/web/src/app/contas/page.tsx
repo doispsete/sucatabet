@@ -442,12 +442,12 @@ export default function AccountsPage() {
               </div>
             ))}
           </div>
-        ) : (Array.isArray(profiles) ? profiles : []).length === 0 ? (
+        ) : (Array.isArray(profiles) ? [...profiles].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')) : []).length === 0 ? (
           <EmptyState
             message="NENHUMA IDENTIDADE DETECTADA NO HUB"
           />
         ) : (
-          (Array.isArray(profiles) ? profiles : []).map((profile) => (
+          (Array.isArray(profiles) ? [...profiles].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')) : []).map((profile) => (
             <div key={profile.id} className="group/profile space-y-6">
               <div className="flex items-center gap-6 px-4">
                 <div className="w-16 h-16 rounded-3xl bg-black/40 flex items-center justify-center border border-white/10 shadow-2xl group-hover/profile:border-[#03d791]/40 group-hover/profile:shadow-[0_0_20px_rgba(3,215,145,0.1)] transition-all duration-500">
@@ -478,7 +478,8 @@ export default function AccountsPage() {
               </div>
 
               <AccountCarousel
-                accounts={Array.isArray(profile.accounts) ? profile.accounts : []}
+                accounts={(Array.isArray(profile.accounts) ? [...profile.accounts] : [])
+                  .sort((a, b) => (a.bettingHouse?.name || "").localeCompare(b.bettingHouse?.name || "", 'pt-BR'))}
                 profileName={profile.name}
                 onAddAccount={() => {
                   setSelectedProfileId(profile.id);

@@ -42,6 +42,7 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
       case 'FREEBET_GEN': return 'Gerar Freebet';
       case 'EXTRACAO': return 'Extração';
       case 'BOOST_25': return 'Aumento 25';
+      case 'BOOST_30': return 'Aumento 30';
       case 'BOOST_50': return 'Aumento 50';
       case 'SUPERODDS': return 'Super Odds';
       case 'TENTATIVA_DUPLO': return 'Tentativa Duplo';

@@ -134,7 +134,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
           let betType: 'Normal' | 'Freebet' | 'Aumento' = 'Normal';
           if (b.isBenefit) {
             if (type === OperationType.EXTRACAO) betType = 'Freebet';
-            else if (type === OperationType.BOOST_25 || type === OperationType.BOOST_50) betType = 'Aumento';
+            else if (type === OperationType.BOOST_25 || type === OperationType.BOOST_30 || type === OperationType.BOOST_50) betType = 'Aumento';
           }
 
           return {
@@ -190,6 +190,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
                 { value: OperationType.FREEBET_GEN, label: "GERAR FREEBET" },
                 { value: OperationType.EXTRACAO, label: "EXTRAÇÃO" },
                 { value: OperationType.BOOST_25, label: "AUMENTO 25%" },
+                { value: OperationType.BOOST_30, label: "AUMENTO 30%" },
                 { value: OperationType.BOOST_50, label: "AUMENTO 50%" },
                 { value: OperationType.SUPERODDS, label: "SUPER ODDS" },
                 { value: OperationType.TENTATIVA_DUPLO, label: "TENTATIVA DUPLO" },
@@ -250,7 +251,16 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
                     <CustomSelect 
                       value={bet.accountId}
                       onChange={val => handleUpdateBet(bet.id, 'accountId', val)}
-                      options={(Array.isArray(accounts) ? accounts : []).map(acc => ({
+                      options={(Array.isArray(accounts) ? [...accounts] : [])
+                        .sort((a, b) => {
+                          const houseA = a.bettingHouse?.name?.toUpperCase() || "";
+                          const houseB = b.bettingHouse?.name?.toUpperCase() || "";
+                          if (houseA !== houseB) return houseA.localeCompare(houseB, 'pt-BR');
+                          const profileA = a.cpfProfile?.name?.toUpperCase() || "";
+                          const profileB = b.cpfProfile?.name?.toUpperCase() || "";
+                          return profileA.localeCompare(profileB, 'pt-BR');
+                        })
+                        .map(acc => ({
                         value: acc.id,
                         label: `${acc.bettingHouse?.name?.toUpperCase()} — ${acc.cpfProfile?.name?.toUpperCase()}`
                       }))}
@@ -373,6 +383,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
                   const rawO = parseFloat(betObj.odds) || 1;
                   if (betObj.isBenefit) {
                     if (type === OperationType.BOOST_25) return (rawO - 1) * 1.25 + 1;
+                    if (type === OperationType.BOOST_30) return (rawO - 1) * 1.30 + 1;
                     if (type === OperationType.BOOST_50) return (rawO - 1) * 1.50 + 1;
                   }
                   return rawO;

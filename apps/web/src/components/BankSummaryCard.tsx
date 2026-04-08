@@ -58,7 +58,7 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
     return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
   });
 
-  const amountPaidMonth = summary.monthlyExpenses || 0;
+  const amountPaidMonth = Number(summary.monthlyExpenses) || 0;
   const amountPendingMonth = pendingExpensesCurrentMonth.reduce((acc: number, e: any) => acc + (Number(e.amount) || 0), 0);
   const totalMonth = amountPaidMonth + amountPendingMonth;
 

@@ -23,6 +23,7 @@ enum OperationType {
   FREEBET_GEN
   EXTRACAO
   BOOST_25
+  BOOST_30
   BOOST_50
   SUPERODDS
   TENTATIVA_DUPLO
@@ -258,3 +259,4 @@ model Expense {
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
 }
+

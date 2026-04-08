@@ -38,6 +38,8 @@ export function FinishOperationModal({ isOpen, onClose, operation, onSuccess, on
       
       if (cachedVal) {
         setFbValueToGenerate(cachedVal);
+      } else if (operation.generatedFbValue) {
+        setFbValueToGenerate(operation.generatedFbValue.toString());
       } else {
         setFbValueToGenerate(operation.expectedProfit.toString());
       }
