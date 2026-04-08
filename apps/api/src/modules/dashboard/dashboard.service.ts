@@ -277,7 +277,7 @@ export class DashboardService {
       const accounts = await this.prisma.account.findMany({
         where: { 
           cpfProfile: { ...userFilter, deletedAt: null },
-          bettingHouse: { name: { contains: '365', mode: 'insensitive' } },
+          bettingHouse: { name: { contains: 'bet365', mode: 'insensitive' } },
           status: { not: 'CANCELLED' }
         },
         include: { bettingHouse: true, cpfProfile: true }

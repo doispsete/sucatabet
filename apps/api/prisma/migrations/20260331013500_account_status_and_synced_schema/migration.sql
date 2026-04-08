@@ -14,9 +14,11 @@ DO $$ BEGIN
     CREATE TYPE "BankTransactionType" AS ENUM ('DEPOSIT', 'WITHDRAW', 'ACCOUNT_DEPOSIT', 'ACCOUNT_WITHDRAW', 'EXPENSE_PAYMENT', 'INCOME');
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
-DO $$ BEGIN
-    CREATE TYPE "ExpenseType" AS ENUM ('OPERACIONAL', 'PESSOAL', 'OPERATIONAL', 'PERSONAL');
-EXCEPTION WHEN duplicate_object THEN null; END $$;
+-- Ensure ExpenseType has all values (Safe recreation)
+ALTER TABLE "Expense" ALTER COLUMN "type" TYPE TEXT;
+DROP TYPE IF EXISTS "ExpenseType";
+CREATE TYPE "ExpenseType" AS ENUM ('OPERACIONAL', 'PESSOAL', 'OPERATIONAL', 'PERSONAL');
+ALTER TABLE "Expense" ALTER COLUMN "type" TYPE "ExpenseType" USING "type"::"ExpenseType";
 
 DO $$ BEGIN
     CREATE TYPE "ExpenseStatus" AS ENUM ('PENDING', 'PAID', 'OVERDUE');

@@ -17,8 +17,6 @@ export enum OperationType {
   BOOST_25 = 'BOOST_25',
   BOOST_30 = 'BOOST_30',
   BOOST_50 = 'BOOST_50',
-  SUPERODDS = 'SUPERODDS',
-  TENTATIVA_DUPLO = 'TENTATIVA_DUPLO',
 }
 
 export enum OperationCategory {

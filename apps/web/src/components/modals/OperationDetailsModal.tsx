@@ -44,8 +44,6 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
       case 'BOOST_25': return 'Aumento 25';
       case 'BOOST_30': return 'Aumento 30';
       case 'BOOST_50': return 'Aumento 50';
-      case 'SUPERODDS': return 'Super Odds';
-      case 'TENTATIVA_DUPLO': return 'Tentativa Duplo';
       default: return type.replace('_', ' ');
     }
   };

@@ -111,6 +111,15 @@ export class AccountsService {
         });
       }
 
+      // 3. Abater do saldo do banco central se houver (Opcional, não bloqueia)
+      if (Number(bankAccount.balance) > 0) {
+        const deduction = Math.min(Number(bankAccount.balance), amountDto.amount);
+        await tx.bankAccount.update({
+          where: { id: bankAccount.id },
+          data: { balance: { decrement: deduction } },
+        });
+      }
+
       // 4. Registrar transação bancária se o banco existir
       await tx.bankTransaction.create({
         data: {

@@ -193,8 +193,6 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
                 { value: OperationType.BOOST_25, label: "AUMENTO 25%" },
                 { value: OperationType.BOOST_30, label: "AUMENTO 30%" },
                 { value: OperationType.BOOST_50, label: "AUMENTO 50%" },
-                { value: OperationType.SUPERODDS, label: "SUPER ODDS" },
-                { value: OperationType.TENTATIVA_DUPLO, label: "TENTATIVA DUPLO" },
               ]}
               placeholder="SELECIONE O TIPO"
             />
