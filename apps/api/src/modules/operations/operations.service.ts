@@ -246,7 +246,7 @@ export class OperationsService {
           category,
           expectedProfit: operationExpectedProfit,
           description: createOperationDto.description,
-          generatedFbValue: createOperationDto.generatedFbValue ? new Prisma.Decimal(createOperationDto.generatedFbValue) : null,
+          generatedFbValue: (createOperationDto.generatedFbValue && !isNaN(createOperationDto.generatedFbValue)) ? new Prisma.Decimal(createOperationDto.generatedFbValue) : null,
           userId,
           status: OperationStatus.PENDING,
         } as any,
@@ -690,7 +690,7 @@ export class OperationsService {
           category,
           expectedProfit: operationExpectedProfit,
           description: updateDto.description,
-          generatedFbValue: updateDto.generatedFbValue ? new Prisma.Decimal(updateDto.generatedFbValue) : null,
+          generatedFbValue: (updateDto.generatedFbValue && !isNaN(updateDto.generatedFbValue)) ? new Prisma.Decimal(updateDto.generatedFbValue) : null,
         } as any,
       });
 
