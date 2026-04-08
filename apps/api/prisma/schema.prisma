@@ -25,6 +25,8 @@ enum OperationType {
   BOOST_25
   BOOST_30
   BOOST_50
+  SUPERODDS
+  TENTATIVA_DUPLO
 }
 
 enum OperationCategory {

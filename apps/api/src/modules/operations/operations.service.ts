@@ -38,6 +38,8 @@ export class OperationsService {
       [OperationType.BOOST_25]: OperationCategory.BOOST,
       [OperationType.BOOST_30]: OperationCategory.BOOST,
       [OperationType.BOOST_50]: OperationCategory.BOOST,
+      [OperationType.SUPERODDS]: OperationCategory.BOOST,
+      [OperationType.TENTATIVA_DUPLO]: OperationCategory.RISCO,
     };
     
     // Fallback para tipos legados que podem estar no banco mas foram removidos do enum
@@ -80,6 +82,8 @@ export class OperationsService {
         [OperationType.BOOST_25]: ['aumento', 'boost', '25'],
         [OperationType.BOOST_30]: ['aumento', 'boost', '30'],
         [OperationType.BOOST_50]: ['aumento', 'boost', '50'],
+        [OperationType.SUPERODDS]: ['super', 'odds'],
+        [OperationType.TENTATIVA_DUPLO]: ['tentativa', 'duplo'],
       };
 
       const matchedTypes = Object.entries(typeKeywords)
