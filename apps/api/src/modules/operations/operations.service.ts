@@ -529,7 +529,7 @@ export class OperationsService {
     }
 
     if (updateDto.type === OperationType.EXTRACAO) {
-      if (!updateDto.freebetId) {
+      if (!updateDto.freebetId && !existingOperation.freebet) {
         throw new BadRequestException('Operações de extração exigem uma freebet vinculada');
       }
 
