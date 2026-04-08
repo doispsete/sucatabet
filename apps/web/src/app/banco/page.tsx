@@ -210,8 +210,8 @@ export default function BancoPage() {
       return (due.getMonth() === currentMonth && due.getFullYear() === currentYear) || exp.status === 'PAID';
     });
 
-    const total = thisMonthExpenses.reduce((acc, exp) => acc + exp.amount, 0);
-    const paid = thisMonthExpenses.filter(exp => exp.status === 'PAID').reduce((acc, exp) => acc + exp.amount, 0);
+    const total = thisMonthExpenses.reduce((acc, exp) => acc + (Number(exp.amount) || 0), 0);
+    const paid = thisMonthExpenses.filter(exp => exp.status === 'PAID').reduce((acc, exp) => acc + (Number(exp.amount) || 0), 0);
     const pending = total - paid;
 
     return { total, paid, pending };
@@ -477,8 +477,8 @@ function OverviewTab({ summary, filters, onFilterChange, onCategoryClick }: {
   const compass = summary.compassData || { monthly: [], categories: [] };
   const filteredMonthly = compass.monthly;
 
-  const totalIncome = filteredMonthly.reduce((acc: number, curr: any) => acc + curr.income, 0);
-  const totalExpense = filteredMonthly.reduce((acc: number, curr: any) => acc + curr.expense, 0);
+  const totalIncome = filteredMonthly.reduce((acc: number, curr: any) => acc + (Number(curr.income) || 0), 0);
+  const totalExpense = filteredMonthly.reduce((acc: number, curr: any) => acc + (Number(curr.expense) || 0), 0);
 
   const selectedMonth = selectedMonthKey ? filteredMonthly.find((m: any) => m.key === selectedMonthKey) : null;
   const displayIncome = selectedMonth ? selectedMonth.income : totalIncome;

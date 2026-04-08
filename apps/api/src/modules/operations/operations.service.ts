@@ -544,6 +544,8 @@ export class OperationsService {
       const now = new Date();
       const startOfWeek = getStartOfWeekBR(now);
 
+      const reversionWeekStart = getStartOfWeekBR(existingOperation.createdAt);
+
       // 1. Reverter impactos de saldo e WeeklyClub das bets antigas
       for (const bet of existingOperation.bets) {
         await tx.account.update({
@@ -556,10 +558,16 @@ export class OperationsService {
 
         const is365 = (bet.account as any)?.bettingHouse?.name?.toLowerCase().includes('365');
         if (is365) {
-          await tx.weeklyClub.update({
-            where: { accountId_weekStart: { accountId: bet.accountId, weekStart: startOfWeek } },
+          // Usamos updateMany para evitar erro P2025 (registro pesquisado para atualização não encontrado)
+          // que abortaria toda a transação caso a entrada do WeeklyClub não exista mais.
+          // Importante: usamos reversionWeekStart (baseado na data de criação da operação original)
+          await tx.weeklyClub.updateMany({
+            where: { 
+              accountId: bet.accountId, 
+              weekStart: reversionWeekStart 
+            },
             data: { totalStake: { decrement: bet.stake } }
-          }).catch(() => null);
+          });
         }
       }
 
