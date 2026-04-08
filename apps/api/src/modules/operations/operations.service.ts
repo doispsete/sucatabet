@@ -556,7 +556,7 @@ export class OperationsService {
           },
         });
 
-        const is365 = (bet.account as any)?.bettingHouse?.name?.toLowerCase().includes('365');
+        const is365 = (bet.account as any)?.bettingHouse?.name?.toLowerCase() === 'bet365';
         if (is365) {
           // Usamos updateMany para evitar erro P2025 (registro pesquisado para atualização não encontrado)
           // que abortaria toda a transação caso a entrada do WeeklyClub não exista mais.
@@ -660,7 +660,7 @@ export class OperationsService {
       });
 
       for (const account of accountsInvolved) {
-        if (account.bettingHouse.name.toLowerCase().includes('365')) {
+        if (account.bettingHouse.name.toLowerCase() === 'bet365') {
           const totalStakeForAccount = betsToCreate
             .filter(b => b.accountId === account.id)
             .reduce((sum, b) => sum.plus(new Prisma.Decimal(b.stake)), new Prisma.Decimal(0));
