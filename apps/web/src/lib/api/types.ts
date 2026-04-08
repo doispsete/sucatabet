@@ -120,6 +120,8 @@ export interface Operation {
   generatedFbValue?: number;
   createdAt: string;
   bets?: Bet[];
+  freebet?: Freebet;
+  freebetId?: string;
 }
 
 export interface Freebet {

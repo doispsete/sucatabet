@@ -31,7 +31,7 @@ export class OperationsService {
   }
 
   private getCategory(type: OperationType): OperationCategory {
-    const mapping: Record<OperationType, OperationCategory> = {
+    const mapping: Partial<Record<OperationType, OperationCategory>> = {
       [OperationType.NORMAL]: OperationCategory.RISCO,
       [OperationType.FREEBET_GEN]: OperationCategory.GERACAO,
       [OperationType.EXTRACAO]: OperationCategory.CONVERSAO,
@@ -39,7 +39,7 @@ export class OperationsService {
       [OperationType.BOOST_30]: OperationCategory.BOOST,
       [OperationType.BOOST_50]: OperationCategory.BOOST,
     };
-    return mapping[type];
+    return mapping[type] || OperationCategory.RISCO;
   }
 
   async findAll(userId: string, role: UserRole, options: { page: number, limit: number, status?: OperationStatus, startDate?: string, endDate?: string, search?: string }) {
@@ -523,10 +523,18 @@ export class OperationsService {
       if (!updateDto.freebetId) {
         throw new BadRequestException('Operações de extração exigem uma freebet vinculada');
       }
+
       const fb = await this.prisma.freebet.findUnique({ where: { id: updateDto.freebetId } });
       const benefitBet = updateDto.bets.find(b => b.type === 'Freebet' || b.isBenefit);
-      if (!fb || (benefitBet && fb.accountId !== benefitBet.accountId)) {
-        throw new BadRequestException('A freebet selecionada não existe ou não pertence à conta da operação de extração');
+      
+      // If editing an existing EXTRACAO, it might already be linked to THIS operation.
+      // We only validate account mismatch if it's a NEW freebet or accounts changed.
+      if (!fb) {
+        throw new BadRequestException('A freebet selecionada não existe');
+      }
+      
+      if (benefitBet && fb.accountId !== benefitBet.accountId) {
+        throw new BadRequestException('A freebet selecionada não pertence à conta da operação de extração');
       }
     }
 
