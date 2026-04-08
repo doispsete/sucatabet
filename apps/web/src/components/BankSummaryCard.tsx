@@ -59,8 +59,8 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
   });
 
   const amountPaidMonth = Number(summary.monthlyExpenses) || 0;
-  const amountPendingMonth = pendingExpensesCurrentMonth.reduce((acc: number, e: any) => acc + (Number(e.amount) || 0), 0);
-  const totalMonth = amountPaidMonth + amountPendingMonth;
+  const amountPendingMonth = pendingExpensesCurrentMonth.reduce((acc: number, e: any) => acc + (parseFloat(String(e.amount)) || 0), 0);
+  const totalMonth = Number(amountPaidMonth) + Number(amountPendingMonth);
 
   // Cálculos de Banca e Patrimônio
   const bancaTotal = summary.totalInAccounts || 0;

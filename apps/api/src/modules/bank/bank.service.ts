@@ -206,12 +206,12 @@ export class BankService {
     });
 
     return {
-      balance,
-      totalInAccounts,
-      totalPatrimony,
-      monthlyGrossProfit,
-      monthlyExpenses,
-      monthlyNetProfit,
+      balance: Number(balance),
+      totalInAccounts: Number(totalInAccounts),
+      totalPatrimony: Number(totalPatrimony),
+      monthlyGrossProfit: Number(monthlyGrossProfit),
+      monthlyExpenses: Number(monthlyExpenses),
+      monthlyNetProfit: Number(monthlyNetProfit),
       recentTransactions,
       nextExpenses,
       compassData: {
