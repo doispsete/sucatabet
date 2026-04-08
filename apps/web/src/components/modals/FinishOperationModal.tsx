@@ -73,11 +73,12 @@ export function FinishOperationModal({ isOpen, onClose, operation, onSuccess, on
     const rawO = parseFloat(bet.odds.toString()) || 1;
     if (!operation) return rawO;
     const type = operation.type as OperationType;
-    const isBoostOperation = type === OperationType.BOOST_25 || type === OperationType.BOOST_50;
+    const isBoostOperation = type === OperationType.BOOST_25 || type === OperationType.BOOST_30 || type === OperationType.BOOST_50;
     const isBoostBet = bet.type === 'Aumento' || bet.expectedProfit === -1;
 
     if (isBoostOperation && isBoostBet) {
       if (type === OperationType.BOOST_25) return (rawO - 1) * 1.25 + 1;
+      if (type === OperationType.BOOST_30) return (rawO - 1) * 1.30 + 1;
       if (type === OperationType.BOOST_50) return (rawO - 1) * 1.50 + 1;
     }
     return rawO;
