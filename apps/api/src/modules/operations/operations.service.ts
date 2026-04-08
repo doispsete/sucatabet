@@ -39,7 +39,14 @@ export class OperationsService {
       [OperationType.BOOST_30]: OperationCategory.BOOST,
       [OperationType.BOOST_50]: OperationCategory.BOOST,
     };
-    return mapping[type] || OperationCategory.RISCO;
+    
+    // Fallback para tipos legados que podem estar no banco mas foram removidos do enum
+    const fallbackMap: Record<string, OperationCategory> = {
+      'SUPERODDS': OperationCategory.BOOST,
+      'TENTATIVA_DUPLO': OperationCategory.RISCO
+    };
+
+    return mapping[type] || fallbackMap[type as string] || OperationCategory.RISCO;
   }
 
   async findAll(userId: string, role: UserRole, options: { page: number, limit: number, status?: OperationStatus, startDate?: string, endDate?: string, search?: string }) {
@@ -479,8 +486,7 @@ export class OperationsService {
     }
     
     return this.prisma.$transaction(async (tx) => {
-      const now = new Date();
-      const startOfWeek = getStartOfWeekBR(now);
+      const reversionWeekStart = getStartOfWeekBR(operation.createdAt);
 
       for (const bet of operation.bets) {
         // Reverter impacto no saldo da conta
@@ -493,12 +499,15 @@ export class OperationsService {
         });
 
         // Reverter impacto no WeeklyClub (APENAS SE FOR 365)
-        const is365 = (bet.account as any)?.bettingHouse?.name?.toLowerCase().includes('365');
+        const is365 = (bet.account as any)?.bettingHouse?.name?.toLowerCase() === 'bet365';
         if (is365) {
-          await tx.weeklyClub.update({
-            where: { accountId_weekStart: { accountId: bet.accountId, weekStart: startOfWeek } },
+          await tx.weeklyClub.updateMany({
+            where: { 
+              accountId: bet.accountId, 
+              weekStart: reversionWeekStart 
+            },
             data: { totalStake: { decrement: bet.stake } }
-          }).catch(() => null);
+          });
         }
       }
       
@@ -684,6 +693,17 @@ export class OperationsService {
           generatedFbValue: updateDto.generatedFbValue ? new Prisma.Decimal(updateDto.generatedFbValue) : null,
         } as any,
       });
+
+      // Se for Extração, garante o vínculo com a Freebet (se mudou ou é nova)
+      if (updateDto.type === OperationType.EXTRACAO && updateDto.freebetId) {
+        await tx.freebet.update({
+          where: { id: updateDto.freebetId },
+          data: { 
+            operationId: id,
+            usedAt: new Date().toISOString()
+          }
+        });
+      }
 
       await this.auditLogs.log('UPDATE', 'Operation', id, userId, existingOperation, updated, tx);
       await this.clearUserDashboardCache(userId, role);
