@@ -529,15 +529,15 @@ export class OperationsService {
     }
 
     if (updateDto.type === OperationType.EXTRACAO) {
-      if (!updateDto.freebetId && !existingOperation.freebet) {
+      const targetFreebetId = updateDto.freebetId || existingOperation.freebet?.id;
+      
+      if (!targetFreebetId) {
         throw new BadRequestException('Operações de extração exigem uma freebet vinculada');
       }
 
-      const fb = await this.prisma.freebet.findUnique({ where: { id: updateDto.freebetId } });
+      const fb = await this.prisma.freebet.findUnique({ where: { id: targetFreebetId } });
       const benefitBet = updateDto.bets.find(b => b.type === 'Freebet' || b.isBenefit);
       
-      // If editing an existing EXTRACAO, it might already be linked to THIS operation.
-      // We only validate account mismatch if it's a NEW freebet or accounts changed.
       if (!fb) {
         throw new BadRequestException('A freebet selecionada não existe');
       }
