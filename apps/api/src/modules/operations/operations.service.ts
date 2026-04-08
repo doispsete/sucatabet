@@ -24,6 +24,7 @@ export class OperationsService {
     const rawO = new Prisma.Decimal(odds);
     if (betType === 'Aumento') {
       if (opType === OperationType.BOOST_25) return rawO.minus(1).mul(1.25).plus(1);
+      if (opType === OperationType.BOOST_30) return rawO.minus(1).mul(1.30).plus(1);
       if (opType === OperationType.BOOST_50) return rawO.minus(1).mul(1.50).plus(1);
     }
     return rawO;
@@ -35,6 +36,7 @@ export class OperationsService {
       [OperationType.FREEBET_GEN]: OperationCategory.GERACAO,
       [OperationType.EXTRACAO]: OperationCategory.CONVERSAO,
       [OperationType.BOOST_25]: OperationCategory.BOOST,
+      [OperationType.BOOST_30]: OperationCategory.BOOST,
       [OperationType.BOOST_50]: OperationCategory.BOOST,
       [OperationType.SUPERODDS]: OperationCategory.BOOST,
       [OperationType.TENTATIVA_DUPLO]: OperationCategory.RISCO,
@@ -71,6 +73,7 @@ export class OperationsService {
         [OperationType.FREEBET_GEN]: ['gerar', 'freebet', 'geracao', 'frebet'],
         [OperationType.EXTRACAO]: ['extracao', 'conversao', 'extração'],
         [OperationType.BOOST_25]: ['aumento', 'boost', '25'],
+        [OperationType.BOOST_30]: ['aumento', 'boost', '30'],
         [OperationType.BOOST_50]: ['aumento', 'boost', '50'],
         [OperationType.SUPERODDS]: ['super', 'odds'],
         [OperationType.TENTATIVA_DUPLO]: ['tentativa', 'duplo']
