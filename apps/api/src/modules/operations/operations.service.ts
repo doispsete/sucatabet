@@ -75,7 +75,7 @@ export class OperationsService {
       const normalizedSearch = search.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       
       // Keywords mapping for OperationType search
-      const typeKeywords: Record<OperationType, string[]> = {
+      const typeKeywords: Partial<Record<OperationType, string[]>> = {
         [OperationType.NORMAL]: ['normal'],
         [OperationType.FREEBET_GEN]: ['gerar', 'freebet', 'geracao', 'frebet'],
         [OperationType.EXTRACAO]: ['extracao', 'conversao', 'extração'],
