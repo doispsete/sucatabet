@@ -40,6 +40,7 @@ export class CreateOperationDto {
   @ValidateNested({ each: true })
   @Type(() => BetDto)
   @ArrayMinSize(1)
+  @IsArray()
   bets: BetDto[];
 
   @IsUUID()
@@ -54,6 +55,8 @@ export class CreateOperationDto {
   @IsOptional()
   generatedFbValue?: number;
 }
+
+export class UpdateOperationDto extends CreateOperationDto {}
 
 export class CloseOperationDto {
   @IsEnum(OperationStatus)
