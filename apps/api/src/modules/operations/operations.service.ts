@@ -526,193 +526,195 @@ export class OperationsService {
     });
   }
 
-  async update(id: string, userId: string, role: UserRole, updateDto: CreateOperationDto) {
-    const existingOperation = await this.findOne(id, userId, role);
-    if (existingOperation.status !== OperationStatus.PENDING) {
-      throw new BadRequestException('Apenas operações pendentes podem ser editadas');
-    }
-
-    if (updateDto.type === OperationType.EXTRACAO) {
-      const targetFreebetId = updateDto.freebetId || existingOperation.freebet?.id;
-      
-      if (!targetFreebetId) {
-        throw new BadRequestException('Operações de extração exigem uma freebet vinculada');
+    try {
+      const existingOperation = await this.findOne(id, userId, role);
+      if (existingOperation.status !== OperationStatus.PENDING) {
+        throw new BadRequestException('Apenas operações pendentes podem ser editadas');
       }
 
-      const fb = await this.prisma.freebet.findUnique({ where: { id: targetFreebetId } });
-      const benefitBet = updateDto.bets.find(b => b.type === 'Freebet' || b.isBenefit);
-      
-      if (!fb) {
-        throw new BadRequestException('A freebet selecionada não existe');
-      }
-      
-      if (benefitBet && fb.accountId !== benefitBet.accountId) {
-        throw new BadRequestException('A freebet selecionada não pertence à conta da operação de extração');
-      }
-    }
+      const rawType = updateDto.type as string;
 
-    const category = this.getCategory(updateDto.type);
-
-    return this.prisma.$transaction(async (tx) => {
-      const now = new Date();
-      const startOfWeek = getStartOfWeekBR(now);
-
-      const reversionWeekStart = getStartOfWeekBR(existingOperation.createdAt);
-
-      // 1. Reverter impactos de saldo e WeeklyClub das bets antigas
-      for (const bet of existingOperation.bets) {
-        await tx.account.update({
-          where: { id: bet.accountId },
-          data: {
-            inOperation: { decrement: bet.cost },
-            balance: { increment: bet.cost },
-          },
-        });
-
-        const is365 = (bet.account as any)?.bettingHouse?.name?.toLowerCase() === 'bet365';
-        if (is365) {
-          // Usamos updateMany para evitar erro P2025 (registro pesquisado para atualização não encontrado)
-          // que abortaria toda a transação caso a entrada do WeeklyClub não exista mais.
-          // Importante: usamos reversionWeekStart (baseado na data de criação da operação original)
-          await tx.weeklyClub.updateMany({
-            where: { 
-              accountId: bet.accountId, 
-              weekStart: reversionWeekStart 
-            },
-            data: { totalStake: { decrement: bet.stake } }
-          });
-        }
-      }
-
-      // 2. Deletar bets antigas
-      await tx.bet.deleteMany({ where: { operationId: id } });
-
-      // 3. Processar novas bets
-      const totalCost = updateDto.bets.reduce((acc, b) => {
-        const stake = new Prisma.Decimal(b.stake);
-        const odds = new Prisma.Decimal(b.odds);
-        if (b.side?.toUpperCase() === 'LAY') return acc.plus(stake.mul(odds.minus(1)));
-        return acc.plus(b.type === 'Freebet' ? 0 : stake);
-      }, new Prisma.Decimal(0));
-
-      const betsToCreate: any[] = [];
-      let operationExpectedProfit = new Prisma.Decimal(0);
-
-      for (let i = 0; i < updateDto.bets.length; i++) {
-        const betDto = updateDto.bets[i];
-        const odds = new Prisma.Decimal(betDto.odds);
-        const stake = new Prisma.Decimal(betDto.stake);
-        const comm = new Prisma.Decimal(betDto.commission || 0).div(100);
+      if (rawType === 'EXTRACAO') {
+        const targetFreebetId = updateDto.freebetId || existingOperation.freebet?.id;
         
-        let effOdds = this.getEffectiveOdds(updateDto.type, betDto.type, odds);
-
-        let betWinNet = new Prisma.Decimal(0);
-        let betReturn = new Prisma.Decimal(0);
-        let cost = new Prisma.Decimal(0);
-
-        const side = (betDto.side || 'BACK').toUpperCase();
-        if (side === 'LAY') {
-          betWinNet = stake.mul(new Prisma.Decimal(1).minus(comm));
-          cost = stake.mul(odds.minus(1));
-          betReturn = cost.plus(betWinNet);
-        } else {
-          betWinNet = effOdds.minus(1).mul(stake).mul(new Prisma.Decimal(1).minus(comm));
-          const isFree = betDto.type === 'Freebet';
-          cost = isFree ? new Prisma.Decimal(0) : stake;
-          betReturn = cost.plus(betWinNet);
+        if (!targetFreebetId) {
+          throw new BadRequestException('Operações de extração exigem uma freebet vinculada');
         }
 
-        if (i === 0) {
-            operationExpectedProfit = betReturn.minus(totalCost);
+        const fb = await this.prisma.freebet.findUnique({ where: { id: targetFreebetId } });
+        const benefitBet = updateDto.bets.find(b => b.type === 'Freebet' || b.isBenefit);
+        
+        if (!fb) {
+          throw new BadRequestException('A freebet selecionada não existe');
         }
         
-        betsToCreate.push({
-          ...betDto,
-          expectedProfit: betWinNet,
-          cost
-        });
+        if (benefitBet && fb.accountId !== benefitBet.accountId) {
+          throw new BadRequestException('A freebet selecionada não pertence à conta da operação de extração');
+        }
       }
 
-      // 4. Criar novas bets e aplicar novos impactos de saldo
-      const accountsToUpdateInClub: Set<string> = new Set();
-      
-      for (const bet of betsToCreate) {
-        await tx.bet.create({
-          data: {
-            odds: bet.odds,
-            stake: bet.stake,
-            cost: bet.cost,
-            expectedProfit: bet.expectedProfit,
-            side: bet.side.toUpperCase(),
-            type: bet.type,
-            operationId: id,
-            accountId: bet.accountId,
-            commission: (bet as any).commission || 0,
-            isBenefit: (bet as any).isBenefit || false,
-          },
-        });
+      const category = this.getCategory(updateDto.type);
 
-        // Update Account Balance
-        if (bet.cost.gt(0)) {
+      return await this.prisma.$transaction(async (tx) => {
+        const now = new Date();
+        const startOfWeek = getStartOfWeekBR(now);
+        const reversionWeekStart = getStartOfWeekBR(existingOperation.createdAt);
+
+        // 1. Reverter impactos de saldo e WeeklyClub das bets antigas
+        for (const bet of existingOperation.bets) {
           await tx.account.update({
             where: { id: bet.accountId },
             data: {
-              inOperation: { increment: bet.cost },
-              balance: { decrement: bet.cost },
+              inOperation: { decrement: bet.cost },
+              balance: { increment: bet.cost },
             },
           });
+
+          const is365 = (bet.account as any)?.bettingHouse?.name?.toLowerCase() === 'bet365';
+          if (is365) {
+            await tx.weeklyClub.updateMany({
+              where: { accountId: bet.accountId, weekStart: reversionWeekStart },
+              data: { totalStake: { decrement: bet.stake } }
+            });
+          }
         }
-        
-        accountsToUpdateInClub.add(bet.accountId);
-      }
 
-      // 5. Atualizar progressos do WeeklyClub (Apenas 365)
-      const accountsInvolved = await tx.account.findMany({
-        where: { id: { in: Array.from(accountsToUpdateInClub) } },
-        include: { bettingHouse: true }
-      });
+        // 2. Deletar bets antigas
+        await tx.bet.deleteMany({ where: { operationId: id } });
 
-      for (const account of accountsInvolved) {
-        if (account.bettingHouse.name.toLowerCase() === 'bet365') {
-          const totalStakeForAccount = betsToCreate
-            .filter(b => b.accountId === account.id)
-            .reduce((sum, b) => sum.plus(new Prisma.Decimal(b.stake)), new Prisma.Decimal(0));
-            
-          await tx.weeklyClub.upsert({
-            where: { accountId_weekStart: { accountId: account.id, weekStart: startOfWeek } },
-            update: { totalStake: { increment: totalStakeForAccount } },
-            create: { accountId: account.id, weekStart: startOfWeek, totalStake: totalStakeForAccount },
+        // 3. Processar novas bets
+        const totalCost = (updateDto.bets || []).reduce((acc, b) => {
+          const stake = new Prisma.Decimal(b.stake || 0);
+          const odds = new Prisma.Decimal(b.odds || 1);
+          if (b.side?.toUpperCase() === 'LAY') return acc.plus(stake.mul(odds.minus(1)));
+          return acc.plus(b.type === 'Freebet' ? 0 : stake);
+        }, new Prisma.Decimal(0));
+
+        const betsToCreate: any[] = [];
+        let operationExpectedProfit = new Prisma.Decimal(0);
+
+        for (let i = 0; i < updateDto.bets.length; i++) {
+          const betDto = updateDto.bets[i];
+          const odds = new Prisma.Decimal(betDto.odds || 1);
+          const stake = new Prisma.Decimal(betDto.stake || 0);
+          const comm = new Prisma.Decimal(betDto.commission || 0).div(100);
+          
+          let effOdds = this.getEffectiveOdds(updateDto.type, betDto.type, odds);
+
+          let betWinNet = new Prisma.Decimal(0);
+          let betReturn = new Prisma.Decimal(0);
+          let cost = new Prisma.Decimal(0);
+
+          const side = (betDto.side || 'BACK').toUpperCase();
+          if (side === 'LAY') {
+            betWinNet = stake.mul(new Prisma.Decimal(1).minus(comm));
+            cost = stake.mul(odds.minus(1));
+            betReturn = cost.plus(betWinNet);
+          } else {
+            betWinNet = effOdds.minus(1).mul(stake).mul(new Prisma.Decimal(1).minus(comm));
+            const isFree = betDto.type === 'Freebet';
+            cost = isFree ? new Prisma.Decimal(0) : stake;
+            betReturn = cost.plus(betWinNet);
+          }
+
+          if (i === 0) {
+              operationExpectedProfit = betReturn.minus(totalCost);
+          }
+          
+          betsToCreate.push({
+            ...betDto,
+            expectedProfit: betWinNet,
+            cost
           });
         }
-      }
 
-      // 6. Atualizar cabeçalho da operação
-      const updated = await tx.operation.update({
-        where: { id },
-        data: {
-          type: updateDto.type,
-          category,
-          expectedProfit: operationExpectedProfit,
-          description: updateDto.description,
-          generatedFbValue: (updateDto.generatedFbValue && !isNaN(updateDto.generatedFbValue)) ? new Prisma.Decimal(updateDto.generatedFbValue) : null,
-        } as any,
-      });
+        // 4. Criar novas bets e aplicar saldo
+        const accountsToUpdateInClub: Set<string> = new Set();
+        
+        for (const bet of betsToCreate) {
+          await tx.bet.create({
+            data: {
+              odds: bet.odds,
+              stake: bet.stake,
+              cost: bet.cost,
+              expectedProfit: bet.expectedProfit,
+              side: (bet.side || 'BACK').toUpperCase(),
+              type: bet.type,
+              operationId: id,
+              accountId: bet.accountId,
+              commission: bet.commission || 0,
+              isBenefit: bet.isBenefit || false,
+            },
+          });
 
-      // Se for Extração, garante o vínculo com a Freebet (se mudou ou é nova)
-      if (updateDto.type === OperationType.EXTRACAO && updateDto.freebetId) {
-        await tx.freebet.update({
-          where: { id: updateDto.freebetId },
-          data: { 
-            operationId: id,
-            usedAt: new Date().toISOString()
+          if (bet.cost.gt(0)) {
+            await tx.account.update({
+              where: { id: bet.accountId },
+              data: {
+                inOperation: { increment: bet.cost },
+                balance: { decrement: bet.cost },
+              },
+            });
           }
+          accountsToUpdateInClub.add(bet.accountId);
+        }
+
+        // 5. WeeklyClub
+        const accountsInvolved = await tx.account.findMany({
+          where: { id: { in: Array.from(accountsToUpdateInClub) } },
+          include: { bettingHouse: true }
         });
+
+        for (const account of accountsInvolved) {
+          if (account.bettingHouse.name.toLowerCase() === 'bet365') {
+            const totalStakeForAccount = betsToCreate
+              .filter(b => b.accountId === account.id)
+              .reduce((sum, b) => sum.plus(new Prisma.Decimal(b.stake || 0)), new Prisma.Decimal(0));
+              
+            await tx.weeklyClub.upsert({
+              where: { accountId_weekStart: { accountId: account.id, weekStart: startOfWeek } },
+              update: { totalStake: { increment: totalStakeForAccount } },
+              create: { accountId: account.id, weekStart: startOfWeek, totalStake: totalStakeForAccount },
+            });
+          }
+        }
+
+        // 6. Final Update
+        const safeFbVal = (updateDto.generatedFbValue !== undefined && updateDto.generatedFbValue !== null && !isNaN(updateDto.generatedFbValue)) 
+          ? new Prisma.Decimal(updateDto.generatedFbValue) 
+          : null;
+
+        const updated = await tx.operation.update({
+          where: { id },
+          data: {
+            type: updateDto.type,
+            category: category,
+            expectedProfit: operationExpectedProfit,
+            description: updateDto.description,
+            generatedFbValue: safeFbVal,
+          } as any,
+        });
+
+        if (rawType === 'EXTRACAO' && updateDto.freebetId) {
+          await tx.freebet.update({
+            where: { id: updateDto.freebetId },
+            data: { 
+              operationId: id,
+              usedAt: new Date().toISOString()
+            }
+          });
+        }
+
+        await this.auditLogs.log('UPDATE', 'Operation', id, userId, existingOperation, updated, tx);
+        await this.clearUserDashboardCache(userId, role);
+        return updated;
+      });
+    } catch (error) {
+      console.error('[OperationsService.update] FATAL ERROR:', error);
+      if (error instanceof BadRequestException || error instanceof NotFoundException || error instanceof ForbiddenException) {
+        throw error;
       }
+      throw new BadRequestException('Erro interno ao atualizar operação. Detalhes nos logs do servidor.');
+    }
 
-      await this.auditLogs.log('UPDATE', 'Operation', id, userId, existingOperation, updated, tx);
-      await this.clearUserDashboardCache(userId, role);
-
-      return updated;
-    });
-  }
 }
