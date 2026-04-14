@@ -15,6 +15,7 @@ RUN npm install --legacy-peer-deps
 
 # Copia o schema do Prisma, config e o código fonte da API
 COPY apps/api/prisma ./apps/api/prisma
+COPY apps/api/prisma.config.ts ./apps/api/
 COPY apps/api/src ./apps/api/src
 COPY apps/api/tsconfig.json ./apps/api/
 COPY apps/api/tsconfig.build.json ./apps/api/
@@ -45,6 +46,8 @@ COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/clie
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 # 4. apps/api/prisma (pasta completa com migrations e schema)
 COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
+# 5. apps/api/prisma.config.ts
+COPY --from=builder /app/apps/api/prisma.config.ts ./apps/api/prisma.config.ts
 # 6. apps/api/package.json
 COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
 
