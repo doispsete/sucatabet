@@ -51,6 +51,12 @@ COPY --from=builder /app/apps/api/prisma.config.ts ./apps/api/prisma.config.ts
 # 6. apps/api/package.json
 COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
 
+# Cria arquivo de log e define permissões
+RUN touch /app/error.log && chown nestjs:nodejs /app/error.log
+
+# Define permissões para a pasta prisma (necessária para o migrate deploy)
+RUN chown -R nestjs:nodejs /app/apps/api/prisma
+
 # Define permissões
 USER nestjs
 
