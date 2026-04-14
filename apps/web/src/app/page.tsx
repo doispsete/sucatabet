@@ -27,6 +27,94 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { BankSummaryCard } from "@/components/BankSummaryCard";
 import { DepositWithdrawModal } from "@/components/modals/DepositWithdrawModal";
 
+// --- Utility functions and Sub-components moved outside to prevent re-mounting and re-evaluating ---
+
+const groupPerformanceData = (data: any[]) => {
+  if (!data || data.length === 0) return [];
+
+  // Choose targetPoints based on period length
+  const days = data.length;
+  let targetPoints;
+
+  if (days <= 15) targetPoints = days; // 1 to 15 points
+  else if (days <= 35) targetPoints = 15; // ~Monthly: 15 points
+  else if (days <= 65) targetPoints = 20; // ~2 Months: 20 points
+  else if (days <= 95) targetPoints = 25; // ~3 Months: 25 points
+  else targetPoints = 30; // Longer periods: 30 points (e.g. 120 days)
+
+  // Ensure we don't have more points than days
+  if (targetPoints > days) targetPoints = days;
+
+  const groups = [];
+  const groupSize = data.length / targetPoints;
+
+  for (let i = 0; i < targetPoints; i++) {
+    const start = Math.floor(i * groupSize);
+    const end = (i === targetPoints - 1) ? data.length : Math.floor((i + 1) * groupSize);
+    const slice = data.slice(start, end);
+
+    if (slice.length === 0) continue;
+
+    const sum = slice.reduce((acc, curr) => acc + (curr.value || 0), 0);
+    const count = slice.reduce((acc, curr) => acc + (curr.count || 0), 0);
+    const volume = slice.reduce((acc, curr) => acc + (curr.volume || 0), 0);
+
+    const bestDay = slice.reduce((prev, curr) => (curr.value || 0) > (prev.value || 0) ? curr : prev, slice[0]);
+
+    const label = slice.length > 1
+      ? `${slice[0].label} - ${slice[slice.length - 1].label}`
+      : `${slice[0].label}`;
+
+    groups.push({
+      label,
+      value: sum,
+      count,
+      volume,
+      bestDay,
+      items: slice
+    });
+  }
+  return groups;
+};
+
+// --- Sub-components moved outside to prevent re-mounting on every render ---
+
+const TiltCard = ({ children, className, glowColor = "#00ff88" }: { children: React.ReactNode, className?: string, glowColor?: string }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 25;
+    const rotateY = (centerX - x) / 25;
+
+    cardRef.current.style.setProperty("--rx", `${rotateX}deg`);
+    cardRef.current.style.setProperty("--ry", `${rotateY}deg`);
+  };
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.setProperty("--rx", "0deg");
+    cardRef.current.style.setProperty("--ry", "0deg");
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={`glass-card p-6 rounded-3xl transition-all duration-300 card-interact ${className}`}
+      style={{ transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))", transformStyle: "preserve-3d", perspective: "1000px" } as any}
+    >
+      {children}
+    </div>
+  );
+};
+
 export default function DashboardPage() {
   const [startDate, setStartDate] = useState<string | null>(() => {
     const d = new Date();
@@ -61,41 +149,6 @@ export default function DashboardPage() {
     return () => window.removeEventListener('operation-created', handleCreated);
   }, [refetchSummary, refetchClub]);
 
-  const TiltCard = ({ children, className, glowColor = "#00ff88" }: { children: React.ReactNode, className?: string, glowColor?: string }) => {
-    const cardRef = useRef<HTMLDivElement>(null);
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!cardRef.current) return;
-      const rect = cardRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = (y - centerY) / 25;
-      const rotateY = (centerX - x) / 25;
-
-      cardRef.current.style.setProperty("--rx", `${rotateX}deg`);
-      cardRef.current.style.setProperty("--ry", `${rotateY}deg`);
-    };
-
-    const handleMouseLeave = () => {
-      if (!cardRef.current) return;
-      cardRef.current.style.setProperty("--rx", "0deg");
-      cardRef.current.style.setProperty("--ry", "0deg");
-    };
-
-    return (
-      <div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className={`glass-card p-6 rounded-3xl transition-all duration-300 card-interact ${className}`}
-        style={{ transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))", transformStyle: "preserve-3d", perspective: "1000px" }}
-      >
-        {children}
-      </div>
-    );
-  }
 
   if (errorSummary || errorClub) {
     return (
@@ -130,59 +183,14 @@ export default function DashboardPage() {
 
   if (!summary || !club) return null;
 
-  const rawPerformance = summary.performance?.[perfPeriod] || [];
+  const currentPerformance = useMemo(() => {
+    if (!summary?.performance?.[perfPeriod]) return [];
+    return groupPerformanceData(summary.performance[perfPeriod]);
+  }, [summary, perfPeriod]);
 
-  // Group logic: Adaptive to range length
-  const groupPerformanceData = (data: any[]) => {
-    if (!data || data.length === 0) return [];
-
-    // Choose targetPoints based on period length
-    const days = data.length;
-    let targetPoints;
-
-    if (days <= 15) targetPoints = days; // 1 to 15 points
-    else if (days <= 35) targetPoints = 15; // ~Monthly: 15 points
-    else if (days <= 65) targetPoints = 20; // ~2 Months: 20 points
-    else if (days <= 95) targetPoints = 25; // ~3 Months: 25 points
-    else targetPoints = 30; // Longer periods: 30 points (e.g. 120 days)
-
-    // Ensure we don't have more points than days
-    if (targetPoints > days) targetPoints = days;
-
-    const groups = [];
-    const groupSize = data.length / targetPoints;
-
-    for (let i = 0; i < targetPoints; i++) {
-      const start = Math.floor(i * groupSize);
-      const end = (i === targetPoints - 1) ? data.length : Math.floor((i + 1) * groupSize);
-      const slice = data.slice(start, end);
-
-      if (slice.length === 0) continue;
-
-      const sum = slice.reduce((acc, curr) => acc + (curr.value || 0), 0);
-      const count = slice.reduce((acc, curr) => acc + (curr.count || 0), 0);
-      const volume = slice.reduce((acc, curr) => acc + (curr.volume || 0), 0);
-
-      const bestDay = slice.reduce((prev, curr) => (curr.value || 0) > (prev.value || 0) ? curr : prev, slice[0]);
-
-      const label = slice.length > 1
-        ? `${slice[0].label} - ${slice[slice.length - 1].label}`
-        : `${slice[0].label}`;
-
-      groups.push({
-        label,
-        value: sum,
-        count,
-        volume,
-        bestDay,
-        items: slice
-      });
-    }
-    return groups;
-  };
-
-  const currentPerformance = groupPerformanceData(rawPerformance);
-  const maxPerfValue = Math.max(...currentPerformance.map((p: any) => Math.abs(p.value)), 1);
+  const maxPerfValue = useMemo(() => 
+    Math.max(...currentPerformance.map((p: any) => Math.abs(p.value)), 1),
+  [currentPerformance]);
 
   return (
     <div className="space-y-8 px-3 md:px-6">

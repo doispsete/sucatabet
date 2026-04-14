@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '../api/services';
 import { AuthUser, UserRole } from '../api/types';
@@ -24,12 +24,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function initAuth() {
       try {
-        // Sempre tenta buscar o usuário. Se houver cookie httpOnly, o navegador enviará.
-        // Se não houver, a API retornará 401 e o catch tratará.
         const me = await authService.me();
         setUser(me);
       } catch {
-        // O middleware.ts é o único responsável por redirecionar para /login.
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -38,17 +35,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
       const response = await authService.login({ email, password }) as any;
-      
-      // Armazena o token via localStorage para o client.ts e cookie para o middleware
       if (response.access_token) {
         localStorage.setItem('access_token', response.access_token);
         document.cookie = `access_token=${response.access_token}; path=/; max-age=28800; SameSite=Lax`;
       }
-      
       setUser(response.user);
       router.push('/');
     } catch (error) {
@@ -57,33 +51,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
-      await authService.logout().catch(() => {}); // Final logout attempt
+      await authService.logout().catch(() => {});
     } finally {
       setUser(null);
-      // Remove o token
       localStorage.removeItem('access_token');
       document.cookie = `access_token=; path=/; max-age=0`;
       router.push('/login');
     }
-  };
+  }, [router]);
 
-  const refetch = async () => {
+  const refetch = useCallback(async () => {
     try {
       const me = await authService.me();
       setUser(me);
     } catch (error) {
       setUser(null);
     }
-  };
+  }, []);
 
-  const isAdmin = user?.role === UserRole.ADMIN;
+  const isAdmin = useMemo(() => user?.role === UserRole.ADMIN, [user]);
+
+  const value = useMemo(() => ({ 
+    user, 
+    isLoading, 
+    isAdmin, 
+    login, 
+    logout, 
+    refetch 
+  }), [user, isLoading, isAdmin, login, logout, refetch]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isAdmin, login, logout, refetch }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

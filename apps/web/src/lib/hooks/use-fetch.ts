@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 
 export function useFetch<T>(
   fetcher: () => Promise<T>,
@@ -69,5 +69,12 @@ export function useFetch<T>(
     return () => window.removeEventListener('refetch-data', handleGlobalRefetch);
   }, [fetch]);
 
-  return { data, isLoading, error, refetch: () => fetch(true) };
+  const refetch = useCallback(() => fetch(true), [fetch]);
+
+  return useMemo(() => ({ 
+    data, 
+    isLoading, 
+    error, 
+    refetch 
+  }), [data, isLoading, error, refetch]);
 }

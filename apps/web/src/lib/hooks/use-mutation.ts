@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { ApiError } from '../api/client';
 
 export function useMutation<TPayload, TResult>(
@@ -32,5 +32,12 @@ export function useMutation<TPayload, TResult>(
     }
   }, [mutator, onSuccess]);
 
-  return { mutate, isMutating, mutationError, clearError: () => setMutationError(null) };
+  const clearError = useCallback(() => setMutationError(null), []);
+
+  return useMemo(() => ({ 
+    mutate, 
+    isMutating, 
+    mutationError, 
+    clearError 
+  }), [mutate, isMutating, mutationError, clearError]);
 }
