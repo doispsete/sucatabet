@@ -31,7 +31,11 @@ EXCEPTION
 END $$;
 
 -- 3. Garantir que colunas críticas são ENUNS e não TEXT (Prevenção de Erro de Produção)
--- Tabela User
+-- Tabela User (Fixing legacy values BEFORE casting)
+UPDATE "User" SET "role" = 'OPERATOR' WHERE "role"::text = 'USER';
+UPDATE "User" SET "status" = 'ACTIVE' WHERE "status"::text = 'APPROVED';
+UPDATE "User" SET "status" = 'SUSPENDED' WHERE "status"::text = 'INACTIVE';
+
 ALTER TABLE "User" ALTER COLUMN "role" SET DATA TYPE "UserRole" USING "role"::text::"UserRole";
 ALTER TABLE "User" ALTER COLUMN "status" SET DATA TYPE "UserStatus" USING "status"::text::"UserStatus";
 ALTER TABLE "User" ALTER COLUMN "status" SET DEFAULT 'PENDING'::"UserStatus";
