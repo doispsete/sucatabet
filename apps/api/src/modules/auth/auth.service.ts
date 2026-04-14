@@ -44,44 +44,70 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: loginDto.email },
-    });
+    try {
+      console.log(`[AUTH] Tentativa de login para: ${loginDto.email}`);
+      const user = await this.prisma.user.findUnique({
+        where: { email: loginDto.email },
+      });
 
-    if (!user) {
-      throw new UnauthorizedException('Credenciais inválidas');
-    }
+      if (!user) {
+        console.warn(`[AUTH] Usuário não encontrado: ${loginDto.email}`);
+        throw new UnauthorizedException('Credenciais inválidas');
+      }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciais inválidas');
-    }
+      console.log(`[AUTH] Usuário encontrado. Validando senha...`);
+      const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+      if (!isPasswordValid) {
+        console.warn(`[AUTH] Senha inválida para: ${loginDto.email}`);
+        throw new UnauthorizedException('Credenciais inválidas');
+      }
 
-    // Validação de Status
-    if (user.status === UserStatus.PENDING) {
-      throw new ForbiddenException('Sua conta está aguardando aprovação.');
-    }
-    if (user.status === UserStatus.REJECTED) {
-      throw new ForbiddenException('Seu acesso foi negado. Entre em contato.');
-    }
-    if (user.status === UserStatus.SUSPENDED) {
-      throw new ForbiddenException('Sua conta está suspensa.');
-    }
-    if (user.status !== UserStatus.ACTIVE) {
-      throw new ForbiddenException('Conta inativa.');
-    }
+      console.log(`[AUTH] Senha ok. Validando status: ${user.status}`);
+      // Validação de Status
+      if (user.status === UserStatus.PENDING) {
+        throw new ForbiddenException('Sua conta está aguardando aprovação.');
+      }
+      if (user.status === UserStatus.REJECTED) {
+        throw new ForbiddenException('Seu acesso foi negado. Entre em contato.');
+      }
+      if (user.status === UserStatus.SUSPENDED) {
+        throw new ForbiddenException('Sua conta está suspensa.');
+      }
+      if (user.status !== UserStatus.ACTIVE) {
+        throw new ForbiddenException('Conta inativa.');
+      }
 
-    const payload = { sub: user.id, email: user.email, role: user.role, name: user.name, plan: user.plan };
-    return {
-      access_token: this.jwtService.sign(payload),
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        plan: user.plan,
-      },
-    };
+      console.log(`[AUTH] Status ok. Gerando token com plano: ${user.plan}`);
+      const payload = { 
+        sub: user.id, 
+        email: user.email, 
+        role: user.role, 
+        name: user.name, 
+        plan: user.plan 
+      };
+
+      const token = this.jwtService.sign(payload);
+      console.log(`[AUTH] Token gerado com sucesso.`);
+
+      return {
+        access_token: token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          plan: user.plan,
+        },
+      };
+    } catch (error) {
+      console.error('[AUTH_ERROR] Erro crítico no login:', error);
+      // Re-throw para o global exception filter se for uma exceção do Nest
+      if (error instanceof UnauthorizedException || error instanceof ForbiddenException) {
+        throw error;
+      }
+      // Se for erro interno (Prisma, etc), logamos e re-lançamos
+      throw error;
+    }
   }
 
   async refreshToken(user: any) {
