@@ -144,6 +144,18 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 </div>
               </div>
 
+              {/* Plan Info */}
+              <div className="space-y-1">
+                <span className="text-[7px] font-black text-[#b9cbbc]/40 uppercase tracking-widest ml-1">Plano Atual</span>
+                <div className="flex items-center justify-between px-3 py-2 bg-[#00ff88]/5 rounded-xl border border-[#00ff88]/20 h-9">
+                  <div className="flex items-center gap-2 text-[10px] text-[#00ff88] font-black">
+                    <Shield size={12} />
+                    <span>{user?.plan || 'FREE'}</span>
+                  </div>
+                  <span className="text-[8px] text-[#00ff88]/50 font-black uppercase tracking-tighter italic">Válido</span>
+                </div>
+              </div>
+
               <div className="w-full h-px bg-white/5 my-1" />
 
               {/* Password change fields (Optional) */}

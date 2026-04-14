@@ -78,3 +78,9 @@ export const formatTime = (date: Date | string | null): string => {
   
   return `${hours}:${minutes}`;
 };
+
+export const formatCpf6 = (cpf: string): string => {
+  if (!cpf) return "---.---";
+  const digits = cpf.replace(/\D/g, '').slice(0, 6);
+  return digits.replace(/(\d{3})(\d{0,3})/, (_, p1, p2) => p1 + (p2 ? '.' + p2 : ''));
+};

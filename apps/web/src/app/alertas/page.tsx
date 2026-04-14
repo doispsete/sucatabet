@@ -18,9 +18,9 @@ export default function AlertasPage() {
   const { data: summary, isLoading: summaryLoading } = useDashboardSummary();
   const { data: club, isLoading: clubLoading } = useDashboardClub();
   const { data: allFreebets } = useFreebets();
- 
+
   const summaryAlerts = summary?.freebetsExpirando || [];
-  
+
   // Combine with client-side filtered freebets (< 48h) to catch missed alerts
   const alerts = React.useMemo(() => {
     const now = Date.now();
@@ -73,7 +73,7 @@ export default function AlertasPage() {
             <div className="col-span-full">
               <div className="glass-card py-20 rounded-[32px] text-center border-dashed border-white/10 opacity-30">
                 <AlertCircle className="w-12 h-12 text-[#b9cbbc] mx-auto mb-4" />
-                <p className="text-[11px] font-black uppercase tracking-widest text-[#b9cbbc] italic">Nenhum risco</p>
+                <p className="text-[11px] font-black uppercase tracking-widest text-[#b9cbbc] italic"> Nenhum risco </p>
               </div>
             </div>
           ) : (

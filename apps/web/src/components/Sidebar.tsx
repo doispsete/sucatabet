@@ -12,11 +12,15 @@ import {
   LogOut,
   Wallet,
   Calculator,
-  Bell
+  Bell,
+  Gamepad2,
+  Zap
 } from "lucide-react";
 import { useAuth } from "@/lib/context/auth-context";
 import { useModal } from "@/lib/context/modal-context";
 import { ProfileModal } from "./modals/ProfileModal";
+import { PlansModal } from "./modals/PlansModal";
+import { CasinoModal } from "./modals/CasinoModal";
 
 interface SidebarProps {
   isMobile?: boolean;
@@ -31,6 +35,8 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
   const { logout, user, isAdmin, isLoading: isAuthLoading } = useAuth();
   const { openNewOperation } = useModal();
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+  const [isPlansOpen, setIsPlansOpen] = React.useState(false);
+  const [isCasinoOpen, setIsCasinoOpen] = React.useState(false);
   const activeCollapsed = isCollapsed || isHalf;
   
   const menuItems = [
@@ -38,6 +44,11 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
     { label: "Operações", href: "/operacoes", icon: Banknote },
     { label: "Freebets", href: "/freebets", icon: Ticket },
     { label: "Contas", href: "/contas", icon: Users },
+    { label: "Plano", onClick: () => setIsPlansOpen(true), icon: Zap },
+    ...(user?.plan === 'PRO' || isAdmin ? [
+      { label: "Banco", href: "/banco", icon: Wallet },
+      { label: "Cassino", onClick: () => setIsCasinoOpen(true), icon: Gamepad2 }
+    ] : []),
     ...(isAdmin ? [{ label: "Admin", href: "/admin", icon: ShieldCheck }] : []),
   ];
 
@@ -65,15 +76,12 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
       {/* Navigation */}
       <nav className="flex flex-col gap-y-2 w-full px-2">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = item.href ? pathname === item.href : false;
           const IconComponent = item.icon;
           
-          return (
-            <Link 
-              key={item.href} 
-              href={item.href}
-              onClick={() => isMobile && onClose?.()}
-              className={`flex items-center h-12 transition-all duration-300 group relative overflow-hidden rounded-xl w-full
+          const Content = (
+            <div
+              className={`flex items-center h-12 transition-all duration-300 group relative overflow-hidden rounded-xl w-full cursor-pointer
                 ${isActive 
                   ? "bg-[#00ff88]/10 text-[#00ff88]" 
                   : "text-[#B9CBBC] opacity-60 hover:opacity-100 hover:bg-white/10 hover:text-[#00ff88]"}`}
@@ -83,17 +91,37 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#00ff88] rounded-r-full shadow-[0_0_10px_rgba(0,255,136,0.5)] z-20" />
               )}
               
-              {/* Icon Slot - ABSOLUTELY FIXED POSITION */}
               <div className="flex items-center justify-center min-w-[48px] h-12 shrink-0 relative z-10">
                 <IconComponent className={`w-5 h-5 transition-transform duration-300 ${isActive ? "text-[#00ff88]" : "group-hover:scale-110 active:scale-90"}`} />
               </div>
 
-              {/* Text Label - Slid in from behind icon */}
               <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap
                 ${isWide ? 'opacity-100 translate-x-0 ml-1' : 'opacity-0 -translate-x-12 pointer-events-none'}`}>
                 {item.label}
               </span>
+            </div>
+          );
+
+          return item.href ? (
+            <Link 
+              key={item.href} 
+              href={item.href}
+              onClick={() => isMobile && onClose?.()}
+              className="w-full"
+            >
+              {Content}
             </Link>
+          ) : (
+            <div 
+              key={item.label} 
+              onClick={() => {
+                item.onClick?.();
+                isMobile && onClose?.()}
+              }
+              className="w-full"
+            >
+              {Content}
+            </div>
           );
         })}
 
@@ -148,7 +176,11 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
             ) : (
               <>
                 <span className="text-[11px] font-black text-white truncate uppercase tracking-tight italic whitespace-nowrap">{user?.name || 'Usuário'}</span>
-                <span className="text-[8px] text-[#00ff88] truncate uppercase tracking-[0.2em] font-black whitespace-nowrap">{user?.role || 'User'}</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[8px] text-[#00ff88] truncate uppercase tracking-[0.2em] font-black whitespace-nowrap">{user?.role || 'User'}</span>
+                  <span className="text-[8px] text-white/40 font-black">•</span>
+                  <span className="text-[8px] text-white/60 truncate uppercase tracking-[0.1em] font-black whitespace-nowrap">{user?.plan || 'FREE'}</span>
+                </div>
               </>
             )}
           </div>
@@ -174,6 +206,16 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
       <ProfileModal 
         isOpen={isProfileOpen} 
         onClose={() => setIsProfileOpen(false)} 
+      />
+
+      <PlansModal 
+        isOpen={isPlansOpen} 
+        onClose={() => setIsPlansOpen(false)} 
+      />
+
+      <CasinoModal 
+        isOpen={isCasinoOpen} 
+        onClose={() => setIsCasinoOpen(false)} 
       />
     </aside>
   );

@@ -5,6 +5,7 @@ import { Modal, LoadingButton, toast, CustomSelect, Input } from "@/components/u
 import { OperationType, Operation } from "@/lib/api/types";
 import { useOperations, useAccounts, useDashboardSummary, useFreebets } from "@/lib/hooks";
 import { formatCurrency } from "@/lib/utils";
+import { AddAccountModal } from "./AddAccountModal";
 
 interface NewOperationModalProps {
   isOpen: boolean;
@@ -48,6 +49,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
   }>>([
     { id: '1', accountId: '', stake: '', odds: '', side: 'BACK', isBenefit: false, commission: '0' }
   ]);
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -265,6 +267,14 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
                       }))}
                       placeholder="ESCOLHER CONTA"
                     />
+                    <button 
+                      type="button"
+                      onClick={() => setIsAccountModalOpen(true)}
+                      className="absolute -right-8 top-1/2 -translate-y-1/2 p-1.5 text-[#03D791]/40 hover:text-[#03D791] hover:bg-[#03D791]/10 rounded-lg transition-all"
+                      title="Vincular Nova Casa"
+                    >
+                      <Plus size={14} />
+                    </button>
                   </div>
                   
                   {/* BENEFIT CHECKBOX */}
@@ -446,6 +456,11 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
           </LoadingButton>
         </div>
       </form>
+
+      <AddAccountModal 
+        isOpen={isAccountModalOpen}
+        onClose={() => setIsAccountModalOpen(false)}
+      />
     </Modal>
   );
 }

@@ -100,6 +100,7 @@ export class DashboardService {
       .reduce((acc, curr) => acc + Number(curr.realProfit || 0), 0);
 
     // Calculate Expenses for the same ranges
+    // CONSISTENCY FIX: Use same filter as performance graph (paid date or creation date)
     const despesasPeriodo = expenses
       .filter(e => {
         const d = (e.lastPaidAt || e.createdAt).getTime();
@@ -191,21 +192,34 @@ export class DashboardService {
       rangeStart = new Date(now.getFullYear(), 0, 1);
     }
 
-    // 2. Single Query for ALL performance data (N+1 Fix)
-    const allOps = await this.prisma.operation.findMany({
-      where: { ...userFilter, status: OperationStatus.FINISHED, createdAt: { gte: rangeStart, lte: rangeEnd } },
-      select: { 
-        realProfit: true, 
-        createdAt: true,
-        bets: { select: { stake: true } }
-      },
-      orderBy: { createdAt: 'asc' }
-    });
+    // 2. Fetch ALL operations and expenses in the range
+    const [allOps, allExpenses] = await Promise.all([
+      this.prisma.operation.findMany({
+        where: { ...userFilter, status: OperationStatus.FINISHED, createdAt: { gte: rangeStart, lte: rangeEnd } },
+        select: { 
+          realProfit: true, 
+          createdAt: true,
+          bets: { select: { stake: true } }
+        },
+        orderBy: { createdAt: 'asc' }
+      }),
+      this.prisma.expense.findMany({
+        where: { 
+          bankAccount: { userId },
+          OR: [
+            { createdAt: { gte: rangeStart, lte: rangeEnd } },
+            { lastPaidAt: { gte: rangeStart, lte: rangeEnd } }
+          ]
+        },
+        select: { amount: true, createdAt: true, lastPaidAt: true }
+      })
+    ]);
 
-    const processGroup = (ops: any[], filterFn: (d: Date) => boolean, labelFn: (d: Date) => string, stepFn: (d: Date) => void, start: Date, end: Date, fullDateFn?: (d: Date) => string) => {
+    const processGroup = (ops: any[], expenses: any[], filterFn: (d: Date) => boolean, labelFn: (d: Date) => string, stepFn: (d: Date) => void, start: Date, end: Date, fullDateFn?: (d: Date) => string) => {
       const result: any[] = [];
       const record: Record<string, any> = {};
       
+      // Process Operations (Profit)
       ops.filter(op => filterFn(op.createdAt)).forEach(op => {
         const key = labelFn(op.createdAt);
         const fullDate = fullDateFn ? fullDateFn(op.createdAt) : op.createdAt.toISOString().split('T')[0];
@@ -213,6 +227,14 @@ export class DashboardService {
         record[key].value += Number(op.realProfit || 0);
         record[key].count += 1;
         record[key].volume += op.bets.reduce((s: number, b: any) => s + Number(b.stake || 0), 0);
+      });
+
+      // Process Expenses (Loss)
+      expenses.filter(e => filterFn(e.lastPaidAt || e.createdAt)).forEach(e => {
+        const key = labelFn(e.lastPaidAt || e.createdAt);
+        const fullDate = fullDateFn ? fullDateFn(e.lastPaidAt || e.createdAt) : (e.lastPaidAt || e.createdAt).toISOString().split('T')[0];
+        if (!record[key]) record[key] = { value: 0, count: 0, volume: 0, label: key, fullDate };
+        record[key].value -= Number(e.amount || 0); // Subtract expenses from the performance point
       });
 
       for (let d = new Date(start); d <= end; stepFn(d)) {
@@ -225,7 +247,7 @@ export class DashboardService {
 
     // Custom view
     if (startDate || endDate) {
-      const custom = processGroup(allOps, () => true, d => d.toISOString().split('T')[0], d => d.setUTCDate(d.getUTCDate() + 1), rangeStart, rangeEnd);
+      const custom = processGroup(allOps, allExpenses, () => true, d => d.toISOString().split('T')[0], d => d.setUTCDate(d.getUTCDate() + 1), rangeStart, rangeEnd);
       return { weekly: custom, monthly: custom, yearly: custom, isCustom: true };
     }
 
@@ -237,14 +259,14 @@ export class DashboardService {
     const lastMonday = new Date(now);
     lastMonday.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
     lastMonday.setHours(0,0,0,0);
-    const weekly = processGroup(allOps, d => d >= lastMonday, d => {
+    const weekly = processGroup(allOps, allExpenses, d => d >= lastMonday, d => {
         const dBR = new Date(d.getTime() - (3 * 60 * 60 * 1000));
         return weekdaysShort[dBR.getUTCDay()];
     }, d => d.setDate(d.getDate() + 1), lastMonday, now, d => d.toISOString().split('T')[0]);
 
     // Monthly
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthly = processGroup(allOps, d => d >= monthStart, d => {
+    const monthly = processGroup(allOps, allExpenses, d => d >= monthStart, d => {
         const dBR = new Date(d.getTime() - (3 * 60 * 60 * 1000));
         return String(dBR.getUTCDate()).padStart(2, '0');
     }, d => d.setDate(d.getDate() + 1), monthStart, new Date(now.getFullYear(), now.getMonth() + 1, 0), d => d.toISOString().split('T')[0]);
@@ -256,9 +278,11 @@ export class DashboardService {
       const m2 = i * 2 + 1;
       const label = `${monthsShort[m1]}-${monthsShort[m2]}`;
       const biOps = allOps.filter(op => op.createdAt.getMonth() === m1 || op.createdAt.getMonth() === m2);
+      const biExpenses = allExpenses.filter(e => (e.lastPaidAt || e.createdAt).getMonth() === m1 || (e.lastPaidAt || e.createdAt).getMonth() === m2);
+      
       yearly.push({
         label,
-        value: biOps.reduce((s, o) => s + Number(o.realProfit || 0), 0),
+        value: biOps.reduce((s, o) => s + Number(o.realProfit || 0), 0) - biExpenses.reduce((s, e) => s + Number(e.amount || 0), 0),
         count: biOps.length,
         volume: biOps.reduce((s, o) => s + o.bets.reduce((ss: number, b: any) => ss + Number(b.stake || 0), 0), 0)
       });

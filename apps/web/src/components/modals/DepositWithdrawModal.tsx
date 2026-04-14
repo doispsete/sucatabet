@@ -44,6 +44,10 @@ export function DepositWithdrawModal({ isOpen, onClose, mode, onSuccess }: Depos
         toast.success("Retirada realizada com sucesso");
       }
       
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('refetch-data'));
+      }
+      
       if (onSuccess) onSuccess();
       onClose();
     } catch (err: any) {

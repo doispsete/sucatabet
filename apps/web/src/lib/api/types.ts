@@ -10,6 +10,12 @@ export enum UserStatus {
   SUSPENDED = 'SUSPENDED',
 }
 
+export enum UserPlan {
+  FREE = 'FREE',
+  BASIC = 'BASIC',
+  PRO = 'PRO',
+}
+
 export enum OperationType {
   NORMAL = 'NORMAL',
   FREEBET_GEN = 'FREEBET_GEN',
@@ -60,6 +66,7 @@ export interface User {
   name: string;
   role: UserRole;
   status: UserStatus;
+  plan: UserPlan;
   approvedAt?: string;
   createdAt: string;
 }

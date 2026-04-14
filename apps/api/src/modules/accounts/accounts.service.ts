@@ -94,26 +94,47 @@ export class AccountsService {
     const account = await this.findOne(id, userId, role);
 
     return this.prisma.$transaction(async (tx) => {
-      // 1. Atualizar saldo da casa
-      const updated = await tx.account.update({
+      // 1. Atualizar saldo da casa e buscar dados necessários
+      const updatedAccount = await tx.account.update({
         where: { id },
         data: { balance: { increment: amountDto.amount } },
+        include: { 
+          cpfProfile: { 
+            include: { 
+              user: { 
+                include: { bankAccount: true } 
+              } 
+            } 
+          } 
+        },
       });
 
-      // 2. Localizar/Criar banco do usuário (Opcional para registro de transação se existir)
-      let bankAccount = await tx.bankAccount.findUnique({
-        where: { userId: account.cpfProfile.userId },
-      });
+      const user = updatedAccount.cpfProfile.user;
+      let bankAccount = user.bankAccount;
 
+      // 2. Garantir que a conta bancária existe
       if (!bankAccount) {
         bankAccount = await tx.bankAccount.create({
-          data: { userId: account.cpfProfile.userId },
+          data: { userId: user.id },
         });
       }
 
-      // 3. Abater do saldo do banco central se houver (Opcional, não bloqueia)
-      if (Number(bankAccount.balance) > 0) {
-        const deduction = Math.min(Number(bankAccount.balance), amountDto.amount);
+      // 3. Verificar Plano e Abater Saldo usando Decimal para precisão
+      const plan = user.plan || 'FREE';
+      const depositAmount = new Prisma.Decimal(amountDto.amount);
+      const currentBalance = new Prisma.Decimal(bankAccount.balance);
+
+      if (plan === 'PRO') {
+        if (currentBalance.lt(depositAmount)) {
+          throw new BadRequestException('Saldo no Banco central insuficiente para este depósito (Requisito Plano PRO)');
+        }
+        await tx.bankAccount.update({
+          where: { id: bankAccount.id },
+          data: { balance: { decrement: depositAmount } },
+        });
+      } else if (currentBalance.gt(0)) {
+        // FREE/BASIC: Abate apenas o que tiver disponível, sem bloquear
+        const deduction = currentBalance.gt(depositAmount) ? depositAmount : currentBalance;
         await tx.bankAccount.update({
           where: { id: bankAccount.id },
           data: { balance: { decrement: deduction } },
@@ -137,14 +158,14 @@ export class AccountsService {
         'Account',
         id,
         userId,
-        { balance: new Prisma.Decimal(account.balance) },
-        { balance: new Prisma.Decimal(updated.balance), depositAmount: new Prisma.Decimal(amountDto.amount) },
+        { previousBalance: new Prisma.Decimal(account.balance) },
+        { balance: new Prisma.Decimal(updatedAccount.balance), depositAmount: new Prisma.Decimal(amountDto.amount) },
         tx,
       );
 
       await this.clearUserDashboardCache(userId, role);
 
-      return updated;
+      return updatedAccount;
     });
   }
 

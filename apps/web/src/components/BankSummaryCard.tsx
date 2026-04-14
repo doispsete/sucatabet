@@ -1,8 +1,8 @@
 "use client";
 
 import React from 'react';
-import { 
-  ArrowUpRight, 
+import {
+  ArrowUpRight,
   CalendarClock,
   PiggyBank,
   CheckCircle2,
@@ -64,7 +64,7 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
     const val = parseFloat(String(e.amount)) || 0;
     return acc + val;
   }, 0);
-  
+
   const totalMonth = amountPaidMonth + amountPendingMonth;
 
   // Cálculos de Banca e Patrimônio
@@ -76,7 +76,7 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
 
   const getStatusColor = (date: string, hasUnpaid: boolean) => {
     if (!hasUnpaid) return { dot: 'bg-primary/40', text: 'text-primary/40', label: 'PAGO', pulse: false, border: 'border-white/5' };
-    
+
     const due = new Date(date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -85,10 +85,10 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
 
     if (diffDays < 0) return { dot: 'bg-red-500', text: 'text-red-500', label: 'ATRASADO', pulse: true, border: 'border-red-500/30 shadow-[0_0_15px_-5px_rgba(239,68,68,0.4)]' };
     if (diffDays <= 0) return { dot: 'bg-red-500', text: 'text-red-500', label: 'HOJE', pulse: true, border: 'border-red-500/30' };
-    return { 
-      dot: 'bg-amber-500', 
-      text: 'text-amber-500', 
-      label: diffDays === 1 ? 'AMANHÃ' : `EM ${diffDays} DIAS`, 
+    return {
+      dot: 'bg-amber-500',
+      text: 'text-amber-500',
+      label: diffDays === 1 ? 'AMANHÃ' : `EM ${diffDays} DIAS`,
       pulse: false,
       border: 'border-amber-500/30 shadow-[0_0_15px_-5px_rgba(245,158,11,0.2)]'
     };
@@ -133,7 +133,7 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
                   <span className="text-[10px] font-black text-[#00ff88] italic">+{lucroPct.toFixed(1)}%</span>
                 </div>
               </div>
-              
+
               <div className="pt-4 border-t border-white/5">
                 <p className="text-[9px] font-black text-white/30 uppercase mb-1 italic">LUCRO DESSE MÊS</p>
                 <p className={`text-xl font-black italic ${lucroMes >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
@@ -158,7 +158,9 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
               <div className={`flex justify-between items-center text-[13px] font-black italic uppercase pt-3 border-t border-white/5 transition-all
                 ${amountPendingMonth > 0 ? (hasCriticalExpense ? 'text-red-500 animate-blink-red-slow' : 'text-amber-500') : 'text-primary'}`}>
                 <span>{amountPendingMonth > 0 ? 'FALTA PAGAR' : 'TUDO PAGO'}</span>
-                <span className="text-base">R$ {formatCurrency(amountPendingMonth)}</span>
+                {amountPendingMonth > 0 && (
+                  <span className="text-base">R$ {formatCurrency(amountPendingMonth)}</span>
+                )}
               </div>
             </div>
           </div>
@@ -171,7 +173,7 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
               <CalendarClock className="w-4 h-4 text-primary" />
               <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-40 italic">PRÓXIMOS VENCIMENTOS</p>
             </div>
-            
+
             <div className="space-y-3">
               {sortedDates.length === 0 ? (
                 <div className="py-10 text-center opacity-10 text-[9px] font-black uppercase tracking-widest italic border border-dashed border-white/10 rounded-3xl">
@@ -182,22 +184,22 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
                   const exps = groupedExpenses[date];
                   const hasUnpaid = exps.some((e: any) => e.status !== 'PAID');
                   const status = getStatusColor(date, hasUnpaid);
-                  
+
                   return (
-                    <Link 
-                      key={date} 
+                    <Link
+                      key={date}
                       href="/banco?tab=expenses"
                       className={`flex flex-col gap-2 p-4 bg-white/[0.02] rounded-2xl border transition-all group/venc block hover:bg-white/[0.05]
                         ${status.pulse ? 'animate-blink-red-slow' : ''} ${status.border}`}
                     >
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                           <div className={`w-1.5 h-1.5 rounded-full ${status.dot} shadow-[0_0_8px_currentColor]`} />
-                           <p className="text-[11px] font-black text-[#e5e2e1] uppercase italic tracking-tight truncate max-w-[150px]">
-                             {exps.length > 1 
-                               ? `${exps.length} DESPESAS` 
-                               : exps[0].name.toUpperCase()}
-                           </p>
+                          <div className={`w-1.5 h-1.5 rounded-full ${status.dot} shadow-[0_0_8px_currentColor]`} />
+                          <p className="text-[11px] font-black text-[#e5e2e1] uppercase italic tracking-tight truncate max-w-[150px]">
+                            {exps.length > 1
+                              ? `${exps.length} DESPESAS`
+                              : exps[0].name.toUpperCase()}
+                          </p>
                         </div>
                         <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border border-white/5 ${status.text} bg-white/5`}>
                           {status.label}
@@ -220,15 +222,15 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
               )}
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/5">
-            <button 
+            <button
               onClick={onDeposit}
               className="flex-1 py-4 bg-[#00ff88]/10 hover:bg-[#00ff88]/20 border border-[#00ff88]/20 rounded-2xl text-[9px] font-black text-[#00ff88] uppercase tracking-widest transition-all shadow-sm active:scale-95"
             >
               REGISTRAR ENTRADA
             </button>
-            <button 
+            <button
               onClick={onWithdraw}
               className="flex-1 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[9px] font-black text-white uppercase tracking-widest transition-all shadow-sm active:scale-95"
             >

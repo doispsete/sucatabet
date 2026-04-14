@@ -39,6 +39,7 @@ export class UsersService {
         name: true,
         role: true,
         status: true,
+        plan: true,
       },
     });
   }
@@ -52,6 +53,7 @@ export class UsersService {
         name: true,
         role: true,
         status: true,
+        plan: true,
         approvedAt: true,
       },
     });
@@ -72,6 +74,7 @@ export class UsersService {
         name: true,
         role: true,
         status: true,
+        plan: true,
       },
     });
   }
@@ -84,6 +87,7 @@ export class UsersService {
         email: true,
         name: true,
         role: true,
+        plan: true,
       },
     });
 
@@ -107,6 +111,7 @@ export class UsersService {
         email: true,
         name: true,
         role: true,
+        plan: true,
       },
     });
   }
@@ -138,6 +143,7 @@ export class UsersService {
         email: true,
         name: true,
         role: true,
+        plan: true,
       },
     });
   }

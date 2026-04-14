@@ -202,6 +202,13 @@ export function FinishOperationModal({ isOpen, onClose, operation, onSuccess, on
         localStorage.removeItem(`pending_fb_origin_${operation.id}`);
       }
       refetchSummary();
+      
+      // Dispatch global refetch event
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('operation-created'));
+        window.dispatchEvent(new CustomEvent('refetch-data'));
+      }
+      
       if (onSuccess) onSuccess();
       onClose();
     } catch (err: unknown) {

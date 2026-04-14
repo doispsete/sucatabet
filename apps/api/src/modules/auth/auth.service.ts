@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma.service';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
-import { UserRole, UserStatus } from '@prisma/client';
+import { UserRole, UserStatus, UserPlan } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +30,7 @@ export class AuthService {
         password: hashedPassword,
         role: UserRole.OPERATOR,
         status: UserStatus.PENDING,
+        plan: UserPlan.FREE,
         bankAccount: {
           create: {
             balance: 0,
@@ -70,7 +71,7 @@ export class AuthService {
       throw new ForbiddenException('Conta inativa.');
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.role, name: user.name };
+    const payload = { sub: user.id, email: user.email, role: user.role, name: user.name, plan: user.plan };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -78,6 +79,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         role: user.role,
+        plan: user.plan,
       },
     };
   }
@@ -88,7 +90,7 @@ export class AuthService {
       throw new UnauthorizedException('Sessão inválida ou conta inativa');
     }
 
-    const payload = { sub: user.userId, email: user.email, role: user.role };
+    const payload = { sub: user.userId, email: user.email, role: user.role, plan: dbUser.plan };
     return {
       access_token: this.jwtService.sign(payload),
     };

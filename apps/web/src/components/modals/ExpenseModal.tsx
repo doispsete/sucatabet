@@ -64,6 +64,11 @@ export function ExpenseModal({ isOpen, onClose, expenseToEdit }: ExpenseModalPro
         await create(payload);
         toast.success("Despesa cadastrada com sucesso");
       }
+      // Dispatch global refetch event
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('refetch-data'));
+      }
+      
       onClose();
     } catch (err: any) {
       toast.error(err.message || "Erro ao salvar despesa");

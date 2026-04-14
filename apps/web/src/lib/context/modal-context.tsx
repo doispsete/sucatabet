@@ -38,6 +38,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
           // Dispatch global event for refetching
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('operation-created'));
+            window.dispatchEvent(new CustomEvent('refetch-data'));
           }
           closeNewOperation();
         }}

@@ -19,6 +19,19 @@ export class CpfProfilesService {
   }
 
   async create(userId: string, createCpfProfileDto: CreateCpfProfileDto) {
+    // 0. Verificar limites de Plano
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { plan: true } });
+    const plan = user?.plan || 'FREE';
+    
+    const currentCpfs = await this.prisma.cpfProfile.count({ where: { userId, deletedAt: null } });
+
+    if (plan === 'FREE' && currentCpfs >= 1) {
+      throw new ForbiddenException('Plano FREE permite apenas 1 perfil de CPF.');
+    }
+    if (plan === 'BASIC' && currentCpfs >= 3) {
+      throw new ForbiddenException('Plano BASIC permite apenas 3 perfis de CPF.');
+    }
+
     try {
       // 1. Procurar por um perfil já existente (ativo ou soft-deleted)
       const existing = await this.prisma.cpfProfile.findFirst({

@@ -16,4 +16,8 @@ export class CreateUserDto {
   @IsEnum(UserRole)
   @IsOptional()
   role?: UserRole;
+
+  @IsEnum(['FREE', 'BASIC', 'PRO'])
+  @IsOptional()
+  plan?: 'FREE' | 'BASIC' | 'PRO';
 }
