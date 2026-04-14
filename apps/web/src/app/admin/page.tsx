@@ -16,8 +16,8 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useUsers, useAuth, useUpdateUserStatus } from "@/lib/hooks";
-import { SkeletonRow, EmptyState, Modal, LoadingButton, toast, Input, CustomSelect, ConfirmDialog } from "@/components/ui/components";
-import { UserRole, User, UserStatus } from "@/lib/api/types";
+import { SkeletonRow, EmptyState, Modal, LoadingButton, toast, Input, CustomSelect, ConfirmDialog, Badge } from "@/components/ui/components";
+import { UserRole, User, UserStatus, UserPlan } from "@/lib/api/types";
 
 export default function AdminPage() {
   const { user: currentUser } = useAuth();
@@ -41,11 +41,13 @@ export default function AdminPage() {
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState(UserRole.OPERATOR);
+  const [newPlan, setNewPlan] = useState<UserPlan>(UserPlan.FREE);
 
   // Form States - Edit
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editRole, setEditRole] = useState(UserRole.OPERATOR);
+  const [editPlan, setEditPlan] = useState<UserPlan>(UserPlan.FREE);
   const [editPassword, setEditPassword] = useState("");
 
   const [confirmDeleteUser, setConfirmDeleteUser] = useState<string | null>(null);
@@ -67,13 +69,20 @@ export default function AdminPage() {
       return;
     }
     try {
-      await createUser({ name: newName, email: newEmail, password: newPassword, role: newRole });
+      await createUser({ 
+        name: newName, 
+        email: newEmail, 
+        password: newPassword, 
+        role: newRole,
+        plan: newPlan 
+      });
       toast.success("Usuário criado com sucesso");
       setIsAddModalOpen(false);
       setNewName("");
       setNewEmail("");
       setNewPassword("");
       setNewRole(UserRole.OPERATOR);
+      setNewPlan(UserPlan.FREE);
     } catch (err: unknown) {
       toast.error((err as Error).message || "Erro ao criar usuário");
     }
@@ -83,7 +92,12 @@ export default function AdminPage() {
     e.preventDefault();
     if (!selectedUser) return;
     try {
-      const data: any = { name: editName, email: editEmail, role: editRole };
+      const data: any = { 
+        name: editName, 
+        email: editEmail, 
+        role: editRole,
+        plan: editPlan 
+      };
       if (editPassword) {
         if (editPassword.length < 8) {
           toast.error("A nova senha deve ter no mínimo 8 caracteres");
@@ -106,6 +120,7 @@ export default function AdminPage() {
     setEditName(user.name);
     setEditEmail(user.email);
     setEditRole(user.role);
+    setEditPlan(user.plan || UserPlan.FREE);
     setIsEditModalOpen(true);
   };
 
@@ -235,7 +250,8 @@ export default function AdminPage() {
                 <th className="px-8 py-4 font-black">Perfil</th>
                 <th className="px-8 py-4 font-black">Email / Login</th>
                 <th className="px-8 py-4 font-black">Cargo / Permissões</th>
-                <th className="px-8 py-4 font-black">Status</th>
+                <th className="px-8 py-4 font-black text-center">Plano</th>
+                <th className="px-8 py-4 font-black text-center">Status</th>
                 <th className="px-8 py-4 font-black text-right">Ações</th>
               </tr>
             </thead>
@@ -271,8 +287,16 @@ export default function AdminPage() {
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-2.5">
+                    <td className="px-8 py-6 text-center">
+                       <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all
+                        ${user.plan === UserPlan.PRO ? 'bg-[#ffd966]/5 text-[#ffd966] border-[#ffd966]/20' : 
+                          user.plan === UserPlan.BASIC ? 'bg-[#b9cbbc]/5 text-white border-white/20' : 
+                          'bg-white/5 text-[#b9cbbc] border-white/5'}`}>
+                        {user.plan || 'FREE'}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6 text-center">
+                      <div className="flex items-center justify-center gap-2.5">
                         {user.status === UserStatus.PENDING ? (
                           <div className="flex items-center gap-2">
                              <Clock className="w-3.5 h-3.5 text-[#ffd966]" />
@@ -418,6 +442,19 @@ export default function AdminPage() {
               placeholder="SELECIONAR CARGO"
             />
           </div>
+          <div className="space-y-2.5">
+            <label className="text-[10px] font-black uppercase tracking-[0.4em] text-[#b9cbbc]/40 pl-4 italic">Plano do Usuário</label>
+            <CustomSelect
+              value={newPlan}
+              onChange={val => setNewPlan(val as UserPlan)}
+              options={[
+                { value: UserPlan.FREE, label: "GRATUITO (FREE)" },
+                { value: UserPlan.BASIC, label: "BÁSICO (BASIC)" },
+                { value: UserPlan.PRO, label: "PROFISSIONAL (PRO)" }
+              ]}
+              placeholder="SELECIONAR PLANO"
+            />
+          </div>
           <div className="pt-6">
             <LoadingButton
               type="submit"
@@ -468,6 +505,19 @@ export default function AdminPage() {
                 { value: UserRole.ADMIN, label: "ADMIN (TOTAL)" }
               ]}
               placeholder="SELECIONAR CARGO"
+            />
+          </div>
+          <div className="space-y-2.5">
+            <label className="text-[10px] font-black uppercase tracking-[0.4em] text-[#b9cbbc]/40 pl-4 italic">Plano do Usuário</label>
+            <CustomSelect
+              value={editPlan}
+              onChange={val => setEditPlan(val as UserPlan)}
+              options={[
+                { value: UserPlan.FREE, label: "GRATUITO (FREE)" },
+                { value: UserPlan.BASIC, label: "BÁSICO (BASIC)" },
+                { value: UserPlan.PRO, label: "PROFISSIONAL (PRO)" }
+              ]}
+              placeholder="SELECIONAR PLANO"
             />
           </div>
           <div className="space-y-2.5">
