@@ -8500,3 +8500,23 @@ The column `(not available)` does not exist in the current database.
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
 
+[2026-04-14T15:04:03.256Z] POST /auth/login
+PrismaClientKnownRequestError: 
+Invalid `this.prisma.user.findUnique()` invocation in
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\auth\auth.service.js:85:45
+
+  82     return { message: "Cadastro realizado. Aguarde aprovação." };
+  83 }
+  84 async login(loginDto) {
+→ 85     const user = await this.prisma.user.findUnique(
+The column `(not available)` does not exist in the current database.
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async AuthService.login (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\auth\auth.service.js:85:22)
+    at async AuthController.login (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\auth\auth.controller.js:27:24)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+

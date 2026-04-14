@@ -12,3 +12,5 @@ echo Iniciando SucataBet Web em localhost:3005...
 start "SucataBet Web" cmd /k "cd apps\web && npm run dev -- -p 3005"
 echo Servidores iniciados! Verifique as janelas abertas para logs.
 
+
+
