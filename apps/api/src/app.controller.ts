@@ -29,6 +29,9 @@ export class AppController {
             IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'UserStatus') THEN 
                 CREATE TYPE "UserStatus" AS ENUM ('PENDING', 'ACTIVE', 'REJECTED', 'SUSPENDED'); 
             END IF; 
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'UserPlan') THEN 
+                CREATE TYPE "UserPlan" AS ENUM ('FREE', 'BASIC', 'PRO'); 
+            END IF; 
             IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'BankTransactionType') THEN 
                 CREATE TYPE "BankTransactionType" AS ENUM ('DEPOSIT', 'WITHDRAW', 'ACCOUNT_DEPOSIT', 'ACCOUNT_WITHDRAW', 'EXPENSE_PAYMENT', 'INCOME'); 
             END IF; 
@@ -43,10 +46,12 @@ export class AppController {
 
       // 2. Tabela User
       await this.prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "status" "UserStatus" NOT NULL DEFAULT \'PENDING\';');
+      await this.prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "plan" "UserPlan" NOT NULL DEFAULT \'FREE\';');
       await this.prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "approvedAt" TIMESTAMP(3);');
       await this.prisma.$executeRawUnsafe('UPDATE "User" SET "status" = \'ACTIVE\' WHERE "status" = \'PENDING\';');
 
       // 3. Tabela BankAccount
+      // ... (rest of the DB logic)
       await this.prisma.$executeRawUnsafe(`
         CREATE TABLE IF NOT EXISTS "BankAccount" (
             "id" TEXT NOT NULL,
@@ -95,7 +100,7 @@ export class AppController {
       await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "remainingOccurrences" INTEGER;');
       await this.prisma.$executeRawUnsafe('ALTER TABLE "Expense" ADD COLUMN IF NOT EXISTS "lastPaidAt" TIMESTAMP(3);');
 
-      // 6. Garantir BankAccount para todos (v4)
+      // 6. Garantir BankAccount para todos (v5)
       await this.prisma.$executeRawUnsafe(`
         INSERT INTO "BankAccount" ("id", "userId", "balance", "monthlyGoal", "createdAt", "updatedAt")
         SELECT 
@@ -109,7 +114,7 @@ export class AppController {
         WHERE NOT EXISTS (SELECT 1 FROM "BankAccount" b WHERE b."userId" = u."id");
       `);
 
-      return { status: 'success', message: 'Correção completa aplicada (v4 - Auto-BankAccount & Sidebar Fix).' };
+      return { status: 'success', message: 'Correção completa aplicada (v5 - Subscription Plans added).' };
     } catch (error) {
       return { status: 'error', message: error.message };
     }
