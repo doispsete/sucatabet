@@ -16,7 +16,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useUsers, useAuth, useUpdateUserStatus } from "@/lib/hooks";
-import { SkeletonRow, EmptyState, Modal, LoadingButton, toast, Input, CustomSelect, ConfirmDialog, Badge } from "@/components/ui/components";
+import { SkeletonRow, EmptyState, Modal, LoadingButton, toast, Input, CustomSelect, ConfirmDialog } from "@/components/ui/components";
 import { UserRole, User, UserStatus, UserPlan } from "@/lib/api/types";
 
 export default function AdminPage() {
