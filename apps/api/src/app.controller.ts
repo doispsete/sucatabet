@@ -51,7 +51,6 @@ export class AppController {
       await this.prisma.$executeRawUnsafe('UPDATE "User" SET "status" = \'ACTIVE\' WHERE "status" = \'PENDING\';');
 
       // 3. Tabela BankAccount
-      // ... (rest of the DB logic)
       await this.prisma.$executeRawUnsafe(`
         CREATE TABLE IF NOT EXISTS "BankAccount" (
             "id" TEXT NOT NULL,
