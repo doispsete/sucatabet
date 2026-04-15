@@ -69,13 +69,16 @@ model User {
   name        String
   role        UserRole     @default(OPERATOR)
   status      UserStatus   @default(PENDING)
-  plan        UserPlan     @default(FREE)
-  approvedAt  DateTime?
-  cpfProfiles CpfProfile[]
-  operations  Operation[]
-  logs        AuditLog[]
-  freebets    Freebet[]
-  bankAccount BankAccount?
+  plan                 UserPlan     @default(FREE)
+  stripeCustomerId     String?      @unique
+  stripeSubscriptionId String?      @unique
+  avatarUrl            String?
+  approvedAt           DateTime?
+  cpfProfiles          CpfProfile[]
+  operations           Operation[]
+  logs                 AuditLog[]
+  freebets             Freebet[]
+  bankAccount          BankAccount?
 }
 
 model CpfProfile {

@@ -19,6 +19,7 @@ import { JobsModule } from './modules/jobs/jobs.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { BankModule } from './modules/bank/bank.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
+import { StripeModule } from './modules/stripe/stripe.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ExpensesModule } from './modules/expenses/expenses.module';
     JobsModule,
     BankModule,
     ExpensesModule,
+    StripeModule,
   ],
   controllers: [AppController],
   providers: [

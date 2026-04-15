@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Quer
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -31,7 +32,7 @@ export class UsersController {
   }
 
   @Patch('profile')
-  updateProfile(@Body() data: any, @Req() req: any) {
+  updateProfile(@Body() data: UpdateProfileDto, @Req() req: any) {
     const userId = req?.user?.userId;
     return this.usersService.updateProfile(userId, data);
   }

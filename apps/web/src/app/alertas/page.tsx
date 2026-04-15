@@ -45,7 +45,7 @@ export default function AlertasPage() {
             <Bell className="w-4 h-4 shadow-[0_0_10px_rgba(3,215,145,0.3)]" />
             <span className="text-[10px] uppercase tracking-[0.4em] font-black italic">NOTIFICAÇÕES DE PRIORIDADE DO SISTEMA</span>
           </div>
-          <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
+          <h1 className="text-2xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
             CENTRO DE <span className="text-[#03d791]">MONITORAMENTO</span>
           </h1>
         </div>
@@ -159,7 +159,7 @@ export default function AlertasPage() {
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
         </div>
 
-        <div className="glass-card rounded-[32px] p-8 md:p-10 relative overflow-hidden group">
+        <div className="glass-card rounded-[32px] p-6 md:p-10 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#00d1ff]/5 rounded-full blur-[120px] -mr-48 -mt-48 transition-transform group-hover:scale-125 duration-1000"></div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
@@ -170,7 +170,7 @@ export default function AlertasPage() {
                     <Activity className="w-6 h-6 text-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">Eficiência do Clube</h3>
+                    <h3 className="text-xl md:text-2xl font-black text-white italic tracking-tighter uppercase">Eficiência do Clube</h3>
                     <p className="text-[11px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-40 italic">SINCRONIA GLOBAL DE DADOS</p>
                   </div>
                 </div>
@@ -182,7 +182,7 @@ export default function AlertasPage() {
               <div className="bg-black/40 backdrop-blur-3xl p-8 rounded-[32px] border border-white/5 group-hover:border-blue-500/20 transition-all">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-[#b9cbbc] font-black opacity-30 mb-3">STATUS DA META</p>
                 <div className="flex items-baseline gap-4">
-                  <span className="text-6xl font-black text-blue-500 italic tracking-tighter animate-in fade-in slide-in-from-bottom-4">
+                  <span className="text-4xl md:text-6xl font-black text-blue-500 italic tracking-tighter animate-in fade-in slide-in-from-bottom-4">
                     {club?.stats?.completed || 0}
                   </span>
                   <div className="space-y-1">
@@ -204,7 +204,7 @@ export default function AlertasPage() {
                 </div>
               ) : (
                 (club?.items || []).map((acc: any) => (
-                  <div key={acc.accountId} className={`glass-card p-7 rounded-[32px] border transition-all duration-500 group-item ${acc.percentual === 100 ? 'border-blue-500/30 bg-blue-500/[0.03]' : 'bg-black/40 border-white/5 hover:border-white/20'}`}>
+                  <div key={acc.accountId} className={`glass-card p-6 md:p-7 rounded-[32px] border transition-all duration-500 group-item ${acc.percentual === 100 ? 'border-blue-500/30 bg-blue-500/[0.03]' : 'bg-black/40 border-white/5 hover:border-white/20'}`}>
                     <div className="flex justify-between items-start mb-8">
                       <div className="flex items-center gap-4">
                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-all ${acc.percentual === 100 ? 'bg-blue-500/20 border-blue-500/40' : 'bg-white/5 border-white/10'}`}>

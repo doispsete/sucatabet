@@ -12,6 +12,8 @@ import {
 import { useBankSummary } from "@/lib/hooks";
 import { formatCurrency, formatDateShort, formatMonthAbbr } from "@/lib/utils";
 import Link from "next/link";
+import { useAuth } from "@/lib/context/auth-context";
+import { UpgradeOverlay } from "./ui/UpgradeOverlay";
 
 interface BankSummaryCardProps {
   onDeposit?: () => void;
@@ -20,12 +22,15 @@ interface BankSummaryCardProps {
 
 export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps) {
   const { data: summary, isLoading } = useBankSummary();
+  const { user, isAdmin } = useAuth();
 
   if (isLoading || !summary) {
     return (
       <div className="glass-card rounded-[32px] p-7 h-[240px] animate-pulse bg-white/5 border border-white/5" />
     );
   }
+
+  const isPro = user?.plan === 'PRO' || isAdmin;
 
   // Agrupar e priorizar despesas (não pagas primeiro)
   const allExpenses = summary.nextExpenses || [];
@@ -103,8 +108,19 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
   });
 
   return (
-    <div className="glass-card rounded-[32px] p-8 h-full flex flex-col justify-between group overflow-hidden relative border-l border-primary/20">
-      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
+    <div className={`glass-card rounded-[32px] p-8 h-full flex flex-col justify-between group overflow-hidden relative border-l border-primary/20 
+      ${!isPro ? '[&_*]:pointer-events-none select-none relative !border-white/5' : ''}`}>
+      
+      {!isPro && (
+        <div className="pointer-events-auto absolute inset-0 z-50">
+          <UpgradeOverlay 
+            title="Módulo Banco PRO" 
+            message="Controle automatizado de despesas e múltiplos CPFs liberado apenas no plano Profissional." 
+          />
+        </div>
+      )}
+
+      <div className={`relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>
         {/* Esquerda: Saldo e Métricas */}
         <div className="space-y-8">
           <div className="flex justify-between items-start">
@@ -115,9 +131,15 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
               </h3>
               <p className="text-[10px] font-bold text-[#00ff88] uppercase italic opacity-60 tracking-wider">SALDO EM BANCO</p>
             </div>
-            <Link href="/banco" className="p-2.5 bg-primary/10 rounded-2xl hover:bg-primary/20 transition-all text-primary border border-primary/20 group-hover:scale-110">
-              <ArrowUpRight className="w-5 h-5" />
-            </Link>
+            {isPro ? (
+              <Link href="/banco" className="p-2.5 bg-primary/10 rounded-2xl hover:bg-primary/20 transition-all text-primary border border-primary/20 group-hover:scale-110">
+                <ArrowUpRight className="w-5 h-5" />
+              </Link>
+            ) : (
+              <div className="p-2.5 bg-white/5 rounded-2xl text-white/20 border border-white/5">
+                <ArrowUpRight className="w-5 h-5" />
+              </div>
+            )}
           </div>
 
           <div className="bg-white/5 rounded-3xl p-5 border border-white/5 relative overflow-hidden">
@@ -185,7 +207,7 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
                   const hasUnpaid = exps.some((e: any) => e.status !== 'PAID');
                   const status = getStatusColor(date, hasUnpaid);
 
-                  return (
+                  return isPro ? (
                     <Link
                       key={date}
                       href="/banco?tab=expenses"
@@ -217,6 +239,37 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
                         </p>
                       </div>
                     </Link>
+                  ) : (
+                    <div
+                      key={date}
+                      className={`flex flex-col gap-2 p-4 bg-white/[0.02] rounded-2xl border transition-all group/venc block hover:bg-white/[0.05]
+                        ${status.pulse ? 'animate-blink-red-slow' : ''} ${status.border}`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-1.5 h-1.5 rounded-full ${status.dot} shadow-[0_0_8px_currentColor]`} />
+                          <p className="text-[11px] font-black text-[#e5e2e1] uppercase italic tracking-tight truncate max-w-[150px]">
+                            {exps.length > 1
+                              ? `${exps.length} DESPESAS`
+                              : exps[0].name.toUpperCase()}
+                          </p>
+                        </div>
+                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border border-white/5 ${status.text} bg-white/5`}>
+                          {status.label}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-end mt-1">
+                        <div className="flex items-center gap-1.5 text-white/20">
+                          <Clock size={10} />
+                          <span className="text-[10px] font-black italic tracking-wider">
+                            {formatDateShort(date).toUpperCase()}
+                          </span>
+                        </div>
+                        <p className="text-xs font-black text-white italic">
+                          R$ {formatCurrency(exps.reduce((acc: number, e: any) => acc + (Number(e.amount) || 0), 0))}
+                        </p>
+                      </div>
+                    </div>
                   );
                 })
               )}

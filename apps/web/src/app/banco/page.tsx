@@ -30,6 +30,8 @@ import { ExpenseModal } from "@/components/modals/ExpenseModal";
 import { DepositWithdrawModal } from "@/components/modals/DepositWithdrawModal";
 import { BankHistoryModal } from "@/components/modals/BankHistoryModal";
 import { Expense } from "@/lib/api/types";
+import { useAuth } from "@/lib/context/auth-context";
+import { UpgradeOverlay } from "@/components/ui/UpgradeOverlay";
 
 type Tab = 'overview' | 'expenses' | 'transactions';
 
@@ -60,7 +62,7 @@ function NextExpenses({ summary, onAction }: { summary: any, onAction: () => voi
   };
 
   return (
-    <div className="glass-card rounded-[32px] p-8 border border-white/5 relative overflow-visible group h-fit">
+    <div className="glass-card rounded-[32px] p-6 md:p-8 border border-white/5 relative overflow-visible group h-fit">
       <div className="flex justify-between items-center mb-6">
         <h4 className="text-[12px] font-black italic uppercase tracking-widest text-[#b9cbbc]/60 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-primary" /> Próximos Pagamentos
@@ -142,6 +144,8 @@ export default function BancoPage() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [historyCategory, setHistoryCategory] = useState<'Despesas' | 'Casas' | 'Manual' | ''>('');
   const [txMode, setTxMode] = useState<'deposit' | 'withdraw'>('deposit');
+  const { user, isAdmin } = useAuth();
+  const isPro = user?.plan === 'PRO' || isAdmin;
   
   // Filtros de Transações
   const [txFilters, setTxFilters] = useState({
@@ -252,8 +256,17 @@ export default function BancoPage() {
   }
 
   return (
-    <div className="space-y-8 px-3 md:px-6 animate-in fade-in duration-500 pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className={`space-y-8 px-3 md:px-6 animate-in fade-in duration-500 pb-20 relative ${!isPro ? '[&_*]:pointer-events-none select-none' : ''}`}>
+      {!isPro && (
+        <div className="pointer-events-auto absolute inset-0 z-50 min-h-screen">
+          <UpgradeOverlay 
+            title="Acesso Restrito: Sucata PRO" 
+            message="O Controle Financeiro Automatizado, múltiplas contas e gestão de despesas são recursos exclusivos." 
+          />
+        </div>
+      )}
+      
+      <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>
           <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase flex items-center gap-4">
             Gestão Financeira
             {isBankLoading && bankSummary && (
@@ -264,13 +277,13 @@ export default function BancoPage() {
       </div>
 
       {/* Stats Quick View */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>
         {/* Saldos Totais (2 Colunas) */}
-        <div className="lg:col-span-2 glass-card p-8 rounded-[40px] border border-white/5 relative overflow-hidden group">
+        <div className="lg:col-span-2 glass-card p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-white/5 relative overflow-hidden group">
           <div className="flex justify-between items-start mb-8 relative z-10">
             <div>
               <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-[0.2em] mb-2 italic opacity-40">SALDOS TOTAIS</p>
-              <h3 className="text-4xl font-black text-white italic tracking-tighter">
+              <h3 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter">
                 R$ {formatCurrency(bankSummary.totalPatrimony)}
               </h3>
               <p className="text-[9px] font-bold text-primary uppercase tracking-widest mt-1 opacity-60 italic">Patrimônio Consolidado</p>
@@ -295,13 +308,13 @@ export default function BancoPage() {
         </div>
 
         {/* Despesas (1 Coluna) */}
-        <div className="glass-card p-7 rounded-[32px] border border-white/5 flex flex-col justify-between group relative overflow-visible">
+        <div className="glass-card p-6 md:p-7 rounded-[32px] border border-white/5 flex flex-col justify-between group relative overflow-visible">
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-4">
               <p className="text-[9px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-40 italic">DESPESAS (MÊS)</p>
               <div className="p-2 bg-white/5 rounded-xl"><Receipt className="text-red-500" /></div>
             </div>
-            <h3 className="text-4xl font-black text-white italic tracking-tighter">R$ {formatCurrency(expenseStats.total)}</h3>
+            <h3 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter">R$ {formatCurrency(expenseStats.total)}</h3>
             
             <div className="flex gap-4 mt-6 pt-4 border-t border-white/5">
               <div className="space-y-0.5">
@@ -328,7 +341,7 @@ export default function BancoPage() {
         />
       </div>
 
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+      <div className={`flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>
         {/* Tabs Selection */}
         <div className="flex gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/5 w-fit">
           <button 
@@ -367,7 +380,7 @@ export default function BancoPage() {
       </div>
 
       {/* Tab Content */}
-      <div className="animate-in slide-in-from-bottom-4 duration-500">
+      <div className={`animate-in slide-in-from-bottom-4 duration-500 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>
         {activeTab === 'expenses' && (
           <ExpensesTab 
             expenses={expenses} 
@@ -454,7 +467,7 @@ function StatCard({ title, value, icon, color }: { title: string, value: string,
           <p className="text-[9px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-40 italic">{title}</p>
           <div className="p-2 bg-white/5 rounded-xl">{icon}</div>
         </div>
-        <h3 className="text-4xl font-black text-white italic tracking-tighter">{value}</h3>
+        <h3 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter">{value}</h3>
       </div>
       <div className={`absolute -bottom-2 -right-2 w-16 h-16 pointer-events-none opacity-5 group-hover:opacity-10 transition-all ${color === 'primary' ? 'text-primary' : 'text-red-500'}`}>
         {icon}
@@ -649,7 +662,14 @@ function OverviewTab({ summary, filters, onFilterChange, onCategoryClick }: {
                     </div>
 
                     <span className={`absolute -bottom-10 text-[11px] font-black transition-all uppercase tracking-widest leading-none ${hoveredMonth?.key === m.key || selectedMonthKey === m.key ? 'text-white scale-110' : 'text-white/50'}`}>
-                      {i === 0 || filteredMonthly[i-1].label !== m.label ? m.label : ''}
+                      {(() => {
+                        const total = filteredMonthly.length;
+                        if (total <= 7) return m.label;
+                        // No mobile ou se houver muitos pontos, pular alguns labels
+                        const interval = Math.ceil(total / 6);
+                        if (i % interval === 0 || i === total - 1) return m.label;
+                        return '';
+                      })()}
                     </span>
                     
                     {(hoveredMonth?.key === m.key || selectedMonthKey === m.key) && (
@@ -663,14 +683,14 @@ function OverviewTab({ summary, filters, onFilterChange, onCategoryClick }: {
         </div>
 
         {/* Summary Footer */}
-        <div className="p-10 border-t border-white/5 space-y-8 bg-white/[0.01]">
+        <div className="p-6 md:p-10 border-t border-white/5 space-y-8 bg-white/[0.01]">
           {(viewMode === 'INCOME' || viewMode === 'GERAL') && (
             <div className="flex items-center gap-6 group">
               <div className="w-14 h-14 rounded-full bg-[#03D791]/10 flex items-center justify-center border border-[#03D791]/20 group-hover:scale-110 transition-transform">
                 <ArrowUpRight className="text-[#03D791]" size={24} />
               </div>
               <div className="space-y-1">
-                <h4 className="text-3xl font-black text-white italic tracking-tighter">R$ {formatCurrency(displayIncome)}</h4>
+                <h4 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter">R$ {formatCurrency(displayIncome)}</h4>
                 <p className="text-[11px] font-black text-[#b9cbbc]/60 uppercase tracking-widest leading-relaxed">
                   {selectedMonth ? `Entrada total em ${selectedMonth.label}` : (filters.period === 'all' ? 'Entrada total em todo o histórico' : filters.period === 'custom' ? 'Entrada total no período selecionado' : `Entrada total nos últimos ${filters.period === '1' ? '30 dias' : `${filters.period} meses`}`)}
                 </p>

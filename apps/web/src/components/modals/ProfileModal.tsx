@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
-import { User, Mail, Lock, Check, X, Shield } from "lucide-react";
+import { User, Mail, Lock, Check, X, Shield, Camera } from "lucide-react";
 import { useProfile, useAuth } from "@/lib/hooks";
 import { LoadingButton, toast, Input, ConfirmDialog } from "@/components/ui/components";
 
@@ -16,9 +16,24 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [avatarBase64, setAvatarBase64] = useState<string | null>(null);
   const [isConfirmingDiscard, setIsConfirmingDiscard] = useState(false);
   const [initialName, setInitialName] = useState("");
   const modalRef = React.useRef<HTMLDivElement>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("A imagem deve ser Menor que 2MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => setAvatarBase64(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Sincroniza o nome inicial quando o modal abre ou user carrega
   React.useEffect(() => {
@@ -28,7 +43,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
     }
   }, [isOpen, user?.name]);
 
-  const hasUnsavedChanges = name !== initialName || oldPassword !== "" || newPassword !== "" || confirmPassword !== "";
+  const hasUnsavedChanges = name !== initialName || oldPassword !== "" || newPassword !== "" || confirmPassword !== "" || avatarBase64 !== null;
 
   const wrappedOnClose = () => {
     if (hasUnsavedChanges) {
@@ -58,6 +73,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
     
     const data: any = {};
     if (name !== user?.name) data.name = name;
+    if (avatarBase64) data.avatarUrl = avatarBase64;
     
     if (newPassword) {
       if (newPassword !== confirmPassword) {
@@ -83,6 +99,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      setAvatarBase64(null);
       setInitialName(name);
       onClose();
     } catch (err: any) {
@@ -111,14 +128,31 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
         <div className="space-y-6">
           {/* Header */}
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-[1px] bg-[#00ff88] rounded-full" />
-              <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-[#00ff88] italic">Perfil do Sistema</h4>
+          <div className="flex items-center gap-4">
+            <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
+            <div 
+              className="w-16 h-16 shrink-0 rounded-2xl overflow-hidden border-2 border-[#00ff88]/20 relative group cursor-pointer bg-black/20 shadow-[0_0_15px_rgba(0,255,136,0.1)]"
+              onClick={() => fileInputRef.current?.click()}
+              title="Mudar Foto de Perfil"
+            >
+              <img 
+                src={avatarBase64 || user?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Lucky'}`} 
+                alt="Profile" 
+                className="w-full h-full object-cover group-hover:opacity-40 transition-all duration-300"
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera size={18} className="text-[#00ff88] drop-shadow-md" />
+              </div>
             </div>
-            <h3 className="text-lg font-black text-white italic tracking-tighter uppercase leading-tight">
-              Olá, {user?.role} {user?.name?.split(' ')[0]}!
-            </h3>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-[1px] bg-[#00ff88] rounded-full" />
+                <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-[#00ff88] italic">Perfil do Sistema</h4>
+              </div>
+              <h3 className="text-lg font-black text-white italic tracking-tighter uppercase leading-tight truncate max-w-[150px]">
+                Olá, {user?.name?.split(' ')[0]}!
+              </h3>
+            </div>
           </div>
 
           {/* Form */}

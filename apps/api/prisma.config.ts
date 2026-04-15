@@ -16,6 +16,6 @@ export default defineConfig({
   datasource: {
     // Prioriza a variável de ambiente real (injetada pelo Docker)
     // Se não existir, usa o fallback do dotenv
-    url: process.env["DATABASE_URL"] || "postgresql://postgres:postgres@localhost:5432/sucatabet",
+    url: process.env["DATABASE_URL"],
   },
 });

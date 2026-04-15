@@ -701,7 +701,19 @@ export function CustomDateRangePicker({
       const rect = containerRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
       const flip = spaceBelow < 450 && rect.top > 450;
-      setPopupPos({ top: flip ? rect.top : rect.bottom, left: rect.left, width: rect.width, flip });
+      
+      const calendarWidth = 300;
+      let left = rect.left - 40;
+      
+      // Garantir que não saia pela direita
+      if (left + calendarWidth > window.innerWidth) {
+        left = window.innerWidth - calendarWidth - 10;
+      }
+      
+      // Garantir que não saia pela esquerda
+      if (left < 10) left = 10;
+      
+      setPopupPos({ top: flip ? rect.top : rect.bottom, left: left, width: rect.width, flip });
     }
   };
 
@@ -837,7 +849,7 @@ export function CustomDateRangePicker({
       className={`fixed z-[9999] bg-[#0a0a0b]/98 backdrop-blur-3xl border border-white/10 rounded-[32px] p-7 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in duration-300 w-[300px]`}
       style={{
         top: popupPos.flip ? (popupPos.top - 15) : (popupPos.top + 15),
-        left: Math.max(10, popupPos.left - 40),
+        left: popupPos.left,
         transform: popupPos.flip ? 'translateY(-100%)' : 'none'
       }}
       onMouseDown={(e) => e.stopPropagation()}

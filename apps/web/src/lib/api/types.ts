@@ -67,6 +67,7 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   plan: UserPlan;
+  avatarUrl?: string;
   approvedAt?: string;
   createdAt: string;
 }

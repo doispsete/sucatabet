@@ -248,13 +248,13 @@
 }
 
 @keyframes blink-red {
-  0%, 100% { background-color: rgba(239, 68, 68, 1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
-  50% { background-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 5px rgba(239, 68, 68, 0.2); }
+  0%, 100% { border-color: rgba(239, 68, 68, 0.6); box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); background-color: rgba(239, 68, 68, 0.08); }
+  50% { border-color: rgba(239, 68, 68, 0.1); box-shadow: 0 0 5px rgba(239, 68, 68, 0.1); background-color: rgba(239, 68, 68, 0.02); }
 }
 
 @keyframes blink-orange {
-  0%, 100% { background-color: rgba(249, 115, 22, 1); box-shadow: 0 0 15px rgba(249, 115, 22, 0.5); }
-  50% { background-color: rgba(249, 115, 22, 0.3); box-shadow: 0 0 5px rgba(249, 115, 22, 0.1); }
+  0%, 100% { border-color: rgba(249, 115, 22, 0.6); box-shadow: 0 0 15px rgba(249, 115, 22, 0.2); background-color: rgba(249, 115, 22, 0.08); }
+  50% { border-color: rgba(249, 115, 22, 0.1); box-shadow: 0 0 5px rgba(249, 115, 22, 0.1); background-color: rgba(249, 115, 22, 0.02); }
 }
 
 .animate-blink-red {
@@ -267,6 +267,14 @@
 
 .animate-blink-orange {
   animation: blink-orange 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes blink-vibrant-red {
+  0%, 100% { background-color: #ef4444; box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); border-color: #ff8888; }
+  50% { background-color: #dc2626; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); border-color: rgba(239, 68, 68, 0.5); }
+}
+
+.animate-blink-vibrant-red {
+  animation: blink-vibrant-red 1s infinite;
 }
 
 .duration-700 {

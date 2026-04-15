@@ -99,3 +99,8 @@ export const expensesService = {
   delete: (id: string) => api.delete<void>(`/expenses/${id}`),
   pay: (id: string) => api.post<T.Expense>(`/expenses/${id}/pay`),
 };
+
+export const stripeService = {
+  createCheckoutSession: (productId: string) => api.post<{url: string}>('/stripe/checkout', { productId }),
+  createPortalSession: () => api.post<{url: string}>('/stripe/portal'),
+};

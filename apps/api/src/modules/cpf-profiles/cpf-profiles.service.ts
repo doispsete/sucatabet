@@ -11,7 +11,7 @@ export class CpfProfilesService {
   constructor(
     private prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  ) { }
 
   private async clearUserDashboardCache(userId: string, role: UserRole) {
     await this.cacheManager.del(`dashboard:summary:${userId}:${role}`);
@@ -22,14 +22,14 @@ export class CpfProfilesService {
     // 0. Verificar limites de Plano
     const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { plan: true } });
     const plan = user?.plan || 'FREE';
-    
+
     const currentCpfs = await this.prisma.cpfProfile.count({ where: { userId, deletedAt: null } });
 
     if (plan === 'FREE' && currentCpfs >= 1) {
       throw new ForbiddenException('Plano FREE permite apenas 1 perfil de CPF.');
     }
     if (plan === 'BASIC' && currentCpfs >= 3) {
-      throw new ForbiddenException('Plano BASIC permite apenas 3 perfis de CPF.');
+      throw new ForbiddenException('Plano BÁSICO permite apenas 3 perfis de CPF.');
     }
 
     try {
@@ -62,12 +62,12 @@ export class CpfProfilesService {
           userId: userId,
         },
       });
-      
+
       await this.clearUserDashboardCache(userId, UserRole.OPERATOR);
       return result;
     } catch (error) {
       if (error instanceof ConflictException) throw error;
-      
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new ConflictException('Este CPF já está cadastrado no sistema.');
@@ -79,7 +79,7 @@ export class CpfProfilesService {
 
   async findAll(userId: string, role: UserRole, targetUserId?: string) {
     const filterUserId = (role === UserRole.ADMIN && targetUserId) ? targetUserId : userId;
-    
+
     return this.prisma.cpfProfile.findMany({
       where: { userId: filterUserId, deletedAt: null },
       include: {
@@ -121,7 +121,7 @@ export class CpfProfilesService {
       where: { id },
       data: updateCpfProfileDto,
     });
-    
+
     await this.clearUserDashboardCache(userId, role);
     return result;
   }
@@ -140,7 +140,7 @@ export class CpfProfilesService {
         data: { deletedAt: new Date() }
       });
     });
-    
+
     await this.clearUserDashboardCache(userId, role);
     return result;
   }

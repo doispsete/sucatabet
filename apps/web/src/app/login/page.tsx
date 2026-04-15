@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import {
-  Bolt,
+  Zap,
   Lock,
   Mail,
   Eye,
@@ -43,8 +43,8 @@ export default function LoginPage() {
       <div className="w-full max-w-[460px] z-10 animate-in fade-in slide-in-from-bottom-12 duration-1000 will-change-transform text-center">
         {/* Logo Section */}
         <div className="flex flex-col items-center gap-6 mb-12">
-          <div className="w-24 h-24 rounded-[32px] glass-card flex items-center justify-center shadow-[0_0_50px_rgba(3,215,145,0.2)] group transition-all duration-700 hover:scale-110 hover:rotate-3 active:scale-95">
-            <Bolt className="w-12 h-12 text-[#03d791] fill-[#03d791]/10 group-hover:animate-neon-pulse transition-transform" />
+          <div className="flex items-center justify-center group transition-all duration-700 hover:scale-110 hover:rotate-3 active:scale-95">
+            <Zap className="w-20 h-20 text-[#03d791] fill-[#03d791]/20 drop-shadow-[0_0_20px_rgba(3,215,145,0.4)] group-hover:animate-neon-pulse transition-transform" />
           </div>
           <div className="flex flex-col items-center">
             <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">

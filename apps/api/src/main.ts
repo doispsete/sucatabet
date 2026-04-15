@@ -14,6 +14,11 @@ async function bootstrap() {
   // Confiar no proxy reverso (Nginx) para identificar o IP real do cliente
   (app.getHttpAdapter().getInstance() as any).set('trust proxy', 1);
 
+  // Aumentar o limite de payload para imagens Base64
+  const express = require('express');
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
   // Global Exception Filter
   app.useGlobalFilters(new AllExceptionsFilter());
 

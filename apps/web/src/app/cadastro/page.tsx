@@ -67,17 +67,17 @@ export default function RegisterPage() {
             <div className="w-20 h-20 bg-[#03d791]/20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(3,215,145,0.2)]">
               <CheckCircle2 className="w-10 h-10 text-[#03d791]" />
             </div>
-            <h2 className="text-2xl font-black text-white uppercase italic tracking-[0.1em] mb-4">Solicitação Enviada</h2>
+            <h2 className="text-2xl font-black text-white uppercase italic tracking-[0.1em] mb-4">Conta Criada!</h2>
             <p className="text-[#B9CBBC] opacity-60 text-sm mb-10 leading-relaxed uppercase font-bold tracking-widest text-[10px]">
-              Seu cadastro foi recebido com sucesso. <br/> 
-              Agora aguarde a aprovação manual de um administrador para acessar a plataforma.
+              Seu cadastro foi concluído com sucesso. <br/> 
+              Você já tem acesso à plataforma. Trabalhe de forma profissional.
             </p>
-            <Link 
+            <a 
               href="/login"
               className="inline-flex items-center gap-3 text-[#03d791] font-black uppercase text-[11px] tracking-[0.3em] italic hover:gap-5 transition-all"
             >
-              VOLTAR AO LOGIN <ArrowRight className="w-4 h-4" />
-            </Link>
+              ENTRAR AGORA <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </div>
@@ -170,7 +170,7 @@ export default function RegisterPage() {
               disabled={loading}
               className="h-14 mt-4 bg-gradient-to-r from-[#03d791] to-[#00D1FF] text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] italic disabled:opacity-50 transition-all hover:shadow-[0_10px_30px_rgba(3,215,145,0.3)] active:scale-[0.98]"
             >
-              {loading ? "PROCESSANDO..." : "SOLICITAR ACESSO"}
+              {loading ? "PROCESSANDO..." : "CRIAR CONTA"}
             </button>
 
             <div className="text-center mt-4">
@@ -184,7 +184,7 @@ export default function RegisterPage() {
         <div className="mt-10 flex flex-col items-center gap-6">
           <div className="flex items-center gap-3 px-6 py-2 glass-card rounded-full border border-white/5">
             <ShieldCheck className="w-3 h-3 text-[#03d791]" />
-            <span className="text-[8px] font-black text-[#B9CBBC] opacity-40 uppercase tracking-[0.4em] italic">SOLICITAÇÃO SUJEITA A TERMOS</span>
+            <span className="text-[8px] font-black text-[#B9CBBC] opacity-40 uppercase tracking-[0.4em] italic">ACESSO IMEDIATO APÓS O REGISTRO</span>
           </div>
         </div>
       </div>

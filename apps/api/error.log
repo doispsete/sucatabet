@@ -8520,3 +8520,95 @@ The column `(not available)` does not exist in the current database.
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
 
+[2026-04-15T18:25:53.159Z] POST /api/stripe/checkout
+TypeError: Cannot read properties of undefined (reading 'id')
+    at StripeController.createCheckoutSession (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\stripe\stripe.controller.js:26:33)
+    at C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:38:29
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-04-15T18:41:06.921Z] POST /api/stripe/checkout
+PrismaClientValidationError: 
+Invalid `this.prisma.user.findUnique()` invocation in
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\stripe\stripe.service.js:28:45
+
+  25     this.stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY || '');
+  26 }
+  27 async createCheckoutSession(userId, productId) {
+→ 28     const user = await this.prisma.user.findUnique({
+           where: {
+             id: undefined,
+         ?   email?: String,
+         ?   stripeCustomerId?: String,
+         ?   stripeSubscriptionId?: String,
+         ?   AND?: UserWhereInput | UserWhereInput[],
+         ?   OR?: UserWhereInput[],
+         ?   NOT?: UserWhereInput | UserWhereInput[],
+         ?   password?: StringFilter | String,
+         ?   name?: StringFilter | String,
+         ?   role?: EnumUserRoleFilter | UserRole,
+         ?   status?: EnumUserStatusFilter | UserStatus,
+         ?   plan?: EnumUserPlanFilter | UserPlan,
+         ?   approvedAt?: DateTimeNullableFilter | DateTime | Null,
+         ?   cpfProfiles?: CpfProfileListRelationFilter,
+         ?   operations?: OperationListRelationFilter,
+         ?   logs?: AuditLogListRelationFilter,
+         ?   freebets?: FreebetListRelationFilter,
+         ?   bankAccount?: BankAccountNullableScalarRelationFilter | BankAccountWhereInput | Null
+           }
+         })
+
+Argument `where` of type UserWhereUniqueInput needs at least one of `id`, `email`, `stripeCustomerId` or `stripeSubscriptionId` arguments. Available options are marked with ?.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async StripeService.createCheckoutSession (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\stripe\stripe.service.js:28:22)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-04-15T18:41:08.597Z] POST /api/stripe/checkout
+PrismaClientValidationError: 
+Invalid `this.prisma.user.findUnique()` invocation in
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\stripe\stripe.service.js:28:45
+
+  25     this.stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY || '');
+  26 }
+  27 async createCheckoutSession(userId, productId) {
+→ 28     const user = await this.prisma.user.findUnique({
+           where: {
+             id: undefined,
+         ?   email?: String,
+         ?   stripeCustomerId?: String,
+         ?   stripeSubscriptionId?: String,
+         ?   AND?: UserWhereInput | UserWhereInput[],
+         ?   OR?: UserWhereInput[],
+         ?   NOT?: UserWhereInput | UserWhereInput[],
+         ?   password?: StringFilter | String,
+         ?   name?: StringFilter | String,
+         ?   role?: EnumUserRoleFilter | UserRole,
+         ?   status?: EnumUserStatusFilter | UserStatus,
+         ?   plan?: EnumUserPlanFilter | UserPlan,
+         ?   approvedAt?: DateTimeNullableFilter | DateTime | Null,
+         ?   cpfProfiles?: CpfProfileListRelationFilter,
+         ?   operations?: OperationListRelationFilter,
+         ?   logs?: AuditLogListRelationFilter,
+         ?   freebets?: FreebetListRelationFilter,
+         ?   bankAccount?: BankAccountNullableScalarRelationFilter | BankAccountWhereInput | Null
+           }
+         })
+
+Argument `where` of type UserWhereUniqueInput needs at least one of `id`, `email`, `stripeCustomerId` or `stripeSubscriptionId` arguments. Available options are marked with ?.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async StripeService.createCheckoutSession (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\stripe\stripe.service.js:28:22)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
+

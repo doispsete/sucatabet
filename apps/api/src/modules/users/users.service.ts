@@ -40,6 +40,7 @@ export class UsersService {
         role: true,
         status: true,
         plan: true,
+        avatarUrl: true,
       },
     });
   }
@@ -54,6 +55,7 @@ export class UsersService {
         role: true,
         status: true,
         plan: true,
+        avatarUrl: true,
         approvedAt: true,
       },
     });
@@ -75,6 +77,7 @@ export class UsersService {
         role: true,
         status: true,
         plan: true,
+        avatarUrl: true,
       },
     });
   }
@@ -88,6 +91,7 @@ export class UsersService {
         name: true,
         role: true,
         plan: true,
+        avatarUrl: true,
       },
     });
 
@@ -116,13 +120,14 @@ export class UsersService {
     });
   }
 
-  async updateProfile(id: string, data: { name?: string, email?: string, oldPassword?: string, newPassword?: string }) {
+  async updateProfile(id: string, data: { name?: string, email?: string, oldPassword?: string, newPassword?: string, avatarUrl?: string }) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
 
     const updateData: any = {};
     if (data.name) updateData.name = data.name;
     if (data.email) updateData.email = data.email;
+    if (data.avatarUrl) updateData.avatarUrl = data.avatarUrl;
 
     if (data.newPassword) {
       if (!data.oldPassword) {
@@ -144,6 +149,7 @@ export class UsersService {
         name: true,
         role: true,
         plan: true,
+        avatarUrl: true,
       },
     });
   }

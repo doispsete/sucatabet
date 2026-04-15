@@ -3,12 +3,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { 
   Search, 
-  Settings,
   Menu,
   Calculator,
-  AlertTriangle
+  AlertTriangle,
+  Plus
 } from "lucide-react";
 import { useDashboardSummary, useFreebets } from "@/lib/hooks";
+import { useModal } from "@/lib/context/modal-context";
 
 interface TopbarProps {
   onMenuClick?: () => void;
@@ -21,6 +22,7 @@ export function Topbar({ onMenuClick, isMobile, isHalf, isCollapsed }: TopbarPro
   const pathname = usePathname();
   const isCalc = pathname === "/calculadora";
   const isAlerts = pathname === "/alertas";
+  const { openNewOperation } = useModal();
 
   const { data: summary } = useDashboardSummary();
   const { data: allFreebets } = useFreebets();
@@ -51,11 +53,11 @@ export function Topbar({ onMenuClick, isMobile, isHalf, isCollapsed }: TopbarPro
     : Infinity;
 
   const alertBlinkClass = minDiffHours <= 2 
-    ? "animate-blink-red !text-white shadow-[0_0_20px_rgba(239,68,68,0.5)]" 
+    ? "animate-blink-vibrant-red !text-white shadow-[0_0_30px_rgba(239,68,68,0.8)] !bg-red-500 font-black" 
     : minDiffHours <= 24 
-      ? "animate-blink-red-slow !text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]" 
+      ? "animate-blink-vibrant-red !text-white shadow-[0_0_25px_rgba(239,68,68,0.6)] !bg-red-500 font-black" 
       : minDiffHours <= 48 
-        ? "animate-blink-orange !text-white shadow-[0_0_15px_rgba(249,115,22,0.3)]" 
+        ? "animate-blink-orange !text-white shadow-[0_0_20px_rgba(249,115,22,0.4)] !bg-orange-500 font-black" 
         : "";
 
   const { push } = useRouter();
@@ -132,7 +134,7 @@ export function Topbar({ onMenuClick, isMobile, isHalf, isCollapsed }: TopbarPro
                   ? `bg-[#00ff88] text-black font-black shadow-[0_0_15px_rgba(0,255,136,0.3)] ${alertBlinkClass}` 
                   : alertBlinkClass || "text-gray-400 hover:text-white"}`}
             >
-              <AlertTriangle className={`w-4 h-4 ${alertBlinkClass ? "animate-pulse" : ""}`} />
+              <AlertTriangle className={`w-4 h-4 ${alertBlinkClass ? "animate-pulse !text-white" : ""}`} />
               {!isHalf && <span>Alertas</span>}
             </Link>
           </nav>
@@ -154,16 +156,37 @@ export function Topbar({ onMenuClick, isMobile, isHalf, isCollapsed }: TopbarPro
         )}
 
         {isMobile && (
-           <h1 className="text-sm font-black text-[#00ff88] tracking-widest italic uppercase">Sucata Bet</h1>
+          <div className="flex items-center gap-2 ml-2">
+            <Link href="/" className="flex items-center">
+              <h1 className="text-sm font-black text-[#00ff88] tracking-widest italic uppercase">Sucata Bet</h1>
+            </Link>
+          </div>
         )}
       </div>
 
       {/* Right Side Actions */}
-      <div className="flex items-center gap-2 md:gap-4">
+      <div className="flex items-center gap-1 md:gap-4">
         {isMobile && (
-          <button className="p-2 text-gray-400 hover:text-[#00ff88] btn-interact">
-            <Search className="w-5 h-5" />
-          </button>
+          <>
+            <Link 
+              href="/calculadora" 
+              className={`p-2 rounded-lg transition-all ${isCalc ? "text-[#00ff88]" : "text-gray-400 hover:text-white"}`}
+            >
+              <Calculator className="w-5 h-5" />
+            </Link>
+            <Link 
+              href="/alertas" 
+              className={`p-2 rounded-lg transition-all ${isAlerts ? "text-[#00ff88] drop-shadow-[0_0_10px_rgba(0,255,136,0.3)]" : alertBlinkClass || "text-gray-400 hover:text-white"}`}
+            >
+              <AlertTriangle className={`w-5 h-5 ${alertBlinkClass ? "animate-pulse" : ""}`} />
+            </Link>
+            <button 
+              onClick={() => openNewOperation()}
+              className="ml-1 p-2 bg-[#00ff88] text-black rounded-lg shadow-[0_0_15px_rgba(0,255,136,0.3)] hover:scale-105 active:scale-95 transition-all"
+            >
+              <Plus className="w-5 h-5 font-black" />
+            </button>
+          </>
         )}
 
         {/* Repositioned Clock - UTC-3 */}

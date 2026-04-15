@@ -14,7 +14,9 @@ import {
   Calculator,
   Bell,
   Gamepad2,
-  Zap
+  Zap,
+  Bolt,
+  Crown
 } from "lucide-react";
 import { useAuth } from "@/lib/context/auth-context";
 import { useModal } from "@/lib/context/modal-context";
@@ -38,18 +40,44 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
   const [isPlansOpen, setIsPlansOpen] = React.useState(false);
   const [isCasinoOpen, setIsCasinoOpen] = React.useState(false);
   const activeCollapsed = isCollapsed || isHalf;
+
+  if (!user && !isAuthLoading) return null;
   
+  const handleManageSubscription = async () => {
+    import('@/components/ui/components').then(({ toast }) => {
+      toast.success('Redirecionando para o Portal de Assinatura Stripe...');
+    });
+    try {
+      const { stripeService } = await import('@/lib/api/services');
+      const response = await stripeService.createPortalSession();
+      if (response.url) {
+        window.location.href = response.url;
+      }
+    } catch (err) {
+      console.error(err);
+      import('@/components/ui/components').then(({ toast }) => {
+        toast.error('Erro ao acessar o portal.');
+      });
+    }
+  };
+
   const menuItems = [
     { label: "Dashboard", href: "/", icon: LayoutDashboard },
     { label: "Operações", href: "/operacoes", icon: Banknote },
-    { label: "Freebets", href: "/freebets", icon: Ticket },
-    { label: "Contas", href: "/contas", icon: Users },
-    { label: "Plano", onClick: () => setIsPlansOpen(true), icon: Zap },
     ...(user?.plan === 'PRO' || isAdmin ? [
       { label: "Banco", href: "/banco", icon: Wallet },
+    ] : []),
+    { label: "Freebets", href: "/freebets", icon: Ticket },
+    ...(user?.plan === 'PRO' || isAdmin ? [
       { label: "Cassino", onClick: () => setIsCasinoOpen(true), icon: Gamepad2 }
     ] : []),
+    { label: "Contas", href: "/contas", icon: Users },
     ...(isAdmin ? [{ label: "Admin", href: "/admin", icon: ShieldCheck }] : []),
+    ...(user && (user.plan === 'PRO' || user.plan === 'BASIC') && !isAdmin ? [
+      { label: "Gerenciar Assinatura", onClick: handleManageSubscription, icon: Crown }
+    ] : [
+      { label: "Planos", onClick: () => setIsPlansOpen(true), icon: Crown }
+    ]),
   ];
 
   const sidebarClasses = isMobile
@@ -61,10 +89,8 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
   return (
     <aside className={`${sidebarClasses} will-change-[width,transform]`}>
       <div className="w-full flex items-center transition-all duration-300 mb-6 px-2">
-        <div className="flex items-center justify-center min-w-[48px] h-12 shrink-0">
-          <div className="w-8 h-8 bg-[#00ff88] rounded flex items-center justify-center font-black text-black text-xs shadow-[0_0_15px_rgba(0,255,136,0.3)]">
-            SB
-          </div>
+        <div className="flex items-center justify-center min-w-[48px] h-12 shrink-0 group">
+          <Zap className="w-7 h-7 text-[#03d791] fill-[#03d791]/10 drop-shadow-[0_0_10px_rgba(3,215,145,0.4)] group-hover:scale-110 transition-transform cursor-pointer" />
         </div>
         <div className={`flex flex-col transition-all duration-300 ml-1
           ${isWide ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12 pointer-events-none'}`}>
@@ -157,7 +183,7 @@ export function Sidebar({ isMobile, isHalf, isOpen, onClose, isCollapsed }: Side
                 <div className="w-full h-full animate-pulse bg-white/10" />
               ) : (
                 <img 
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Lucky'}`} 
+                  src={user?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Lucky'}`} 
                   alt="Profile" 
                   className="w-full h-full object-cover"
                 />

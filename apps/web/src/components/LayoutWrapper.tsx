@@ -5,6 +5,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { DynamicBackground } from "./DynamicBackground";
+import { AnnouncementModal } from "./modals/AnnouncementModal";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -29,11 +30,13 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Fechar drawer ao navegar
+  useEffect(() => {
+    setIsDrawerOpen(false);
+  }, [pathname]);
 
   const isDashboard = pathname === "/";
   const isLogin = pathname === "/login";
@@ -43,8 +46,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // Sidebar logic: Always 64px in Half-Screen or on non-dashboard pages.
-  // Expanded only on Dashboard at Full resolution (>= 1280px).
   const sidebarWidth = isMobile ? 0 : (isHalf || !isDashboard ? 64 : 220);
 
   return (
@@ -55,15 +56,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         style={{ boxShadow: '0 0 10px rgba(0,255,136,0.5)' }}
       />
       <DynamicBackground />
-      {/* Mobile Menu Trigger (since Topbar is gone) */}
-      {isMobile && (
-        <button 
-          onClick={() => setIsDrawerOpen(true)}
-          className="fixed top-4 left-4 z-40 p-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-[#00ff88] shadow-xl"
-        >
-          <span className="material-symbols-outlined">menu</span>
-        </button>
-      )}
 
       <Sidebar 
         isMobile={isMobile} 
@@ -72,6 +64,8 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         onClose={() => setIsDrawerOpen(false)}
         isCollapsed={isHalf || !isDashboard}
       />
+
+      <AnnouncementModal />
 
       {/* Mobile Overlay */}
       {isMobile && isDrawerOpen && (
@@ -89,9 +83,14 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         }}
       >
         <Suspense fallback={<div className="fixed top-0 left-0 right-0 h-20 bg-[#050505]/50 backdrop-blur-xl z-30" />}>
-          <Topbar isMobile={isMobile} isHalf={isHalf} isCollapsed={isHalf || !isDashboard} />
+          <Topbar 
+            isMobile={isMobile} 
+            isHalf={isHalf} 
+            isCollapsed={isHalf || !isDashboard}
+            onMenuClick={() => setIsDrawerOpen(prev => !prev)}
+          />
         </Suspense>
-        <main className="flex-1 overflow-y-auto pt-[100px] pb-10 px-3 md:px-8 lg:px-10 custom-scrollbar relative">
+        <main className={`flex-1 overflow-y-auto pt-[76px] px-3 md:px-8 lg:px-10 custom-scrollbar relative ${isMobile ? 'pb-6' : 'pb-10'}`}>
           {children}
         </main>
       </div>

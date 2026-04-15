@@ -71,7 +71,7 @@ function OperationsContent() {
   const getStatusStyle = (status: OperationStatus) => {
     switch (status) {
       case OperationStatus.PENDING:
-        return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+        return "bg-[#FFDD65]/10 text-[#FFDD65] border-[#FFDD65]/30";
       case OperationStatus.FINISHED:
         return "bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20";
       case OperationStatus.CASHOUT:
@@ -123,7 +123,7 @@ function OperationsContent() {
             <div className="w-10 h-[2px] bg-[#03D791] rounded-full shadow-[0_0_15px_rgba(3,215,145,0.5)]" />
             <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-[#03D791] italic">hub de operações</h2>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.8] italic uppercase">
+          <h1 className="text-3xl md:text-7xl font-black text-white tracking-tighter leading-[0.8] italic uppercase">
             Fluxo de<br /><span className="text-[#03D791]">Operações</span>
           </h1>
         </div>
@@ -158,10 +158,10 @@ function OperationsContent() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
-        <div className="col-span-1 md:col-span-1 lg:col-span-8 glass-card rounded-[45px] p-10 relative overflow-hidden flex items-center justify-between border-white/5 shadow-3xl group">
+        <div className="col-span-1 md:col-span-1 lg:col-span-8 glass-card rounded-[32px] md:rounded-[45px] p-6 md:p-10 relative overflow-hidden flex items-center justify-between border-white/5 shadow-3xl group">
           <div className="relative z-10">
             <p className="text-[#b9cbbc] text-[10px] font-black uppercase tracking-[0.5em] mb-4 opacity-30 italic">BANCA TOTAL</p>
-            <h3 className="text-6xl font-black text-white tracking-tighter italic">
+            <h3 className="text-3xl md:text-6xl font-black text-white tracking-tighter italic">
               R$ {formatCurrency(summary?.bancaTotal ?? 0)}
             </h3>
             <div className="flex items-center gap-3 mt-6">
@@ -176,10 +176,10 @@ function OperationsContent() {
           </div>
         </div>
 
-        <div className="col-span-1 md:col-span-1 lg:col-span-4 glass-card rounded-[45px] p-10 flex flex-col justify-between border-l-4 border-[#03D791] border-white/5 shadow-3xl bg-[#03D791]/5">
+        <div className="col-span-1 md:col-span-1 lg:col-span-4 glass-card rounded-[32px] md:rounded-[45px] p-6 md:p-10 flex flex-col justify-between border-l-4 border-[#03D791] border-white/5 shadow-3xl bg-[#03D791]/5">
           <div>
             <p className="text-[#b9cbbc] text-[10px] font-black uppercase tracking-[0.4em] mb-4 opacity-30 italic">VALOR EM OPERAÇÃO</p>
-            <h3 className="text-4xl font-black text-white italic tracking-tighter">
+            <h3 className="text-2xl md:text-4xl font-black text-white italic tracking-tighter">
               R$ {formatCurrency(summary?.emOperacao ?? 0)}
             </h3>
           </div>
@@ -200,8 +200,8 @@ function OperationsContent() {
 
       {/* Operations List Container */}
       <div className="glass-card rounded-[40px] overflow-hidden border-white/5">
-        {/* Table Header */}
-        <div className="grid grid-cols-12 px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
+        {/* Table Header - somente desktop */}
+        <div className="hidden md:grid grid-cols-12 px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
           <div className="col-span-4 lg:col-span-2">Data / Hora</div>
           <div className="col-span-4 lg:col-span-2">Operação</div>
           <div className="hidden lg:flex col-span-2 justify-center items-center">Descrição</div>
@@ -227,6 +227,10 @@ function OperationsContent() {
           ) : (
             (Array.isArray(opsResponse?.data) ? opsResponse.data : []).map((op) => {
               const totalStake = op.bets?.reduce((sum: number, bet: any) => sum + Number(bet.cost || 0), 0) || 0;
+              const profitColor = op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]' : op.realProfit != null && op.realProfit < 0 ? 'text-red-400' : 'text-[#FFDD65]';
+              const statusStyle = getStatusStyle(op.status as OperationStatus);
+              const statusLabel = getStatusLabel(op.status as OperationStatus);
+
               return (
                 <div
                   key={op.id}
@@ -238,65 +242,105 @@ function OperationsContent() {
                       setIsDetailsModalOpen(true);
                     }
                   }}
-                  className="grid grid-cols-12 px-8 py-6 items-center hover:bg-white/[0.02] transition-all cursor-pointer group"
+                  className="cursor-pointer hover:bg-white/[0.02] transition-all group"
                 >
-                  <div className="col-span-4 lg:col-span-2 flex flex-col">
-                    <span className="text-sm font-black text-white italic tracking-tighter uppercase">{formatDate(op.createdAt)}</span>
-                    <span className="text-[9px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-30">{formatTime(op.createdAt)}</span>
-                  </div>
-                  <div className="col-span-4 lg:col-span-2 flex flex-col gap-1">
-                    <div className="flex -space-x-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                      {op.bets?.map((bet: any, i: number) => (
-                        <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-black/40 flex items-center justify-center overflow-hidden" title={bet.account?.bettingHouse?.name}>
-                          <img
-                            src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`}
-                            alt=""
-                            className="w-3.5 h-3.5 object-contain"
-                          />
-                        </div>
-                      ))}
+                  {/* Mobile Card */}
+                  <div className="md:hidden grid grid-cols-[auto_1fr_auto] gap-x-3 px-4 py-4 border-b border-white/5 items-center">
+                    {/* Col esquerda: data */}
+                    <div className="flex flex-col items-center min-w-[44px]">
+                      <span className="text-[9px] text-white/35 font-black tabular-nums text-center leading-snug">{formatDate(op.createdAt)}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-[#03D791] font-black uppercase tracking-[0.2em] leading-none italic">
-                        {getOperationTypeLabel(op.type)}
-                      </span>
+
+                    {/* Col centro: favicons + tipo + descrição */}
+                    <div className="flex flex-col items-center gap-1 min-w-0 px-1">
+                      <div className="flex -space-x-1.5">
+                        {op.bets?.slice(0, 4).map((bet: any, i: number) => (
+                          <div key={i} className="w-5 h-5 rounded-full border border-black/60 bg-black/60 flex items-center justify-center overflow-hidden" title={bet.account?.bettingHouse?.name}>
+                            <img src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`} alt="" className="w-3 h-3 object-contain" />
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-[11px] font-black text-[#03D791] italic truncate w-full text-center">{getOperationTypeLabel(op.type)}</span>
+                      {op.description && (
+                        <span className="text-[11px] font-semibold text-white/60 truncate w-full text-center">{op.description}</span>
+                      )}
                     </div>
-                  </div>
-                  <div className="hidden lg:flex col-span-2 justify-center items-center">
-                    <span className="text-[11px] text-white/40 font-black italic tracking-tighter uppercase inline-block whitespace-nowrap" title={op.description}>
-                      {op.description || "-"}
-                    </span>
-                  </div>
-                  <div className="hidden lg:block col-span-2 text-center">
-                    <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500
-                    ${op.status === OperationStatus.PENDING ? 'bg-amber-500/10 border-amber-500/20 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.1)]' :
-                        op.status === OperationStatus.FINISHED ? 'bg-[#03D791]/10 border-[#03D791]/20 text-[#03D791] shadow-[0_0_15px_rgba(3,215,145,0.1)]' :
-                          'bg-white/5 border-white/10 text-[#b9cbbc]'}
-                  `}>
-                      {op.status === OperationStatus.PENDING ? 'Pendente' :
-                        op.status === OperationStatus.FINISHED ? 'Finalizada' : 'Cashout'}
-                    </span>
-                  </div>
-                  <div className="col-span-4 lg:col-span-2 text-right">
-                    <div className="flex flex-col items-end">
-                      <span className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.2em] italic mb-1">
-                        Stake: <span className="text-white/60">R$ {formatCurrency(totalStake)}</span>
-                      </span>
+
+                    {/* Col direita: status → stake → resultado */}
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md border ${statusStyle}`}>{statusLabel}</span>
+                      <span className="text-[9px] text-white/30 font-black tabular-nums">R${formatCurrency(totalStake)}</span>
                       {op.status === OperationStatus.FINISHED || op.status === OperationStatus.CASHOUT ? (
-                        <span className={`text-sm font-black italic tracking-tighter ${op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]' : 'text-red-500/60'}`}>
-                          {op.realProfit != null ? `${op.realProfit >= 0 ? '+' : ''} R$ ${formatCurrency(op.realProfit)}` : 'Encerrada'}
+                        <span className={`text-sm font-black italic leading-tight ${
+                          op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]'
+                          : op.realProfit != null && op.realProfit < 0 ? 'text-red-400'
+                          : 'text-white/40'
+                        }`}>
+                          {op.realProfit != null ? `${op.realProfit >= 0 ? '+' : ''}R$${formatCurrency(op.realProfit)}` : '—'}
                         </span>
                       ) : (
-                        <span className="text-sm font-black text-[#FFDD65] italic tracking-tighter">
-                          {op.expectedProfit != null ? `${op.expectedProfit >= 0 ? '+' : ''} R$ ${formatCurrency(op.expectedProfit)}` : 'R$ 0,00'}
+                        <span className="text-sm font-black italic leading-tight text-[#FFDD65]">
+                          {op.expectedProfit != null ? `+R$${formatCurrency(op.expectedProfit)}` : '—'}
                         </span>
                       )}
                     </div>
                   </div>
-                  <div className="hidden lg:block col-span-2 text-right">
-                    <span className="text-[10px] font-black text-white/20 uppercase tracking-tighter tabular-nums truncate max-w-[80px] inline-block">
-                      #{op.id.split('-')[0]}
-                    </span>
+
+                  {/* Desktop Row: grid original */}
+                  <div className="hidden md:grid grid-cols-12 px-8 py-6 items-center group">
+                    <div className="col-span-4 lg:col-span-2 flex flex-col">
+                      <span className="text-sm font-black text-white italic tracking-tighter uppercase">{formatDate(op.createdAt)}</span>
+                      <span className="text-[9px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-30">{formatTime(op.createdAt)}</span>
+                    </div>
+                    <div className="col-span-4 lg:col-span-2 flex flex-col gap-1">
+                      <div className="flex -space-x-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                        {op.bets?.map((bet: any, i: number) => (
+                          <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-black/40 flex items-center justify-center overflow-hidden" title={bet.account?.bettingHouse?.name}>
+                            <img
+                              src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`}
+                              alt=""
+                              className="w-3.5 h-3.5 object-contain"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-[#03D791] font-black uppercase tracking-[0.2em] leading-none italic">
+                          {getOperationTypeLabel(op.type)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="hidden lg:flex col-span-2 justify-center items-center">
+                      <span className="text-[11px] text-white/40 font-black italic tracking-tighter uppercase inline-block whitespace-nowrap" title={op.description}>
+                        {op.description || "-"}
+                      </span>
+                    </div>
+                    <div className="hidden lg:block col-span-2 text-center">
+                      <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>
+                        {statusLabel}
+                      </span>
+                    </div>
+                    <div className="col-span-4 lg:col-span-2 text-right">
+                      <div className="flex flex-col items-end">
+                        <span className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.2em] italic mb-1">
+                          Stake: <span className="text-white/60">R$ {formatCurrency(totalStake)}</span>
+                        </span>
+                        {op.status === OperationStatus.FINISHED || op.status === OperationStatus.CASHOUT ? (
+                          <span className={`text-sm font-black italic tracking-tighter ${op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]' : 'text-red-500/60'}`}>
+                            {op.realProfit != null ? `${op.realProfit >= 0 ? '+' : ''} R$ ${formatCurrency(op.realProfit)}` : 'Encerrada'}
+                          </span>
+                        ) : (
+                          <span className="text-sm font-black text-[#FFDD65] italic tracking-tighter">
+                            {op.expectedProfit != null ? `${op.expectedProfit >= 0 ? '+' : ''} R$ ${formatCurrency(op.expectedProfit)}` : 'R$ 0,00'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="hidden lg:block col-span-2 text-right">
+                      <span className="text-[10px] font-black text-white/20 uppercase tracking-tighter tabular-nums truncate max-w-[80px] inline-block">
+                        #{op.id.split('-')[0]}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );

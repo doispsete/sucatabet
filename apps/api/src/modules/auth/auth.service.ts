@@ -29,7 +29,7 @@ export class AuthService {
         email: data.email,
         password: hashedPassword,
         role: UserRole.OPERATOR,
-        status: UserStatus.PENDING,
+        status: UserStatus.ACTIVE, // TODO: Update to auto-approve new registrations
         plan: UserPlan.FREE,
         bankAccount: {
           create: {
@@ -40,7 +40,7 @@ export class AuthService {
       },
     });
 
-    return { message: "Cadastro realizado. Aguarde aprovação." };
+    return { message: "Cadastro realizado com sucesso. Bem-vindo!" };
   }
 
   async login(loginDto: LoginDto) {
@@ -97,6 +97,7 @@ export class AuthService {
           name: user.name,
           role: user.role,
           plan: user.plan,
+          avatarUrl: user.avatarUrl,
         },
       };
     } catch (error) {
