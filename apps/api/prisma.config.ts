@@ -3,9 +3,25 @@ import * as dotenv from "dotenv";
 import * as path from "path";
 
 // Tenta carregar o .env de múltiplos locais possíveis na estrutura do Docker
-dotenv.config({ path: path.join(process.cwd(), ".env") });
-dotenv.config({ path: path.join(process.cwd(), "apps/api/.env") });
-dotenv.config({ path: path.join(process.cwd(), "../../.env") });
+const envPaths = [
+  path.join(process.cwd(), ".env"),
+  path.join(process.cwd(), "apps/api/.env"),
+  path.join(__dirname, ".env"),
+  path.join(__dirname, "../.env")
+];
+
+envPaths.forEach(p => {
+  dotenv.config({ path: p, override: true });
+});
+
+const databaseUrl = process.env["DATABASE_URL"];
+
+if (databaseUrl) {
+  const masked = databaseUrl.replace(/:.*@/, ':****@');
+  console.log(`[PrismaConfig] Usando URL: ${masked}`);
+} else {
+  console.warn(`[PrismaConfig] Aviso: DATABASE_URL não encontrada no ambiente.`);
+}
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -14,8 +30,6 @@ export default defineConfig({
     seed: "ts-node prisma/seed.ts",
   },
   datasource: {
-    // Prioriza a variável de ambiente real (injetada pelo Docker)
-    // Se não existir, usa o fallback do dotenv
-    url: process.env["DATABASE_URL"],
+    url: databaseUrl,
   },
 });
