@@ -149,6 +149,15 @@ export default function DashboardPage() {
     return () => window.removeEventListener('operation-created', handleCreated);
   }, [refetchSummary, refetchClub]);
 
+  // ⚠️ Hooks DEVEM estar antes de qualquer early return (Rules of Hooks)
+  const currentPerformance = useMemo(() => {
+    if (!summary?.performance?.[perfPeriod]) return [];
+    return groupPerformanceData(summary.performance[perfPeriod]);
+  }, [summary, perfPeriod]);
+
+  const maxPerfValue = useMemo(() =>
+    Math.max(...(currentPerformance.length > 0 ? currentPerformance.map((p: any) => Math.abs(p.value)) : [1]), 1),
+  [currentPerformance]);
 
   if (errorSummary || errorClub) {
     return (
@@ -182,15 +191,6 @@ export default function DashboardPage() {
   }
 
   if (!summary || !club) return null;
-
-  const currentPerformance = useMemo(() => {
-    if (!summary?.performance?.[perfPeriod]) return [];
-    return groupPerformanceData(summary.performance[perfPeriod]);
-  }, [summary, perfPeriod]);
-
-  const maxPerfValue = useMemo(() => 
-    Math.max(...currentPerformance.map((p: any) => Math.abs(p.value)), 1),
-  [currentPerformance]);
 
   return (
     <div className="space-y-8 px-3 md:px-6">
