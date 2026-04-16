@@ -15,7 +15,7 @@ export function UpgradeOverlay({ title = "Recurso Premium", message = "Faça o u
 
   return (
     <>
-      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md bg-black/40 rounded-inherit">
+      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md bg-black/40 rounded-inherit pointer-events-auto">
         <div className="flex flex-col items-center max-w-sm gap-4 animate-in fade-in zoom-in-95 duration-500">
           <div className="relative">
             <div className={`w-16 h-16 rounded-3xl bg-black/50 border flex items-center justify-center shadow-2xl relative z-10 
