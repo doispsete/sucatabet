@@ -127,15 +127,20 @@ export class StripeService {
     }
 
     const session = event.data.object as any;
+    console.log(`[Stripe Webhook] Body parsed successfully. Type: ${event.type} | ID: ${event.id}`);
 
     try {
       // 1. Checkout finalizado (Início da assinatura)
       if (event.type === 'checkout.session.completed') {
-        if (session.mode === 'subscription' && session.client_reference_id) {
-          const userId = session.client_reference_id;
+        const userId = session.client_reference_id;
+        console.log(`[Stripe Webhook] Checkout Completed | Mode: ${session.mode} | UserId: ${userId}`);
+        
+        if (session.mode === 'subscription' && userId) {
           const subscription = await this.stripe.subscriptions.retrieve(session.subscription as string);
           const productId = subscription.items.data[0].plan.product as string;
           const plan = this.mapProductIdToPlan(productId);
+          
+          console.log(`[Stripe Webhook] Mapping Product: ${productId} to Plan: ${plan}`);
 
           await this.prisma.user.update({
             where: { id: userId },
@@ -145,7 +150,9 @@ export class StripeService {
               stripeCustomerId: session.customer as string,
             } as any,
           });
-          console.log(`[Stripe Webhook] Plano atualizado para usuário ${userId}: ${plan}`);
+          console.log(`[Stripe Webhook] ✅ Plano atualizado para usuário ${userId}: ${plan}`);
+        } else {
+          console.warn(`[Stripe Webhook] ⚠️ Checkout ignorado: Mode=${session.mode}, UserId=${userId}`);
         }
       }
 
@@ -153,6 +160,7 @@ export class StripeService {
       if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
         const subscription = event.data.object as any;
         const userId = subscription.metadata?.userId;
+        console.log(`[Stripe Webhook] Sub Script Event: ${event.type} | UserId in Metadata: ${userId}`);
 
         if (userId) {
           const productId = subscription.items.data[0].plan.product as string;
@@ -162,6 +170,8 @@ export class StripeService {
             plan = this.mapProductIdToPlan(productId);
           }
 
+          console.log(`[Stripe Webhook] Mapping Sub Product: ${productId} to Plan: ${plan}`);
+
           await this.prisma.user.update({
             where: { id: userId },
             data: { 
@@ -170,7 +180,7 @@ export class StripeService {
               stripeCustomerId: subscription.customer as string 
             } as any,
           });
-          console.log(`[Stripe Webhook] Assinatura ${event.type} para usuário ${userId}: ${plan}`);
+          console.log(`[Stripe Webhook] ✅ Assinatura sincronizada para usuário ${userId}: ${plan}`);
         }
       }
 
@@ -187,7 +197,7 @@ export class StripeService {
               stripeSubscriptionId: null 
             } as any,
           });
-          console.log(`[Stripe Webhook] Assinatura cancelada para usuário ${userId}. Plano revertido para FREE.`);
+          console.log(`[Stripe Webhook] ❌ Assinatura cancelada para usuário ${userId}. Plano revertido para FREE.`);
         }
       }
     } catch (error: any) {
