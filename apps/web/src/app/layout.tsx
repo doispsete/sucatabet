@@ -7,6 +7,8 @@ import { ToastContainer } from "@/components/ui/components";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GlobalErrorManager } from "@/components/GlobalErrorManager";
 
+import { StripeRefetchHandler } from "@/components/StripeRefetchHandler";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -47,6 +49,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <GlobalErrorManager />
           <AuthProvider>
+            <StripeRefetchHandler />
             <ModalProvider>
               <LayoutWrapper>
                 {children}
