@@ -102,17 +102,27 @@ export class StripeService {
   }
 
   async handleWebhook(signature: string, payload: Buffer) {
+    console.log(`[Stripe Service] Payload type: ${typeof payload} | IsBuffer: ${Buffer.isBuffer(payload)}`);
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     let event: any;
 
     try {
+      let finalPayload = payload;
+      
+      // FALLBACK: Se por algum motivo o middleware falhou e temos um objeto,
+      // tentamos converter de volta para string para o Stripe aceitar.
+      if (typeof payload === 'object' && !Buffer.isBuffer(payload)) {
+        console.warn('[Stripe Service] ALERTA: Recebido objeto em vez de Buffer. Tentando stringify...');
+        finalPayload = Buffer.from(JSON.stringify(payload));
+      }
+
       if (!webhookSecret) {
-        // Se não houver WEBHOOK_SECRET configurado, faz o parse inseguro apenas para dev
-        event = JSON.parse(payload.toString());
+        event = JSON.parse(finalPayload.toString());
       } else {
-        event = this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+        event = this.stripe.webhooks.constructEvent(finalPayload, signature, webhookSecret);
       }
     } catch (err: any) {
+      console.error(`[Stripe Service] Erro na construção do evento: ${err.message}`);
       throw new BadRequestException(`Webhook Error: ${err.message}`);
     }
 

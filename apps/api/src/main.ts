@@ -8,7 +8,10 @@ import cookieParser from 'cookie-parser';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { 
+    rawBody: true,
+    bodyParser: false 
+  });
   app.setGlobalPrefix('api');
   
   // Confiar no proxy reverso (Nginx) para identificar o IP real do cliente
@@ -16,6 +19,18 @@ async function bootstrap() {
 
   // Aumentar o limite de payload para imagens Base64
   const express = require('express');
+  
+  // LOG DE TODAS AS REQUISIÇÕES (PARA DEBUG)
+  app.use((req: any, res, next) => {
+    const url = req.originalUrl || req.url;
+    // Logamos apenas um resumo para não inundar os logs, mas pegamos tudo do Stripe
+    if (url?.includes('stripe/webhook')) {
+      console.log(`[STRIPE ATTEMPT] matched ${url}`);
+      return express.raw({ type: '*/*' })(req, res, next);
+    }
+    next();
+  });
+
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 

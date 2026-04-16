@@ -37,8 +37,11 @@ export function UpgradeOverlay({ title = "Recurso Premium", message = "Faça o u
           </div>
 
           <button
-            onClick={() => setIsPlansOpen(true)}
-            className={`w-full h-12 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2 transition-all duration-300 will-change-transform hover:scale-105 active:scale-95
+            onClick={() => {
+              console.log('Upgrade button clicked!');
+              setIsPlansOpen(true);
+            }}
+            className={`w-full h-12 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2 transition-all duration-300 will-change-transform hover:scale-105 active:scale-95 !pointer-events-auto cursor-pointer relative z-[110]
               ${highlightIcon ? 'bg-[#facc15] text-black shadow-[0_0_20px_rgba(250,204,21,0.3)] hover:shadow-[0_0_30px_rgba(250,204,21,0.5)]' : 'bg-white text-black'}`}
           >
             <Crown size={14} /> Fazer Upgrade

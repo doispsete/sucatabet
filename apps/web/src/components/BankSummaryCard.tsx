@@ -112,7 +112,7 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
       ${!isPro ? 'select-none relative !border-white/5' : ''}`}>
       
       {!isPro && (
-        <div className="absolute inset-0 z-50 pointer-events-auto">
+        <div className="absolute inset-0 z-[100] !pointer-events-auto cursor-default">
           <UpgradeOverlay 
             title="Módulo Banco PRO" 
             message="Controle automatizado de despesas e múltiplos CPFs liberado apenas no plano Profissional." 
@@ -120,7 +120,7 @@ export function BankSummaryCard({ onDeposit, onWithdraw }: BankSummaryCardProps)
         </div>
       )}
 
-      <div className={`relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 ${!isPro ? 'opacity-20 blur-[2px] pointer-events-none' : ''}`}>
+      <div className={`relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 ${!isPro ? 'opacity-20 blur-[2px] !pointer-events-none' : ''}`}>
         {/* Esquerda: Saldo e Métricas */}
         <div className="space-y-8">
           <div className="flex justify-between items-start">
