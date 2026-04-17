@@ -7,12 +7,20 @@ import { AppModule } from './app.module';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import 'class-validator';
+import 'class-transformer';
+
+import { NestExpressApplication, ExpressAdapter } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    rawBody: true,
-    bodyParser: false
-  });
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule,
+    new ExpressAdapter(),
+    {
+      rawBody: true,
+      bodyParser: false
+    }
+  );
   app.setGlobalPrefix('api');
 
   // Confiar no proxy reverso (Nginx) para identificar o IP real do cliente

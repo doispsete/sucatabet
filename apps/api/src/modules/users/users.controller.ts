@@ -43,6 +43,12 @@ export class UsersController {
     return this.usersService.getOnlineUsers();
   }
 
+  @Get('ping')
+  ping(@Req() req: any) {
+    const userId = req?.user?.userId;
+    return this.usersService.heartbeat(userId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

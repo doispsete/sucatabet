@@ -8,6 +8,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GlobalErrorManager } from "@/components/GlobalErrorManager";
 
 import { StripeRefetchHandler } from "@/components/StripeRefetchHandler";
+import { PresenceHeartbeat } from "@/components/PresenceHeartbeat";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,6 +51,7 @@ export default function RootLayout({
           <GlobalErrorManager />
           <AuthProvider>
             <StripeRefetchHandler />
+            <PresenceHeartbeat />
             <ModalProvider>
               <LayoutWrapper>
                 {children}

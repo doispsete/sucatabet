@@ -218,4 +218,17 @@ export class UsersService {
 
     return recentLogs.map(log => log.executedBy);
   }
+
+  async heartbeat(userId: string) {
+    // Registra uma atividade silenciosa apenas para atualizar o "last_seen" via AuditLog
+    await this.prisma.auditLog.create({
+      data: {
+        action: 'HEARTBEAT',
+        entity: 'USER',
+        entityId: userId,
+        executedBy: userId
+      }
+    });
+    return { ok: true };
+  }
 }

@@ -37,7 +37,7 @@ export default function AdminPage() {
     const fetchOnline = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/admin/online`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
         });
         if (res.ok) setOnlineUsers(await res.json());
       } catch (e) {}
@@ -52,7 +52,7 @@ export default function AdminPage() {
     const fetchStatus = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/system-status`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
         });
         if (res.ok) setSystemStatus(await res.json());
       } catch (e) {
@@ -180,7 +180,7 @@ export default function AdminPage() {
 
     return [
       { label: "Total Usuários", value: users.length.toString(), subtext: "Cadastrados", color: "text-[#00ff88]" },
-      { label: "Usuários Ativos", value: activeCount.toString(), subtext: "Aprovados", color: "text-[#4cd6ff]" },
+      { label: "Usuários Online", value: onlineUsers.length.toString(), subtext: "Agora", color: "text-[#4cd6ff]" },
       { 
         label: "Status Sistema", 
         value: `${systemStatus.uptime_percent}%`, 
@@ -216,7 +216,7 @@ export default function AdminPage() {
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="group flex items-center gap-4 bg-[#00ff88] text-black px-12 py-6 rounded-[25px] text-[11px] font-black uppercase tracking-[0.4em] italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,255,136,0.2)] active:scale-95 transition-all"
+          className="group flex items-center justify-center gap-4 bg-[#00ff88] text-black px-12 py-6 rounded-[25px] text-[11px] font-black uppercase tracking-[0.4em] italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,255,136,0.2)] active:scale-95 transition-all"
         >
           <UserPlus size={20} />
           Novo Operador
