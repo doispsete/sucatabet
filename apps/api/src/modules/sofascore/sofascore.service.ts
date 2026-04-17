@@ -40,17 +40,56 @@ export class SofascoreService {
   }
 
   async searchGames(term: string) {
-    const searchTerm = encodeURIComponent(term);
-    const data: any = await this.fetchWithRateLimit(`${this.baseUrl}/search/all?q=${searchTerm}&page=0`, true);
-    
-    if (!data?.results) return [];
+    try {
+      const searchTerm = encodeURIComponent(term);
+      const searchData: any = await this.fetchWithRateLimit(`${this.baseUrl}/search/all?q=${searchTerm}&page=0`, true);
+      
+      if (!searchData?.results) return [];
 
-    // Filtra apenas resultados do tipo 'event' (partidas)
-    const events = data.results
-      .filter((r: any) => r.type === 'event' && r.entity)
-      .map((r: any) => r.entity);
+      // 1. Pegar os IDs dos times encontrados
+      const teamIds = searchData.results
+        .filter((r: any) => r.type === 'team' && r.entity?.id)
+        .slice(0, 3) // Limita aos 3 principais times para não sobrecarregar
+        .map((r: any) => r.entity.id);
 
-    // Retorna os eventos formatados conforme a especificação
+      if (teamIds.length === 0) {
+        // Se não achou time, tenta buscar eventos diretos (fallback)
+        const events = searchData.results
+          .filter((r: any) => r.type === 'event' && r.entity)
+          .map((r: any) => r.entity);
+        return this.formatEvents(events);
+      }
+
+      // 2. Buscar próximos eventos de cada time em paralelo
+      const eventPromises = teamIds.map((id: number) => 
+        this.fetchWithRateLimit(`${this.baseUrl}/team/${id}/events/next/0`, true)
+      );
+
+      const eventsData = await Promise.all(eventPromises);
+      const allEvents: any[] = [];
+      const seenIds = new Set();
+
+      for (const data of eventsData) {
+        if (data?.events) {
+          for (const event of data.events) {
+            if (!seenIds.has(event.id)) {
+              allEvents.push(event);
+              seenIds.add(event.id);
+            }
+          }
+        }
+      }
+
+      // 3. Ordenar por data e formatar
+      allEvents.sort((a, b) => a.startTimestamp - b.startTimestamp);
+      return this.formatEvents(allEvents);
+    } catch (error) {
+      this.logger.error(`Erro na busca híbrida Sofascore: ${error.message}`);
+      return [];
+    }
+  }
+
+  private formatEvents(events: any[]) {
     return events.map((event: any) => ({
         eventId: event.id,
         homeTeam: event.homeTeam.name,

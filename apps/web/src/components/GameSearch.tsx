@@ -95,7 +95,7 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
           ))
         ) : query.length >= 3 && !loading ? (
           <div className="py-8 text-center text-white/30 text-sm">
-            Nenhum jogo encontrado para os próximos 7 dias.
+            Nenhum jogo encontrado para este critério de busca.
           </div>
         ) : query.length > 0 && query.length < 3 ? (
           <div className="py-8 text-center text-white/20 text-xs">
