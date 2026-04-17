@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Modal, LoadingButton, toast, CustomSelect, Input } from "@/components/ui/components";
+import { GameSearch } from "@/components/GameSearch";
+import { MatchIndicator } from "@/components/MatchIndicator";
 import { OperationType, Operation } from "@/lib/api/types";
 import { useOperations, useAccounts, useDashboardSummary, useFreebets } from "@/lib/hooks";
 import { formatCurrency } from "@/lib/utils";
@@ -50,6 +52,8 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
   }>>([
     { id: '1', accountId: '', stake: '', odds: '', side: 'BACK', isBenefit: false, commission: '0' }
   ]);
+  const [sofascoreEventId, setSofascoreEventId] = useState<string | null>(null);
+  const [showGameSearch, setShowGameSearch] = useState(false);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   useEffect(() => {
@@ -61,6 +65,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
         setNotes(operationToEdit.description || "");
         setGeneratedFbValue(operationToEdit.generatedFbValue?.toString() || "");
         setFreebetId(operationToEdit.freebet?.id || operationToEdit.freebetId || null);
+        setSofascoreEventId((operationToEdit as any).sofascoreEventId || null);
         setBets((operationToEdit.bets || []).map((b, i) => ({
           id: b.id || (Date.now() + i).toString(),
           accountId: b.accountId,
@@ -151,9 +156,15 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
       };
 
       if (operationToEdit) {
-        await updateOperation(operationToEdit.id, payload);
+        await updateOperation(operationToEdit.id, {
+            ...payload,
+            sofascoreEventId: sofascoreEventId || undefined
+        });
       } else {
-        await createOperation(payload);
+        await createOperation({
+            ...payload,
+            sofascoreEventId: sofascoreEventId || undefined
+        });
       }
 
       if (freebetId) refetchFreebets();
@@ -234,6 +245,52 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
               onChange={e => setNotes(e.target.value)}
               placeholder="EX: JOGO DO FLAMENGO"
             />
+          </div>
+
+          <div className="md:col-span-2 space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#03D791]">Vincular Jogo (Sofascore)</label>
+            <div className="flex flex-col gap-2">
+              {sofascoreEventId ? (
+                <div className="glass-card p-3 rounded-xl border border-[#03D791]/30 flex items-center justify-between">
+                   <MatchIndicator operation={operationToEdit || { sofascoreEventId } as any} />
+                   <button 
+                    type="button" 
+                    onClick={() => { setSofascoreEventId(null); setShowGameSearch(true); }}
+                    className="text-[9px] font-bold text-red-400 hover:text-red-500 uppercase tracking-widest"
+                   >
+                     Trocar
+                   </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowGameSearch(true)}
+                  className="w-full bg-white/5 border border-dashed border-white/20 rounded-xl py-4 text-[10px] font-black uppercase tracking-widest text-white/40 hover:bg-white/10 hover:border-[#03D791]/30 hover:text-[#03D791] transition-all"
+                >
+                  {showGameSearch ? "Buscando jogo..." : "+ Vincular Jogo para Placar ao Vivo"}
+                </button>
+              )}
+              
+              {showGameSearch && (
+                <div className="glass-card p-4 rounded-2xl border border-[#03D791]/20 animate-in fade-in zoom-in-95">
+                   <GameSearch 
+                     onSelect={(game) => {
+                       setSofascoreEventId(game.eventId);
+                       setShowGameSearch(false);
+                       // Se a descrição estiver vazia, usa o nome do jogo
+                       if (!notes) setNotes(`${game.homeTeam} x ${game.awayTeam}`);
+                     }} 
+                   />
+                   <button 
+                    type="button"
+                    onClick={() => setShowGameSearch(false)}
+                    className="w-full mt-2 py-2 text-[9px] font-black text-white/20 hover:text-white/40 uppercase tracking-widest"
+                   >
+                     Cancelar busca
+                   </button>
+                </div>
+              )}
+            </div>
           </div>
           {type === OperationType.FREEBET_GEN && (
             <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">

@@ -5,6 +5,7 @@ import { PrismaService } from '../../prisma.service';
 import { getStartOfWeekBR } from '../../common/utils/date-utils';
 import { CreateOperationDto, UpdateOperationDto, CloseOperationDto } from './dto/operation.dto';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
+import { SofascoreService } from '../sofascore/sofascore.service';
 import { OperationType, OperationCategory, OperationStatus, OperationResult, UserRole, Prisma } from '@prisma/client';
 
 @Injectable()
@@ -12,6 +13,7 @@ export class OperationsService {
   constructor(
     private prisma: PrismaService,
     private auditLogs: AuditLogsService,
+    private sofascoreService: SofascoreService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     console.log('[OperationsService] Initialized - Build Version: 2026-04-08-v3');
@@ -723,5 +725,47 @@ export class OperationsService {
       }
       throw new BadRequestException('Erro interno ao atualizar operação. Detalhes nos logs do servidor.');
     }
+  }
+
+  async linkGame(id: string, userId: string, role: UserRole, sofascoreEventId: string) {
+    const operation = await this.findOne(id, userId, role);
+    
+    const gameData = await this.sofascoreService.getEventDetails(sofascoreEventId);
+    if (!gameData) {
+      throw new BadRequestException('Jogo não encontrado no Sofascore');
+    }
+
+    const updated = await this.prisma.operation.update({
+      where: { id },
+      data: {
+        // @ts-ignore
+        sofascoreEventId: sofascoreEventId.toString(),
+        // @ts-ignore
+        sofascoreStatus: gameData.status,
+        // @ts-ignore
+        sofascoreHomeScore: gameData.homeScore,
+        // @ts-ignore
+        sofascoreAwayScore: gameData.awayScore,
+        // @ts-ignore
+        sofascoreHomeName: gameData.homeTeam,
+        // @ts-ignore
+        sofascoreAwayName: gameData.awayTeam,
+        // @ts-ignore
+        sofascoreLeague: gameData.league,
+        // @ts-ignore
+        sofascoreStartTime: gameData.startTime,
+        // @ts-ignore
+        sofascoreHomeLogo: gameData.homeLogo,
+        // @ts-ignore
+        sofascoreAwayLogo: gameData.awayLogo,
+        // @ts-ignore
+        sofascorePeriod: gameData.period,
+        // @ts-ignore
+        sofascoreMinute: gameData.minute,
+      },
+    });
+
+    await this.auditLogs.log('UPDATE', 'Operation', id, userId, operation, updated);
+    return updated;
   }
 }

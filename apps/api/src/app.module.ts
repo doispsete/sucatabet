@@ -20,6 +20,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { BankModule } from './modules/bank/bank.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
 import { StripeModule } from './modules/stripe/stripe.module';
+import { SofascoreModule } from './modules/sofascore/sofascore.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { StripeModule } from './modules/stripe/stripe.module';
     BankModule,
     ExpensesModule,
     StripeModule,
+    SofascoreModule,
   ],
   controllers: [AppController],
   providers: [

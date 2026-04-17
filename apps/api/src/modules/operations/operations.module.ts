@@ -3,9 +3,10 @@ import { OperationsService } from './operations.service';
 import { OperationsController } from './operations.controller';
 import { PrismaService } from '../../prisma.service';
 import { AuditLogsModule } from '../audit-logs/audit-logs.module';
+import { SofascoreModule } from '../sofascore/sofascore.module';
 
 @Module({
-  imports: [AuditLogsModule],
+  imports: [AuditLogsModule, SofascoreModule],
   controllers: [OperationsController],
   providers: [OperationsService, PrismaService],
 })

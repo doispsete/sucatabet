@@ -13,6 +13,7 @@ import {
   FileText,
   Shovel
 } from "lucide-react";
+import { MatchIndicator } from "@/components/MatchIndicator";
 import { useOperations, useDashboardSummary } from "@/lib/hooks";
 import { SkeletonOperationRow, EmptyState, CustomSelect } from "@/components/ui/components";
 import { OperationStatus } from "@/lib/api/types";
@@ -264,6 +265,7 @@ function OperationsContent() {
                       {op.description && (
                         <span className="text-[11px] font-semibold text-white/60 truncate w-full text-center">{op.description}</span>
                       )}
+                      <MatchIndicator operation={op} className="mt-1 justify-center" />
                     </div>
 
                     {/* Col direita: status → stake → resultado */}
@@ -310,10 +312,11 @@ function OperationsContent() {
                         </span>
                       </div>
                     </div>
-                    <div className="hidden lg:flex col-span-2 justify-center items-center">
+                    <div className="hidden lg:flex flex-col col-span-2 justify-center items-center">
                       <span className="text-[11px] text-white/40 font-black italic tracking-tighter uppercase inline-block whitespace-nowrap" title={op.description}>
                         {op.description || "-"}
                       </span>
+                      <MatchIndicator operation={op} className="mt-1" />
                     </div>
                     <div className="hidden lg:block col-span-2 text-center">
                       <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>

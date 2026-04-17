@@ -138,9 +138,24 @@ model Operation {
   generatedFbValue Decimal?
   createdAt        DateTime          @default(now())
 
+  // Sofascore Integration
+  sofascoreEventId   String?
+  sofascoreStatus    String?
+  sofascoreHomeScore Int?
+  sofascoreAwayScore Int?
+  sofascoreHomeName  String?
+  sofascoreAwayName  String?
+  sofascoreLeague    String?
+  sofascoreStartTime DateTime?
+  sofascoreHomeLogo  String?
+  sofascoreAwayLogo  String?
+  sofascorePeriod    String?
+  sofascoreMinute    Int?
+
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([sofascoreEventId])
 }
 
 model Bet {
@@ -220,6 +235,8 @@ enum BankTransactionType {
 enum ExpenseType {
   OPERACIONAL
   PESSOAL
+  OPERATIONAL
+  PERSONAL
 }
 
 enum ExpenseStatus {

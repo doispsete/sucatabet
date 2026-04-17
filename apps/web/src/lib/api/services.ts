@@ -61,6 +61,11 @@ export const operationsService = {
   close: (id: string, body: unknown) => api.patch<T.Operation>(`/operations/${id}/close`, body),
   void: (id: string) => api.patch<T.Operation>(`/operations/${id}/void`),
   delete: (id: string) => api.delete<void>(`/operations/${id}`),
+  linkGame: (id: string, sofascoreEventId: string) => api.patch<T.Operation>(`/operations/${id}/link-game`, { sofascoreEventId }),
+};
+
+export const sofascoreService = {
+  search: (query: string) => api.get<any[]>(`/sofascore/search?q=${query}`),
 };
 
 export const freebetsService = {

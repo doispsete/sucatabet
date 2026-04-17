@@ -132,6 +132,19 @@ export interface Operation {
   bets?: Bet[];
   freebet?: Freebet;
   freebetId?: string;
+  sofascoreEventId?: string | null;
+  sofascoreStatus?: string | null;
+  sofascoreHomeScore?: number | null;
+  sofascoreAwayScore?: number | null;
+  sofascoreHomeName?: string | null;
+  sofascoreAwayName?: string | null;
+  sofascoreLeague?: string | null;
+  sofascoreStartTime?: string | null;
+  sofascoreHomeLogo?: string | null;
+  sofascoreAwayLogo?: string | null;
+  sofascorePeriod?: string | null;
+  sofascoreMinute?: number | null;
+  sofascoreLastUpdate?: string | null;
 }
 
 export interface Freebet {

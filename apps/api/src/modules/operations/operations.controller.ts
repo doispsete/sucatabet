@@ -57,6 +57,11 @@ export class OperationsController {
     return this.operationsService.void(id, req.user.userId, req.user.role);
   }
 
+  @Patch(':id/link-game')
+  linkGame(@Param('id') id: string, @Request() req, @Body() body: { sofascoreEventId: string }) {
+    return this.operationsService.linkGame(id, req.user.userId, req.user.role, body.sofascoreEventId);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string, @Request() req) {
     return this.operationsService.remove(id, req.user.userId, req.user.role);
