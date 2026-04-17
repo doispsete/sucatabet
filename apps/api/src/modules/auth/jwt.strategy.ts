@@ -26,13 +26,20 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, email: true, role: true, name: true, avatarUrl: true }
+      select: { id: true, email: true, role: true, name: true, avatarUrl: true, plan: true }
     });
 
     if (!user) {
       throw new UnauthorizedException('Sua sessão expirou ou é inválida. Por favor, faça login novamente.');
     }
 
-    return { userId: user.id, email: user.email, role: user.role, name: user.name, avatarUrl: user.avatarUrl };
+    return { 
+      userId: user.id, 
+      email: user.email, 
+      role: user.role, 
+      name: user.name, 
+      avatarUrl: user.avatarUrl,
+      plan: user.plan 
+    };
   }
 }
