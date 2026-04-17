@@ -1,5 +1,4 @@
 import "./globals.css";
-import "@/app/sentry.client.config";
 import { Inter } from "next/font/google";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
 import { AuthProvider } from "@/lib/context/auth-context";
