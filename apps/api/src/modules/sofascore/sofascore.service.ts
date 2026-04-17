@@ -4,9 +4,9 @@ import { formatInTimeZone } from 'date-fns-tz';
 @Injectable()
 export class SofascoreService {
   private readonly logger = new Logger(SofascoreService.name);
-  private readonly baseUrl = 'https://api.sofascore.app/api/v1';
-  // User-Agent mobile para evitar bloqueio de datacenter (Hostinger)
-  private readonly userAgent = 'SofaScore/167 CFNetwork/1410.0.3 Darwin/22.6.0';
+  private readonly baseUrl = 'https://www.sofascore.com/api/v1';
+  // User-Agent Desktop para mimetizar um navegador real
+  private readonly userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
   private async fetchWithRateLimit(url: string, skipDelay = false) {
     if (!skipDelay) {
@@ -17,15 +17,21 @@ export class SofascoreService {
       const response = await fetch(url, {
         headers: {
           'User-Agent': this.userAgent,
-          'Accept': 'application/json',
+          'Accept': 'application/json, text/plain, */*',
+          'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
           'Origin': 'https://www.sofascore.com',
           'Referer': 'https://www.sofascore.com/',
-          'x-forwarded-for': '177.75.40.1', // Simula IP residencial brasileiro
+          'Sec-Fetch-Dest': 'empty',
+          'Sec-Fetch-Mode': 'cors',
+          'Sec-Fetch-Site': 'same-origin',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
         },
       });
 
       if (response.status === 429 || response.status === 403) {
         this.logger.error(`BLOQUEIO SOFASCORE: IP da VPS bloqueado (${response.status}) na URL: ${url}`);
+        // Log extra para depuração de headers se necessário
         throw new HttpException('Sofascore temporariamente indisponível', HttpStatus.SERVICE_UNAVAILABLE);
       }
 
