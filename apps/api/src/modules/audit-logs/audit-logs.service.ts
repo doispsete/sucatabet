@@ -1,21 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 
 @Injectable()
 export class AuditLogsService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(AuditLogsService.name);
 
-  async log(
+  constructor(private prisma: PrismaService) { }
+
+  log(
     action: string,
     entity: string,
     entityId: string,
     executedBy: string,
     oldValue?: any,
     newValue?: any,
-    tx?: any,
-  ) {
-    const prisma = tx || this.prisma;
-    return prisma.auditLog.create({
+  ): void {
+    // Fire and forget — não bloqueia a transação principal
+    this.prisma.auditLog.create({
       data: {
         action,
         entity,
@@ -24,6 +25,8 @@ export class AuditLogsService {
         oldValue: oldValue || null,
         newValue: newValue || null,
       },
+    }).catch((err) => {
+      this.logger.error(`Failed to write audit log: ${err.message}`);
     });
   }
 }

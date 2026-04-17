@@ -11,7 +11,7 @@ export class HousesService {
     private prisma: PrismaService,
     private auditLogs: AuditLogsService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  ) { }
 
   private getLogoUrl(domain?: string): string | null {
     if (!domain) return null;
@@ -39,8 +39,8 @@ export class HousesService {
         logoUrl,
       },
     });
-    
-    await this.auditLogs.log('CREATE', 'BettingHouse', result.id, executedBy, null, result);
+
+    this.auditLogs.log('CREATE', 'BettingHouse', result.id, executedBy, null, result);
     await this.cacheManager.del('houses:all');
     return result;
   }
@@ -49,8 +49,8 @@ export class HousesService {
     const house = await this.prisma.bettingHouse.findUnique({ where: { id } });
     if (!house) throw new NotFoundException('Casa não encontrada');
 
-    const logoUrl = updateHouseDto.domain 
-      ? this.getLogoUrl(updateHouseDto.domain) 
+    const logoUrl = updateHouseDto.domain
+      ? this.getLogoUrl(updateHouseDto.domain)
       : house.logoUrl;
 
     const result = await this.prisma.bettingHouse.update({
@@ -61,7 +61,7 @@ export class HousesService {
       },
     });
 
-    await this.auditLogs.log('UPDATE', 'BettingHouse', id, executedBy, house, result);
+    this.auditLogs.log('UPDATE', 'BettingHouse', id, executedBy, house, result);
     await this.cacheManager.del('houses:all');
     return result;
   }
@@ -71,8 +71,8 @@ export class HousesService {
     if (!house) throw new NotFoundException('Casa não encontrada');
 
     const result = await this.prisma.bettingHouse.delete({ where: { id } });
-    
-    await this.auditLogs.log('DELETE', 'BettingHouse', id, executedBy, house, null);
+
+    this.auditLogs.log('DELETE', 'BettingHouse', id, executedBy, house, null);
     await this.cacheManager.del('houses:all');
     return result;
   }

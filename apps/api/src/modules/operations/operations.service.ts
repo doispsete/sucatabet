@@ -44,7 +44,7 @@ export class OperationsService {
       [OperationType.SUPERODDS]: OperationCategory.BOOST,
       [OperationType.TENTATIVA_DUPLO]: OperationCategory.RISCO,
     };
-    
+
     // Fallback para tipos legados que podem estar no banco mas foram removidos do enum
     const fallbackMap: Record<string, OperationCategory> = {
       'SUPERODDS': OperationCategory.BOOST,
@@ -57,9 +57,9 @@ export class OperationsService {
   async findAll(userId: string, role: UserRole, options: { page: number, limit: number, status?: OperationStatus, startDate?: string, endDate?: string, search?: string }) {
     const { page, limit, status, startDate, endDate, search } = options;
     const skip = (page - 1) * limit;
-    
+
     const where: any = { userId };
-    
+
     if (status) {
       where.status = status;
     }
@@ -76,7 +76,7 @@ export class OperationsService {
 
     if (search) {
       const normalizedSearch = search.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      
+
       // Keywords mapping for OperationType search
       // @ts-ignore - Avoid build failure during enum transitions
       const typeKeywords: Partial<Record<OperationType, string[]>> = {
@@ -99,27 +99,27 @@ export class OperationsService {
 
       where.OR = [
         { description: { contains: search, mode: 'insensitive' } },
-        { 
-          bets: { 
-            some: { 
-              account: { 
-                bettingHouse: { 
-                  name: { contains: search, mode: 'insensitive' } 
-                } 
-              } 
-            } 
-          } 
+        {
+          bets: {
+            some: {
+              account: {
+                bettingHouse: {
+                  name: { contains: search, mode: 'insensitive' }
+                }
+              }
+            }
+          }
         },
-        { 
-          bets: { 
-            some: { 
-              account: { 
-                cpfProfile: { 
-                  name: { contains: search, mode: 'insensitive' } 
-                } 
-              } 
-            } 
-          } 
+        {
+          bets: {
+            some: {
+              account: {
+                cpfProfile: {
+                  name: { contains: search, mode: 'insensitive' }
+                }
+              }
+            }
+          }
         }
       ];
 
@@ -186,7 +186,7 @@ export class OperationsService {
 
   async create(userId: string, createOperationDto: CreateOperationDto) {
     const category = this.getCategory(createOperationDto.type);
-    
+
     if (createOperationDto.type === OperationType.EXTRACAO) {
       if (!createOperationDto.freebetId) {
         throw new BadRequestException('Operações de extração exigem uma freebet vinculada');
@@ -215,7 +215,7 @@ export class OperationsService {
         const odds = new Prisma.Decimal(betDto.odds);
         const stake = new Prisma.Decimal(betDto.stake);
         const comm = new Prisma.Decimal(betDto.commission || 0).div(100);
-        
+
         let effOdds = this.getEffectiveOdds(createOperationDto.type, betDto.type, odds);
 
         let betWinNet = new Prisma.Decimal(0); // O que a casa paga ALÉM do que você apostou nela
@@ -238,9 +238,9 @@ export class OperationsService {
         }
 
         if (i === 0) {
-            operationExpectedProfit = betReturn.minus(totalCost);
+          operationExpectedProfit = betReturn.minus(totalCost);
         }
-        
+
         betsToCreate.push({
           ...betDto,
           expectedProfit: betWinNet, // Salva o lucro líquido individual da bet
@@ -316,14 +316,14 @@ export class OperationsService {
       if (createOperationDto.freebetId) {
         await tx.freebet.update({
           where: { id: createOperationDto.freebetId },
-          data: { 
+          data: {
             operationId: operation.id,
             usedAt: new Date().toISOString()
           }
         });
       }
 
-      await this.auditLogs.log('CREATE', 'Operation', operation.id, userId, null, operation, tx);
+      await this.auditLogs.log('CREATE', 'Operation', operation.id, userId, null, operation);
       await this.clearUserDashboardCache(userId, UserRole.ADMIN);
       await this.clearUserDashboardCache(userId, UserRole.OPERATOR);
 
@@ -348,26 +348,26 @@ export class OperationsService {
       // 1. Clear inOperation and update balance based on winners
       for (const bet of operation.bets) {
         const isWinner = closeDto.winningBetIds?.includes(bet.id);
-        
+
         // Payout Calculation: Standard payout for any winning bet (including early payout)
         let payout = new Prisma.Decimal(0);
         if (isWinner) {
-            const oo = this.getEffectiveOdds(operation.type, bet.type, new Prisma.Decimal(bet.odds));
-            const os = new Prisma.Decimal(bet.stake);
-            const oc = new Prisma.Decimal((bet as any).commission || 0).div(100);
-            const cost = new Prisma.Decimal(bet.cost);
-            const isF = bet.type === 'Freebet';
+          const oo = this.getEffectiveOdds(operation.type, bet.type, new Prisma.Decimal(bet.odds));
+          const os = new Prisma.Decimal(bet.stake);
+          const oc = new Prisma.Decimal((bet as any).commission || 0).div(100);
+          const cost = new Prisma.Decimal(bet.cost);
+          const isF = bet.type === 'Freebet';
 
-            if (bet.side?.toUpperCase() === 'BACK') {
-                if (isF) {
-                    payout = os.mul(oo.minus(1)).mul(new Prisma.Decimal(1).minus(oc));
-                } else {
-                    payout = os.plus(os.mul(oo).minus(os).mul(new Prisma.Decimal(1).minus(oc)));
-                }
+          if (bet.side?.toUpperCase() === 'BACK') {
+            if (isF) {
+              payout = os.mul(oo.minus(1)).mul(new Prisma.Decimal(1).minus(oc));
             } else {
-                // LAY payout: devolução da responsabilidade + lucro líquido
-                payout = os.mul(new Prisma.Decimal(1).minus(oc)).plus(cost);
+              payout = os.plus(os.mul(oo).minus(os).mul(new Prisma.Decimal(1).minus(oc)));
             }
+          } else {
+            // LAY payout: devolução da responsabilidade + lucro líquido
+            payout = os.mul(new Prisma.Decimal(1).minus(oc)).plus(cost);
+          }
         }
 
         await tx.account.update({
@@ -385,7 +385,7 @@ export class OperationsService {
           });
         }
       }
-      
+
       // Calculate real profit
       let realProfit: Prisma.Decimal | number | null | undefined = closeDto.realProfit;
       if (realProfit === undefined || realProfit === null) {
@@ -400,18 +400,18 @@ export class OperationsService {
 
             let br = new Prisma.Decimal(0);
             if (b.side?.toUpperCase() === 'BACK') {
-                if (isF) {
-                    br = os.mul(oo.minus(1)).mul(new Prisma.Decimal(1).minus(oc));
-                } else {
-                    br = os.plus(os.mul(oo).minus(os).mul(new Prisma.Decimal(1).minus(oc)));
-                }
+              if (isF) {
+                br = os.mul(oo.minus(1)).mul(new Prisma.Decimal(1).minus(oc));
+              } else {
+                br = os.plus(os.mul(oo).minus(os).mul(new Prisma.Decimal(1).minus(oc)));
+              }
             } else {
-                // LAY: Payout = Responsabilidade + Lucro Líquido
-                br = os.mul(new Prisma.Decimal(1).minus(oc)).plus(cost);
+              // LAY: Payout = Responsabilidade + Lucro Líquido
+              br = os.mul(new Prisma.Decimal(1).minus(oc)).plus(cost);
             }
             return acc.plus(br);
           }, new Prisma.Decimal(0));
-        
+
         realProfit = totalPayout.minus(totalStaked);
         console.log(`[BACKEND SETTLEMENT]`, { totalPayout: totalPayout.toNumber(), totalStaked: totalStaked.toNumber(), realProfit: realProfit.toNumber() });
       }
@@ -431,25 +431,25 @@ export class OperationsService {
       if (operation.type === OperationType.FREEBET_GEN && closeDto.status === OperationStatus.FINISHED) {
         const benefitBet = operation.bets.find(b => (b as any).isBenefit);
         const fbValue = (operation as any).generatedFbValue;
-        
+
         if (benefitBet && fbValue && (fbValue as any).toNumber() > 0) {
-            const expiresAt = new Date();
-            expiresAt.setDate(expiresAt.getDate() + 7);
-            
-            await tx.freebet.create({
-                data: {
-                    value: fbValue,
-                    origin: operation.description || 'Geração via Encerramento de Operação',
-                    accountId: benefitBet.accountId,
-                    userId,
-                    operationId: id,
-                    expiresAt,
-                }
-            });
+          const expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 7);
+
+          await tx.freebet.create({
+            data: {
+              value: fbValue,
+              origin: operation.description || 'Geração via Encerramento de Operação',
+              accountId: benefitBet.accountId,
+              userId,
+              operationId: id,
+              expiresAt,
+            }
+          });
         }
       }
 
-      await this.auditLogs.log('CLOSE', 'Operation', id, userId, operation, updated, tx);
+      await this.auditLogs.log('CLOSE', 'Operation', id, userId, operation, updated);
       await this.clearUserDashboardCache(userId, role);
 
       return updated;
@@ -478,7 +478,7 @@ export class OperationsService {
         });
       }
 
-      await this.auditLogs.log('VOID', 'Operation', id, userId, operation, updated, tx);
+      await this.auditLogs.log('VOID', 'Operation', id, userId, operation, updated);
 
       await this.clearUserDashboardCache(userId, role);
 
@@ -492,7 +492,7 @@ export class OperationsService {
     if (operation.status !== OperationStatus.PENDING) {
       throw new BadRequestException('Não é possível remover uma operação fechada ou anulada');
     }
-    
+
     return this.prisma.$transaction(async (tx) => {
       const reversionWeekStart = getStartOfWeekBR(operation.createdAt);
 
@@ -510,26 +510,26 @@ export class OperationsService {
         const is365 = (bet.account as any)?.bettingHouse?.name?.toLowerCase() === 'bet365';
         if (is365) {
           await tx.weeklyClub.updateMany({
-            where: { 
-              accountId: bet.accountId, 
-              weekStart: reversionWeekStart 
+            where: {
+              accountId: bet.accountId,
+              weekStart: reversionWeekStart
             },
             data: { totalStake: { decrement: bet.stake } }
           });
         }
       }
-      
+
       await tx.bet.deleteMany({ where: { operationId: id } });
       const deleted = await tx.operation.delete({ where: { id } });
 
-      await this.auditLogs.log('DELETE', 'Operation', id, userId, operation, null, tx);
+      await this.auditLogs.log('DELETE', 'Operation', id, userId, operation, null);
 
       await this.clearUserDashboardCache(userId, role);
 
       return deleted;
     });
   }
-  
+
   async update(id: string, userId: string, role: UserRole, updateDto: UpdateOperationDto) {
     console.log(`[OperationsService.update] Starting update for ID: ${id}, User: ${userId} - Build Version: 2026-04-08-v4`);
 
@@ -543,18 +543,18 @@ export class OperationsService {
 
       if (rawType === 'EXTRACAO') {
         const targetFreebetId = updateDto.freebetId || existingOperation.freebet?.id;
-        
+
         if (!targetFreebetId) {
           throw new BadRequestException('Operações de extração exigem uma freebet vinculada');
         }
 
         const fb = await this.prisma.freebet.findUnique({ where: { id: targetFreebetId } });
         const benefitBet = updateDto.bets.find(b => b.type === 'Freebet' || b.isBenefit);
-        
+
         if (!fb) {
           throw new BadRequestException('A freebet selecionada não existe');
         }
-        
+
         if (benefitBet && fb.accountId !== benefitBet.accountId) {
           throw new BadRequestException('A freebet selecionada não pertence à conta da operação de extração');
         }
@@ -605,7 +605,7 @@ export class OperationsService {
           const odds = new Prisma.Decimal(betDto.odds || 1);
           const stake = new Prisma.Decimal(betDto.stake || 0);
           const comm = new Prisma.Decimal(betDto.commission || 0).div(100);
-          
+
           let effOdds = this.getEffectiveOdds(updateDto.type, betDto.type, odds);
 
           let betWinNet = new Prisma.Decimal(0);
@@ -625,9 +625,9 @@ export class OperationsService {
           }
 
           if (i === 0) {
-              operationExpectedProfit = betReturn.minus(totalCost);
+            operationExpectedProfit = betReturn.minus(totalCost);
           }
-          
+
           betsToCreate.push({
             ...betDto,
             expectedProfit: betWinNet,
@@ -637,7 +637,7 @@ export class OperationsService {
 
         // 4. Criar novas bets e aplicar saldo
         const accountsToUpdateInClub: Set<string> = new Set();
-        
+
         for (const bet of betsToCreate) {
           await tx.bet.create({
             data: {
@@ -677,7 +677,7 @@ export class OperationsService {
             const totalStakeForAccount = betsToCreate
               .filter(b => b.accountId === account.id)
               .reduce((sum, b) => sum.plus(new Prisma.Decimal(b.stake || 0)), new Prisma.Decimal(0));
-              
+
             await tx.weeklyClub.upsert({
               where: { accountId_weekStart: { accountId: account.id, weekStart: startOfWeek } },
               update: { totalStake: { increment: totalStakeForAccount } },
@@ -687,8 +687,8 @@ export class OperationsService {
         }
 
         // 6. Final Update
-        const safeFbVal = (updateDto.generatedFbValue !== undefined && updateDto.generatedFbValue !== null && !isNaN(updateDto.generatedFbValue)) 
-          ? new Prisma.Decimal(updateDto.generatedFbValue) 
+        const safeFbVal = (updateDto.generatedFbValue !== undefined && updateDto.generatedFbValue !== null && !isNaN(updateDto.generatedFbValue))
+          ? new Prisma.Decimal(updateDto.generatedFbValue)
           : null;
 
         const updated = await tx.operation.update({
@@ -705,14 +705,14 @@ export class OperationsService {
         if (rawType === 'EXTRACAO' && updateDto.freebetId) {
           await tx.freebet.update({
             where: { id: updateDto.freebetId },
-            data: { 
+            data: {
               operationId: id,
               usedAt: new Date().toISOString()
             }
           });
         }
 
-        await this.auditLogs.log('UPDATE', 'Operation', id, userId, existingOperation, updated, tx);
+        await this.auditLogs.log('UPDATE', 'Operation', id, userId, existingOperation, updated);
         await this.clearUserDashboardCache(userId, role);
         return updated;
       });
