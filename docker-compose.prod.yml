@@ -2,16 +2,16 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: postgres
-    # O postgres pode manter environment para clareza dos mapeamentos base
+    mem_limit: 768m
+    cpus: 1.0
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-sucatabet_db}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      # A senha não deve conter caracteres especiais (/, +, =). Use: openssl rand -hex 32
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-sucatabet_db}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-sucatabet_db}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,6 +22,8 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: sucatabet-pgadmin
+    mem_limit: 512m
+    cpus: 0.25
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@sucatabet.com
@@ -38,9 +40,10 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
     container_name: sucatabet-api
+    mem_limit: 768m
+    cpus: 1.0
     env_file: .env
     environment:
-      # DATABASE_URL e outros secrets já vêm do .env via env_file
       PORT: 3006
       NODE_ENV: production
       TZ: America/Sao_Paulo
@@ -56,9 +59,10 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
     container_name: sucatabet-web
+    mem_limit: 512m
+    cpus: 0.5
     env_file: .env
     environment:
-      # Secrets como NEXTAUTH_SECRET já vêm do .env via env_file
       NODE_ENV: production
       TZ: America/Sao_Paulo
     depends_on:
@@ -70,6 +74,8 @@ services:
   nginx:
     image: nginx:alpine
     container_name: sucatabet-nginx
+    mem_limit: 128m
+    cpus: 0.25
     ports:
       - "80:80"
       - "443:443"

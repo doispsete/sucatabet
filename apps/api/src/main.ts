@@ -1,4 +1,5 @@
 process.env.TZ = 'America/Sao_Paulo';
+import "./instrument";
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
@@ -8,18 +9,18 @@ import cookieParser from 'cookie-parser';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { 
+  const app = await NestFactory.create(AppModule, {
     rawBody: true,
-    bodyParser: false 
+    bodyParser: false
   });
   app.setGlobalPrefix('api');
-  
+
   // Confiar no proxy reverso (Nginx) para identificar o IP real do cliente
   (app.getHttpAdapter().getInstance() as any).set('trust proxy', 1);
 
   // Aumentar o limite de payload para imagens Base64
   const express = require('express');
-  
+
   // LOG DE TODAS AS REQUISIÇÕES (PARA DEBUG)
   app.use((req: any, res, next) => {
     const url = req.originalUrl || req.url;
