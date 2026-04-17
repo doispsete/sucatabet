@@ -22,12 +22,47 @@ import { UserRole, User, UserStatus, UserPlan } from "@/lib/api/types";
 export default function AdminPage() {
   const { user: currentUser } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<'all' | 'pending'>('all');
+  const [activeTab] = useState<'all'>('all'); // Fixado em 'all'
   
   // Hooks de Dados
-  const { data: users, isLoading, refetch, create: createUser, update: updateUser, remove, isMutating } = useUsers(activeTab === 'pending' ? 'PENDING' : undefined);
-  const { data: pendingUsers } = useUsers('PENDING'); // Para o badge de contagem
+  const { data: users, isLoading, refetch, create: createUser, update: updateUser, remove, isMutating } = useUsers();
   const { updateStatus, isMutating: isUpdatingStatus } = useUpdateUserStatus();
+
+  // Novos estados para monitoramento real
+  const [onlineUsers, setOnlineUsers] = React.useState<string[]>([]);
+  const [systemStatus, setSystemStatus] = React.useState({ status: 'online', uptime_percent: 99.8 });
+
+  // Polling para usuários online (30s)
+  React.useEffect(() => {
+    const fetchOnline = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/admin/online`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (res.ok) setOnlineUsers(await res.json());
+      } catch (e) {}
+    };
+    fetchOnline();
+    const interval = setInterval(fetchOnline, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Polling para status do sistema (60s)
+  React.useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/system-status`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (res.ok) setSystemStatus(await res.json());
+      } catch (e) {
+        setSystemStatus(prev => ({ ...prev, status: 'degraded' }));
+      }
+    };
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -138,14 +173,23 @@ export default function AdminPage() {
 
   const stats = useMemo(() => {
     if (!users) return [];
-    const pendingCount = (pendingUsers || []).length;
+    
+    const activeCount = (users || []).filter(u => u.status === 'ACTIVE').length;
+    const sysColor = systemStatus.status === 'online' ? 'text-[#00ff88]' : 
+                    systemStatus.status === 'degraded' ? 'text-[#ffd966]' : 'text-red-500';
+
     return [
       { label: "Total Usuários", value: users.length.toString(), subtext: "Cadastrados", color: "text-[#00ff88]" },
-      { label: "Aprovações", value: pendingCount.toString(), subtext: "Pendentes", color: pendingCount > 0 ? "text-[#ffd966]" : "text-[#b9cbbc]", highlight: pendingCount > 0 },
-      { label: "Operadores", value: users.filter(u => u.role === UserRole.OPERATOR).length.toString(), subtext: "Limited Access", color: "text-[#4cd6ff]" },
-      { label: "Status Sistema", value: "99%", status: "pulse", color: "text-[#F4FFF3]" },
+      { label: "Usuários Ativos", value: activeCount.toString(), subtext: "Aprovados", color: "text-[#4cd6ff]" },
+      { 
+        label: "Status Sistema", 
+        value: `${systemStatus.uptime_percent}%`, 
+        subtext: systemStatus.status.toUpperCase(), 
+        status: systemStatus.status === 'online' ? "pulse" : undefined, 
+        color: sysColor 
+      },
     ];
-  }, [users, pendingUsers]);
+  }, [users, systemStatus]);
 
   if (!isAdmin && currentUser) {
     return (
@@ -179,14 +223,14 @@ export default function AdminPage() {
         </button>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         {isLoading ? (
           Array(4).fill(0).map((_, i) => (
             <div key={i} className="h-24 bg-white/5 rounded-[30px] animate-pulse" />
           ))
         ) : (
           stats.map((stat, i) => (
-            <div key={i} className={`glass-card p-8 rounded-[40px] flex flex-col justify-between group transition-all duration-500 border-white/5 relative overflow-hidden ${stat.highlight ? 'border-[#ffd966]/30 shadow-[0_0_20px_rgba(255,217,102,0.1)]' : 'hover:border-[#00ff88]/20'}`}>
+            <div key={i} className={`glass-card p-8 rounded-[40px] flex flex-col justify-between group transition-all duration-500 border-white/5 relative overflow-hidden hover:border-[#00ff88]/20`}>
               <span className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-[0.4em] opacity-30 italic">{stat.label}</span>
               <div className="flex items-baseline gap-3 mt-4">
                 <span className={`text-4xl font-black italic tracking-tighter ${stat.color}`}>{stat.value}</span>
@@ -198,40 +242,13 @@ export default function AdminPage() {
         )}
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => setActiveTab('all')}
-          className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] italic transition-all ${
-            activeTab === 'all' 
-              ? 'bg-[#00ff88] text-black shadow-lg shadow-[#00ff88]/10' 
-              : 'bg-white/5 text-[#b9cbbc] opacity-40 hover:opacity-100 hover:bg-white/10'
-          }`}
-        >
-          Todos os Usuários
-        </button>
-        <button
-          onClick={() => setActiveTab('pending')}
-          className={`flex items-center gap-3 px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] italic transition-all ${
-            activeTab === 'pending' 
-              ? 'bg-[#ffd966] text-black shadow-lg shadow-[#ffd966]/10' 
-              : 'bg-white/5 text-[#b9cbbc] opacity-40 hover:opacity-100 hover:bg-white/10'
-          }`}
-        >
-          Aprovações Pendentes
-          {(pendingUsers || []).length > 0 && (
-            <span className="bg-red-500 text-white w-4 h-4 rounded-full flex items-center justify-center text-[8px] animate-pulse">
-              {(pendingUsers || []).length}
-            </span>
-          )}
-        </button>
-      </div>
+      {/* Administrative Registry Table */}
 
       {/* Administrative Registry Table */}
       <div className="glass-card rounded-2xl overflow-hidden border-[#3B4A3F]/20 mb-20">
         <div className="px-8 py-5 bg-[#1a1a1a]/50 border-b border-[#3B4A3F]/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <h3 className="font-headline font-black text-[#E5E2E1] italic tracking-tight uppercase text-sm">
-            {activeTab === 'all' ? 'Registro Administrativo' : 'Solicitações de Acesso'}
+            Registro Administrativo
           </h3>
           <div className="flex gap-2">
             <button className="p-2.5 hover:bg-white/5 rounded-xl transition-colors text-[#b9cbbc] opacity-40 hover:opacity-100 btn-interact">
@@ -261,16 +278,21 @@ export default function AdminPage() {
               ) : (Array.isArray(users) ? users : []).length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-20">
-                    <EmptyState message={activeTab === 'all' ? "Nenhum usuário encontrado." : "Nenhuma solicitação pendente."} />
+                    <EmptyState message="Nenhum usuário encontrado." />
                   </td>
                 </tr>
               ) : (
-                (activeTab === 'all' ? (Array.isArray(users) ? users : []) : (Array.isArray(pendingUsers) ? pendingUsers : [])).map((user) => (
+                (Array.isArray(users) ? users : []).map((user) => (
                   <tr key={user.id} className="hover:bg-white/[0.02] transition-colors group row-interact">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-11 h-11 rounded-full bg-[#2a2a2a] overflow-hidden border border-white/5 shadow-inner flex items-center justify-center">
+                        <div className="relative w-11 h-11 rounded-full bg-[#2a2a2a] overflow-hidden border border-white/5 shadow-inner flex items-center justify-center">
                           <Users className="w-5 h-5 text-[#b9cbbc]" />
+                          
+                          {/* Online Indicator */}
+                          {onlineUsers.includes(user.id) && (
+                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#00ff88] border-2 border-[#1a1a1a] rounded-full shadow-[0_0_10px_rgba(0,255,136,0.5)] animate-pulsar" />
+                          )}
                         </div>
                         <div>
                           <p className="text-sm font-black text-[#e5e2e1] italic tracking-tight uppercase leading-none mb-1">{user.name}</p>

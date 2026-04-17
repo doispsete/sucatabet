@@ -202,4 +202,20 @@ export class UsersService {
       return tx.user.delete({ where: { id } });
     });
   }
+
+  async getOnlineUsers() {
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    
+    const recentLogs = await this.prisma.auditLog.findMany({
+      where: {
+        createdAt: { gte: fifteenMinutesAgo }
+      },
+      select: {
+        executedBy: true
+      },
+      distinct: ['executedBy']
+    });
+
+    return recentLogs.map(log => log.executedBy);
+  }
 }

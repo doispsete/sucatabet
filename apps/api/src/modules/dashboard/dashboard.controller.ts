@@ -20,4 +20,9 @@ export class DashboardController {
   getClubProgress(@Request() req) {
     return this.dashboardService.getClubProgress(req.user.userId, req.user.role);
   }
+
+  @Get('system-status')
+  getSystemStatus() {
+    return this.dashboardService.getSystemStatus();
+  }
 }

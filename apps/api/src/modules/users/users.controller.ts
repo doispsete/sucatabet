@@ -38,6 +38,11 @@ export class UsersController {
   }
 
   @Roles(UserRole.ADMIN)
+  @Get('admin/online')
+  getOnlineUsers() {
+    return this.usersService.getOnlineUsers();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
