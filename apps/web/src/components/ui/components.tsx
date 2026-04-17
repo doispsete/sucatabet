@@ -33,7 +33,7 @@ export function Toast({ message, type, onClose }: ToastProps) {
 }
 
 // Global Toast Manager (Simplified for this project)
-let toastFn: (msg: string, type: 'success' | 'error') => void = () => {};
+let toastFn: (msg: string, type: 'success' | 'error') => void = () => { };
 
 export function ToastContainer() {
   const [toasts, setToasts] = useState<{ id: number; msg: string; type: 'success' | 'error' }[]>([]);
@@ -70,7 +70,7 @@ interface LoadingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export function LoadingButton({ children, isLoading, className, ...props }: LoadingButtonProps) {
   return (
-    <button 
+    <button
       disabled={isLoading || props.disabled}
       className={`relative flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100 ${className}`}
       {...props}
@@ -82,11 +82,11 @@ export function LoadingButton({ children, isLoading, className, ...props }: Load
 }
 
 // --- INPUT ---
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
 export function Input({ className, ...props }: InputProps) {
   return (
-    <input 
+    <input
       className={`
         w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-sm text-white 
         focus:border-[#03D791]/30 outline-none transition-all placeholder:opacity-10
@@ -133,7 +133,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
 
   const modalContent = (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
-      <div 
+      <div
         className="absolute inset-0 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
         onClick={onClose}
       />
@@ -219,13 +219,13 @@ export function CustomSelect({ value, onChange, options, placeholder = "SELECION
       </button>
 
       {isOpen && createPortal(
-        <div 
-          style={{ 
-            position: 'fixed', 
-            top: coords.top, 
-            left: coords.left, 
+        <div
+          style={{
+            position: 'fixed',
+            top: coords.top,
+            left: coords.left,
             width: coords.width,
-            zIndex: 9999 
+            zIndex: 9999
           }}
           className="glass-card rounded-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 fade-in duration-200"
         >
@@ -265,13 +265,13 @@ interface ConfirmDialogProps {
   type?: 'danger' | 'info';
 }
 
-export function ConfirmDialog({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  title, 
-  message, 
-  confirmLabel = "Confirmar", 
+export function ConfirmDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  confirmLabel = "Confirmar",
   cancelLabel = "Cancelar",
   type = 'info'
 }: ConfirmDialogProps) {
@@ -279,7 +279,7 @@ export function ConfirmDialog({
 
   return createPortal(
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
-      <div 
+      <div
         className="absolute inset-0 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
         onClick={onClose}
       />
@@ -287,18 +287,18 @@ export function ConfirmDialog({
         <div className={`w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center ${type === 'danger' ? 'bg-red-500/10' : 'bg-[#03D791]/10'}`}>
           {type === 'danger' ? <AlertCircle className="w-8 h-8 text-red-500" /> : <HelpCircle className="w-8 h-8 text-[#03D791]" />}
         </div>
-        
+
         <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-2">{title}</h3>
         <p className="text-xs text-[#b9cbbc] font-medium opacity-60 mb-10 px-4">{message}</p>
 
         <div className="flex gap-4">
-          <button 
+          <button
             onClick={onClose}
             className="flex-1 py-4 rounded-2xl bg-white/5 text-[#b9cbbc] text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all italic border border-white/5"
           >
             {cancelLabel}
           </button>
-          <button 
+          <button
             onClick={() => {
               onConfirm();
               onClose();
@@ -341,7 +341,7 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
       const popoverWidth = 280; // Compact size
       const popoverHeight = 440; // Approx height
       let left = rect.left;
-      
+
       if (left + popoverWidth > window.innerWidth) {
         left = window.innerWidth - popoverWidth - 20;
       }
@@ -400,8 +400,8 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
     today.setHours(0, 0, 0, 0);
 
     if (!allowPastDates && newDate < today) {
-        toast.error("DATA INVÁLIDA: Não é possível selecionar uma data retroativa");
-        return;
+      toast.error("DATA INVÁLIDA: Não é possível selecionar uma data retroativa");
+      return;
     }
 
     // Keep current time if exists
@@ -412,24 +412,30 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
       newDate.setHours(12);
       newDate.setMinutes(0);
     }
-    onChange(newDate.toISOString());
+    const y = newDate.getFullYear();
+    const m = String(newDate.getMonth() + 1).padStart(2, '0');
+    const d = String(newDate.getDate()).padStart(2, '0');
+    onChange(`${y}-${m}-${d}`);
   };
 
   const handleTimeChange = (type: 'h' | 'm', value: number, isDirect = false) => {
     const baseDate = selectedDate || new Date(viewDate.getFullYear(), viewDate.getMonth(), 1, 12, 0);
     const newDate = new Date(baseDate);
     if (type === 'h') {
-        let newH = isDirect ? value : newDate.getHours() + value;
-        if (newH > 23) newH = (isDirect ? 23 : 0);
-        if (newH < 0) newH = (isDirect ? 0 : 23);
-        newDate.setHours(newH);
+      let newH = isDirect ? value : newDate.getHours() + value;
+      if (newH > 23) newH = (isDirect ? 23 : 0);
+      if (newH < 0) newH = (isDirect ? 0 : 23);
+      newDate.setHours(newH);
     } else {
-        let newM = isDirect ? value : newDate.getMinutes() + value;
-        if (newM > 59) newM = (isDirect ? 59 : 0);
-        if (newM < 0) newM = (isDirect ? 0 : 55); 
-        newDate.setMinutes(newM);
+      let newM = isDirect ? value : newDate.getMinutes() + value;
+      if (newM > 59) newM = (isDirect ? 59 : 0);
+      if (newM < 0) newM = (isDirect ? 0 : 55);
+      newDate.setMinutes(newM);
     }
-    onChange(newDate.toISOString());
+    const y = newDate.getFullYear();
+    const m = String(newDate.getMonth() + 1).padStart(2, '0');
+    const d = String(newDate.getDate()).padStart(2, '0');
+    onChange(`${y}-${m}-${d}`);
   };
 
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -440,90 +446,90 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
     const month = viewDate.getMonth();
     const totalDays = daysInMonth(year, month);
     const startDay = firstDayOfMonth(year, month);
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     // Days from prev month
     const prevMonthDays = daysInMonth(year, month - 1);
-    
+
     const days = [];
 
     // Render padding from prev month
     for (let i = startDay - 1; i >= 0; i--) {
-        const d = prevMonthDays - i;
-        const dObj = new Date(year, month - 1, d);
-        const isPast = !allowPastDates && dObj < today;
+      const d = prevMonthDays - i;
+      const dObj = new Date(year, month - 1, d);
+      const isPast = !allowPastDates && dObj < today;
 
-        days.push(
-            <button 
-                key={`prev-${d}`} 
-                type="button"
-                disabled={isPast}
-                onClick={() => {
-                    setViewDate(dObj);
-                    handleDateSelect(d);
-                }}
-                className={`h-10 w-10 text-[10px] font-black transition-all flex items-center justify-center italic
+      days.push(
+        <button
+          key={`prev-${d}`}
+          type="button"
+          disabled={isPast}
+          onClick={() => {
+            setViewDate(dObj);
+            handleDateSelect(d);
+          }}
+          className={`h-10 w-10 text-[10px] font-black transition-all flex items-center justify-center italic
                     ${isPast ? 'opacity-0 pointer-events-none' : 'text-[#b9cbbc]/10 hover:text-[#b9cbbc]/30'}
                 `}
-            >
-                {d}
-            </button>
-        );
+        >
+          {d}
+        </button>
+      );
     }
 
     // Current month
     for (let d = 1; d <= totalDays; d++) {
-        const dateToCheck = new Date(year, month, d);
-        const isPast = !allowPastDates && dateToCheck < today;
-        const isSelected = selectedDate?.getDate() === d && 
-                         selectedDate?.getMonth() === month && 
-                         selectedDate?.getFullYear() === year;
-        const isToday = new Date().getDate() === d && 
-                        new Date().getMonth() === month && 
-                        new Date().getFullYear() === year;
+      const dateToCheck = new Date(year, month, d);
+      const isPast = !allowPastDates && dateToCheck < today;
+      const isSelected = selectedDate?.getDate() === d &&
+        selectedDate?.getMonth() === month &&
+        selectedDate?.getFullYear() === year;
+      const isToday = new Date().getDate() === d &&
+        new Date().getMonth() === month &&
+        new Date().getFullYear() === year;
 
-        days.push(
-            <button
-                key={d}
-                type="button"
-                disabled={isPast}
-                onClick={() => handleDateSelect(d)}
-                className={`
+      days.push(
+        <button
+          key={d}
+          type="button"
+          disabled={isPast}
+          onClick={() => handleDateSelect(d)}
+          className={`
                     h-10 w-10 rounded-xl text-[10px] font-black transition-all flex items-center justify-center
-                    ${isSelected ? 'bg-[#03D791] text-black shadow-[0_0_15px_rgba(3,215,145,0.4)]' : 
-                      isToday ? 'bg-white/10 text-[#03D791]' : 
-                      isPast ? 'opacity-20 cursor-not-allowed text-[#b9cbbc]' : 'text-[#b9cbbc] hover:bg-white/5 hover:text-white'}
+                    ${isSelected ? 'bg-[#03D791] text-black shadow-[0_0_15px_rgba(3,215,145,0.4)]' :
+              isToday ? 'bg-white/10 text-[#03D791]' :
+                isPast ? 'opacity-20 cursor-not-allowed text-[#b9cbbc]' : 'text-[#b9cbbc] hover:bg-white/5 hover:text-white'}
                 `}
-            >
-                {d}
-            </button>
-        );
+        >
+          {d}
+        </button>
+      );
     }
 
     // Next month padding
     const remaining = 42 - days.length; // 6 rows of 7
     for (let d = 1; d <= remaining; d++) {
-        const dObj = new Date(year, month + 1, d);
-        const isPast = !allowPastDates && dObj < today;
+      const dObj = new Date(year, month + 1, d);
+      const isPast = !allowPastDates && dObj < today;
 
-        days.push(
-            <button 
-                key={`next-${d}`} 
-                type="button"
-                disabled={isPast}
-                onClick={() => {
-                    setViewDate(dObj);
-                    handleDateSelect(d);
-                }}
-                className={`h-10 w-10 text-[10px] font-black transition-all flex items-center justify-center italic
+      days.push(
+        <button
+          key={`next-${d}`}
+          type="button"
+          disabled={isPast}
+          onClick={() => {
+            setViewDate(dObj);
+            handleDateSelect(d);
+          }}
+          className={`h-10 w-10 text-[10px] font-black transition-all flex items-center justify-center italic
                     ${isPast ? 'opacity-0 pointer-events-none' : 'text-[#b9cbbc]/10 hover:text-[#b9cbbc]/30'}
                 `}
-            >
-                {d}
-            </button>
-        );
+        >
+          {d}
+        </button>
+      );
     }
 
     return days;
@@ -537,23 +543,23 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
         className="w-full h-full flex items-center justify-between bg-black/50 border border-white/10 rounded-2xl px-5 py-3.5 text-sm font-black uppercase tracking-widest text-[#00ff88] focus:border-[#00ff88]/30 transition-all group hover:bg-black/70"
       >
         <div className="flex items-center gap-3">
-            <CalendarIcon size={16} className="text-[#00ff88] animate-pulse" />
-            <span className="truncate italic">
-                {selectedDate ? `${formatDate(selectedDate)} ${formatTime(selectedDate)}` : placeholder}
-            </span>
+          <CalendarIcon size={16} className="text-[#00ff88] animate-pulse" />
+          <span className="truncate italic">
+            {selectedDate ? `${formatDate(selectedDate)} ${formatTime(selectedDate)}` : placeholder}
+          </span>
         </div>
         <ChevronDown className={`w-5 h-5 text-[#b9cbbc] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && createPortal(
-        <div 
+        <div
           ref={popoverRef}
-          style={{ 
-            position: 'fixed', 
-            top: coords.top, 
-            left: coords.left, 
+          style={{
+            position: 'fixed',
+            top: coords.top,
+            left: coords.left,
             width: coords.width,
-            zIndex: 9999 
+            zIndex: 9999
           }}
           className={`glass-card rounded-[30px] border border-white/10 shadow-[0_60px_120px_rgba(0,0,0,0.9)] overflow-hidden animate-in fade-in duration-300 p-6 flex flex-col
             ${coords.isBottom ? 'zoom-in-95 slide-in-from-top-2' : 'zoom-in-95 slide-in-from-bottom-2'}
@@ -563,8 +569,8 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
           <div className="flex items-center justify-between mb-4">
             <button onClick={handlePrevMonth} className="p-2 hover:bg-white/5 rounded-full text-[#b9cbbc] transition-all hover:text-[#00ff88]"><ChevronLeft size={16} /></button>
             <div className="text-center">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white italic">{months[viewDate.getMonth()]}</p>
-                <p className="text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-widest">{viewDate.getFullYear()}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white italic">{months[viewDate.getMonth()]}</p>
+              <p className="text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-widest">{viewDate.getFullYear()}</p>
             </div>
             <button onClick={handleNextMonth} className="p-2 hover:bg-white/5 rounded-full text-[#b9cbbc] transition-all hover:text-[#00ff88]"><ChevronRight size={16} /></button>
           </div>
@@ -572,7 +578,7 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
           {/* Weekdays */}
           <div className="grid grid-cols-7 mb-2">
             {weekdays.map(d => (
-                <div key={d} className="text-center text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-widest">{d}</div>
+              <div key={d} className="text-center text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-widest">{d}</div>
             ))}
           </div>
 
@@ -584,46 +590,46 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
           {/* Time Picker */}
           <div className="pt-4 border-t border-white/5 space-y-4">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Clock size={12} className="text-[#00ff88] opacity-50" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-[#b9cbbc]/40 italic">Horário</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <Clock size={12} className="text-[#00ff88] opacity-50" />
+                <span className="text-[8px] font-black uppercase tracking-widest text-[#b9cbbc]/40 italic">Horário</span>
+              </div>
             </div>
 
             <div className="flex items-center justify-center gap-4">
-                {/* Hours */}
-                <div className="flex flex-col items-center gap-1">
-                    <button onClick={() => handleTimeChange('h', 1)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronUp size={16}/></button>
-                    <input 
-                        type="number"
-                        min="0"
-                        max="23"
-                        value={(selectedDate?.getHours() || 0).toString().padStart(2, '0')}
-                        onChange={e => handleTimeChange('h', parseInt(e.target.value) || 0, true)}
-                        className="bg-black/40 border border-white/5 rounded-xl w-12 h-10 flex items-center justify-center text-lg font-black italic text-[#00ff88] text-center focus:border-[#00ff88]/30 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <button onClick={() => handleTimeChange('h', -1)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronDown size={16}/></button>
-                </div>
-                
-                <div className="text-xl font-black text-white/5 animate-pulse">:</div>
-                
-                {/* Minutes */}
-                <div className="flex flex-col items-center gap-1">
-                    <button onClick={() => handleTimeChange('m', 5)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronUp size={16}/></button>
-                    <input 
-                        type="number"
-                        min="0"
-                        max="59"
-                        value={(selectedDate?.getMinutes() || 0).toString().padStart(2, '0')}
-                        onChange={e => handleTimeChange('m', parseInt(e.target.value) || 0, true)}
-                        className="bg-black/40 border border-white/5 rounded-xl w-12 h-10 flex items-center justify-center text-lg font-black italic text-[#00ff88] text-center focus:border-[#00ff88]/30 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <button onClick={() => handleTimeChange('m', -5)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronDown size={16}/></button>
-                </div>
+              {/* Hours */}
+              <div className="flex flex-col items-center gap-1">
+                <button onClick={() => handleTimeChange('h', 1)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronUp size={16} /></button>
+                <input
+                  type="number"
+                  min="0"
+                  max="23"
+                  value={(selectedDate?.getHours() || 0).toString().padStart(2, '0')}
+                  onChange={e => handleTimeChange('h', parseInt(e.target.value) || 0, true)}
+                  className="bg-black/40 border border-white/5 rounded-xl w-12 h-10 flex items-center justify-center text-lg font-black italic text-[#00ff88] text-center focus:border-[#00ff88]/30 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button onClick={() => handleTimeChange('h', -1)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronDown size={16} /></button>
+              </div>
+
+              <div className="text-xl font-black text-white/5 animate-pulse">:</div>
+
+              {/* Minutes */}
+              <div className="flex flex-col items-center gap-1">
+                <button onClick={() => handleTimeChange('m', 5)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronUp size={16} /></button>
+                <input
+                  type="number"
+                  min="0"
+                  max="59"
+                  value={(selectedDate?.getMinutes() || 0).toString().padStart(2, '0')}
+                  onChange={e => handleTimeChange('m', parseInt(e.target.value) || 0, true)}
+                  className="bg-black/40 border border-white/5 rounded-xl w-12 h-10 flex items-center justify-center text-lg font-black italic text-[#00ff88] text-center focus:border-[#00ff88]/30 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button onClick={() => handleTimeChange('m', -5)} className="p-1 hover:text-[#00ff88] transition-all rounded-lg"><ChevronDown size={16} /></button>
+              </div>
             </div>
           </div>
 
-          <button 
+          <button
             onClick={() => setIsOpen(false)}
             className="w-full mt-4 bg-[#00ff88] text-black text-[9px] font-black uppercase tracking-[0.1em] py-3 rounded-xl shadow-[0_15px_30px_rgba(0,255,136,0.2)] hover:scale-[1.02] active:scale-95 transition-all italic"
           >
@@ -637,35 +643,35 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
 }
 
 // --- CUSTOM DATE RANGE PICKER ---
-export function CustomDateRangePicker({ 
-  startDate, 
-  endDate, 
-  onChange, 
+export function CustomDateRangePicker({
+  startDate,
+  endDate,
+  onChange,
   placeholder = "SELECIONAR PERÍODO",
   className = "",
   customTrigger,
   isOpenByDefault = false
-}: { 
+}: {
   startDate: string | null;
   endDate: string | null;
-  onChange: (start: string | null, end: string | null) => void; 
+  onChange: (start: string | null, end: string | null) => void;
   placeholder?: string;
   className?: string;
   customTrigger?: (open: () => void) => React.ReactNode;
   isOpenByDefault?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(isOpenByDefault);
-  
+
   // Local states to avoid constant parent re-renders while choosing
   const [localStart, setLocalStart] = useState<string | null>(startDate);
   const [localEnd, setLocalEnd] = useState<string | null>(endDate);
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [viewDate, setViewDate] = useState(new Date());
-  
+
   const [inputValue1, setInputValue1] = useState("");
   const [inputValue2, setInputValue2] = useState("");
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [popupPos, setPopupPos] = useState({ top: 0, left: 0, width: 0, flip: false });
 
@@ -701,18 +707,18 @@ export function CustomDateRangePicker({
       const rect = containerRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
       const flip = spaceBelow < 450 && rect.top > 450;
-      
+
       const calendarWidth = 300;
       let left = rect.left - 40;
-      
+
       // Garantir que não saia pela direita
       if (left + calendarWidth > window.innerWidth) {
         left = window.innerWidth - calendarWidth - 10;
       }
-      
+
       // Garantir que não saia pela esquerda
       if (left < 10) left = 10;
-      
+
       setPopupPos({ top: flip ? rect.top : rect.bottom, left: left, width: rect.width, flip });
     }
   };
@@ -733,7 +739,7 @@ export function CustomDateRangePicker({
     let cleaned = val.replace(/\D/g, '').slice(0, 8);
     if (cleaned.length >= 2) cleaned = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
     if (cleaned.length >= 5) cleaned = cleaned.slice(0, 5) + '/' + cleaned.slice(5);
-    
+
     if (type === 'start') setInputValue1(cleaned);
     else setInputValue2(cleaned);
 
@@ -752,12 +758,12 @@ export function CustomDateRangePicker({
   const handleDateClick = (e: React.MouseEvent, day: number) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     // Only handle click selection if we weren't just dragging
     if (isDragging) return;
 
     const clickedDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-    clickedDate.setHours(0,0,0,0);
+    clickedDate.setHours(0, 0, 0, 0);
 
     const s = localStart ? new Date(localStart) : null;
     const e_val = localEnd ? new Date(localEnd) : null;
@@ -777,12 +783,12 @@ export function CustomDateRangePicker({
 
   useEffect(() => {
     const handleGlobalMouseUp = () => {
-        setIsDragging(false);
-        setDragStartCandidate(null);
+      setIsDragging(false);
+      setDragStartCandidate(null);
     };
     if (typeof window !== 'undefined') {
-        window.addEventListener('mouseup', handleGlobalMouseUp);
-        return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+      window.addEventListener('mouseup', handleGlobalMouseUp);
+      return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
     }
   }, []);
 
@@ -790,38 +796,38 @@ export function CustomDateRangePicker({
     e.preventDefault();
     e.stopPropagation();
     const d = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-    d.setHours(0,0,0,0);
+    d.setHours(0, 0, 0, 0);
     setDragStartCandidate(d);
   };
 
   const onMouseEnterDate = (day: number) => {
     const d = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-    d.setHours(0,0,0,0);
+    d.setHours(0, 0, 0, 0);
     setHoverDate(d);
-    
+
     if (dragStartCandidate) {
       if (!isDragging && d.getTime() !== dragStartCandidate.getTime()) {
-          setIsDragging(true);
-          setLocalStart(dragStartCandidate.toISOString());
-          setLocalEnd(null);
+        setIsDragging(true);
+        setLocalStart(dragStartCandidate.toISOString());
+        setLocalEnd(null);
       }
-      
+
       if (isDragging) {
-          const s = dragStartCandidate;
-          if (d < s) {
-              setLocalStart(d.toISOString());
-              setLocalEnd(s.toISOString());
-          } else {
-              setLocalStart(s.toISOString());
-              setLocalEnd(d.toISOString());
-          }
+        const s = dragStartCandidate;
+        if (d < s) {
+          setLocalStart(d.toISOString());
+          setLocalEnd(s.toISOString());
+        } else {
+          setLocalStart(s.toISOString());
+          setLocalEnd(d.toISOString());
+        }
       }
     }
   };
 
   const isSelected = (day: number) => {
     const d = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-    d.setHours(0,0,0,0);
+    d.setHours(0, 0, 0, 0);
     const s = localStart ? new Date(localStart) : null;
     const e = localEnd ? new Date(localEnd) : null;
     return (s && d.getTime() === s.getTime()) || (e && d.getTime() === e.getTime());
@@ -829,7 +835,7 @@ export function CustomDateRangePicker({
 
   const isInRange = (day: number) => {
     const d = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-    d.setHours(0,0,0,0);
+    d.setHours(0, 0, 0, 0);
     const s = localStart ? new Date(localStart) : null;
     const e = localEnd ? new Date(localEnd) : null;
     const h = hoverDate;
@@ -845,7 +851,7 @@ export function CustomDateRangePicker({
   };
 
   const calendar = (
-    <div 
+    <div
       className={`fixed z-[9999] bg-[#0a0a0b]/98 backdrop-blur-3xl border border-white/10 rounded-[32px] p-7 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in duration-300 w-[300px]`}
       style={{
         top: popupPos.flip ? (popupPos.top - 15) : (popupPos.top + 15),
@@ -883,9 +889,9 @@ export function CustomDateRangePicker({
             onClick={(e) => handleDateClick(e, day)}
             className={`
               w-9 h-9 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center relative group
-              ${isSelected(day) ? 'bg-[#00d1ff] text-black shadow-[0_0_20px_rgba(0,209,255,0.4)] z-10' : 
+              ${isSelected(day) ? 'bg-[#00d1ff] text-black shadow-[0_0_20px_rgba(0,209,255,0.4)] z-10' :
                 isInRange(day) ? 'bg-[#00d1ff]/10 text-[#00d1ff]' :
-                'text-white/40 hover:bg-white/5'}
+                  'text-white/40 hover:bg-white/5'}
             `}
           >
             {day}
@@ -895,67 +901,67 @@ export function CustomDateRangePicker({
       </div>
 
       <div className="mt-8 pt-6 border-t border-white/5 flex flex-col gap-3">
-          <button 
-            onClick={(e) => { 
-                e.stopPropagation(); 
-                onChange(localStart, localEnd);
-                setIsOpen(false); 
-            }}
-            className="w-full py-3 bg-[#00d1ff] text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:brightness-110 transition-all shadow-[0_10px_20px_rgba(0,209,255,0.2)]"
-          >
-            Confirmar Período
-          </button>
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              setLocalStart(null);
-              setLocalEnd(null);
-              setInputValue1("");
-              setInputValue2("");
-            }}
-            className="w-full py-3 bg-white/5 text-white/40 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white/10 hover:text-white transition-all"
-          >
-            Limpar
-          </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onChange(localStart, localEnd);
+            setIsOpen(false);
+          }}
+          className="w-full py-3 bg-[#00d1ff] text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:brightness-110 transition-all shadow-[0_10px_20px_rgba(0,209,255,0.2)]"
+        >
+          Confirmar Período
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setLocalStart(null);
+            setLocalEnd(null);
+            setInputValue1("");
+            setInputValue2("");
+          }}
+          className="w-full py-3 bg-white/5 text-white/40 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white/10 hover:text-white transition-all"
+        >
+          Limpar
+        </button>
       </div>
     </div>
   );
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-        {customTrigger ? customTrigger(() => setIsOpen(true)) : (
-          <div 
-              onClick={() => setIsOpen(true)}
-              className="flex items-center bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-white/20 transition-all cursor-text overflow-hidden"
-          >
-              <div className="flex items-center justify-center w-10 h-10 border-r border-white/10 bg-white/5 group-hover:bg-white/10 transition-colors">
-                  <CalendarIcon size={14} className="text-[#00d1ff] animate-pulse" />
-              </div>
-              <div className="flex items-center gap-1 px-2">
-                  <input 
-                      type="text" 
-                      value={inputValue1}
-                      placeholder="INÍCIO"
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => handleManualInput(e.target.value, 'start')}
-                      className="w-20 bg-transparent border-none focus:ring-0 text-[10px] font-black text-white placeholder:text-white/10 uppercase tracking-tighter"
-                  />
-                  <span className="text-white/10 font-bold">-</span>
-                  <input 
-                      type="text" 
-                      value={inputValue2}
-                      placeholder="FIM"
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => handleManualInput(e.target.value, 'end')}
-                      className="w-20 bg-transparent border-none focus:ring-0 text-[10px] font-black text-white placeholder:text-white/10 uppercase tracking-tighter"
-                  />
-              </div>
+      {customTrigger ? customTrigger(() => setIsOpen(true)) : (
+        <div
+          onClick={() => setIsOpen(true)}
+          className="flex items-center bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-white/20 transition-all cursor-text overflow-hidden"
+        >
+          <div className="flex items-center justify-center w-10 h-10 border-r border-white/10 bg-white/5 group-hover:bg-white/10 transition-colors">
+            <CalendarIcon size={14} className="text-[#00d1ff] animate-pulse" />
           </div>
-        )}
+          <div className="flex items-center gap-1 px-2">
+            <input
+              type="text"
+              value={inputValue1}
+              placeholder="INÍCIO"
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => handleManualInput(e.target.value, 'start')}
+              className="w-20 bg-transparent border-none focus:ring-0 text-[10px] font-black text-white placeholder:text-white/10 uppercase tracking-tighter"
+            />
+            <span className="text-white/10 font-bold">-</span>
+            <input
+              type="text"
+              value={inputValue2}
+              placeholder="FIM"
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => handleManualInput(e.target.value, 'end')}
+              className="w-20 bg-transparent border-none focus:ring-0 text-[10px] font-black text-white placeholder:text-white/10 uppercase tracking-tighter"
+            />
+          </div>
+        </div>
+      )}
 
       {isOpen && typeof document !== 'undefined' && createPortal(
-            calendar, 
-            document.getElementById('datepicker-portal') || document.body
+        calendar,
+        document.getElementById('datepicker-portal') || document.body
       )}
     </div>
   );
