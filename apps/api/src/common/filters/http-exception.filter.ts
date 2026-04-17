@@ -1,5 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
+import * as Sentry from '@sentry/nestjs';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -20,19 +21,23 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const isInternalError = status === HttpStatus.INTERNAL_SERVER_ERROR;
 
+    // Captura no Sentry/GlitchTip apenas erros 500 e acima
+    if (isInternalError) {
+      Sentry.captureException(exception);
+    }
+
     const errorResponse = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      message: isInternalError 
-        ? 'Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.' 
+      message: isInternalError
+        ? 'Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.'
         : (typeof message === 'object' && (message as any).message ? (message as any).message : message),
     };
 
-    // Log internal errors but don't expose stack on production
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
       console.error('INTERNAL_SERVER_ERROR:', exception);
-      
+
       try {
         const fs = require('fs');
         const path = require('path');
