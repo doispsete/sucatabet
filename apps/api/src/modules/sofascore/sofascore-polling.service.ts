@@ -48,20 +48,21 @@ export class SofascorePollingService implements OnModuleInit {
       const gameData = await this.sofascoreService.getEventDetails(operation.sofascoreEventId);
       
       if (gameData) {
+        // Sanitização explícita para evitar erros de serialização do Prisma
+        const updateData = {
+          sofascoreStatus: String(gameData.status || 'notstarted'),
+          sofascoreHomeScore: gameData.homeScore !== null ? Number(gameData.homeScore) : null,
+          sofascoreAwayScore: gameData.awayScore !== null ? Number(gameData.awayScore) : null,
+          sofascorePeriod: gameData.period !== null ? String(gameData.period) : null,
+          sofascoreMinute: gameData.minute !== null ? Number(gameData.minute) : null,
+          sofascoreHomeLogo: gameData.homeLogo,
+          sofascoreAwayLogo: gameData.awayLogo,
+          sofascoreStartTime: gameData.startTime,
+        };
+
         await this.prisma.operation.update({
           where: { id: operation.id },
-          data: {
-            // @ts-ignore
-            sofascoreStatus: gameData.status,
-            // @ts-ignore
-            sofascoreHomeScore: gameData.homeScore,
-            // @ts-ignore
-            sofascoreAwayScore: gameData.awayScore,
-            // @ts-ignore
-            sofascorePeriod: gameData.period,
-            // @ts-ignore
-            sofascoreMinute: gameData.minute,
-          },
+          data: updateData as any,
         });
 
         if (gameData.status === 'finished') {

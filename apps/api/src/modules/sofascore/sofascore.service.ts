@@ -4,7 +4,7 @@ import { formatInTimeZone } from 'date-fns-tz';
 @Injectable()
 export class SofascoreService {
   private readonly logger = new Logger(SofascoreService.name);
-  private readonly baseUrl = 'https://api.sofascore.com/api/v1';
+  private readonly baseUrl = 'https://api.sofascore.app/api/v1';
   // User-Agent mobile para evitar bloqueio de datacenter (Hostinger)
   private readonly userAgent = 'SofaScore/167 CFNetwork/1410.0.3 Darwin/22.6.0';
 
