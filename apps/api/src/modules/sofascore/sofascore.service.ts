@@ -40,39 +40,18 @@ export class SofascoreService {
   }
 
   async searchGames(term: string) {
-    const today = new Date();
-    const dates: string[] = [];
+    const searchTerm = encodeURIComponent(term);
+    const data: any = await this.fetchWithRateLimit(`${this.baseUrl}/search/all?q=${searchTerm}&page=0`, true);
     
-    // Vamos buscar apenas os próximos 4 dias para garantir velocidade (0, 1, 2, 3)
-    for (let i = 0; i < 4; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() + i);
-        dates.push(date.toISOString().split('T')[0]);
-    }
+    if (!data?.results) return [];
 
-    const searchTerm = term.toLowerCase();
-    
-    // Busca os 4 dias em paralelo para evitar timeout de 7s
-    // O delay agora é aplicado apenas se não for a primeira leva paralela
-    const dayPromises = dates.map((date, index) => 
-        this.fetchWithRateLimit(`${this.baseUrl}/sport/football/scheduled-events/${date}`, true)
-    );
-
-    const allDaysData = await Promise.all(dayPromises);
-    const allEvents: any[] = [];
-
-    for (const data of allDaysData) {
-        if (data?.events) {
-            const filtered = data.events.filter((event: any) => 
-                event.homeTeam.name.toLowerCase().includes(searchTerm) || 
-                event.awayTeam.name.toLowerCase().includes(searchTerm)
-            );
-            allEvents.push(...filtered);
-        }
-    }
+    // Filtra apenas resultados do tipo 'event' (partidas)
+    const events = data.results
+      .filter((r: any) => r.type === 'event' && r.entity)
+      .map((r: any) => r.entity);
 
     // Retorna os eventos formatados conforme a especificação
-    return allEvents.map((event: any) => ({
+    return events.map((event: any) => ({
         eventId: event.id,
         homeTeam: event.homeTeam.name,
         homeTeamId: event.homeTeam.id,
@@ -80,7 +59,7 @@ export class SofascoreService {
         awayTeam: event.awayTeam.name,
         awayTeamId: event.awayTeam.id,
         awayLogo: `https://api.sofascore.com/api/v1/team/${event.awayTeam.id}/image`,
-        league: event.tournament.name,
+        league: event.tournament?.name || 'Futebol',
         startTime: new Date(event.startTimestamp * 1000).toISOString(),
         status: event.status.type, // notstarted, inprogress, finished
         period: event.status.period || null,
