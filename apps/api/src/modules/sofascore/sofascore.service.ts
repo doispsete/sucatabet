@@ -46,45 +46,54 @@ export class SofascoreService {
       
       if (!searchData?.results) return [];
 
-      // 1. Pegar os IDs dos times encontrados
-      const teamIds = searchData.results
-        .filter((r: any) => r.type === 'team' && r.entity?.id)
-        .slice(0, 3) // Limita aos 3 principais times para não sobrecarregar
-        .map((r: any) => r.entity.id);
+      // 1. Pegar IDs de times e eventos diretos
+      const teams = searchData.results.filter((r: any) => r.type === 'team' && r.entity?.id);
+      const directEvents = searchData.results.filter((r: any) => r.type === 'event' && r.entity);
 
-      if (teamIds.length === 0) {
-        // Se não achou time, tenta buscar eventos diretos (fallback)
-        const events = searchData.results
-          .filter((r: any) => r.type === 'event' && r.entity)
-          .map((r: any) => r.entity);
-        return this.formatEvents(events);
-      }
-
-      // 2. Buscar próximos eventos de cada time em paralelo
-      const eventPromises = teamIds.map((id: number) => 
-        this.fetchWithRateLimit(`${this.baseUrl}/team/${id}/events/next/0`, true)
-      );
-
-      const eventsData = await Promise.all(eventPromises);
       const allEvents: any[] = [];
       const seenIds = new Set();
 
-      for (const data of eventsData) {
-        if (data?.events) {
-          for (const event of data.events) {
-            if (!seenIds.has(event.id)) {
-              allEvents.push(event);
-              seenIds.add(event.id);
+      // Adicionar eventos diretos encontrados na pesquisa global
+      for (const r of directEvents) {
+        if (!seenIds.has(r.entity.id)) {
+          allEvents.push(r.entity);
+          seenIds.add(r.entity.id);
+        }
+      }
+
+      // 2. Buscar próximos eventos dos times encontrados (top 5 para ser mais abrangente)
+      const teamIds = teams.slice(0, 5).map((r: any) => r.entity.id);
+      if (teamIds.length > 0) {
+        const eventPromises = teamIds.map((id: number) => 
+          this.fetchWithRateLimit(`${this.baseUrl}/team/${id}/events/next/0`, true)
+        );
+
+        const eventsData = await Promise.all(eventPromises);
+        for (const data of eventsData) {
+          if (data?.events) {
+            for (const event of data.events) {
+              if (!seenIds.has(event.id)) {
+                allEvents.push(event);
+                seenIds.add(event.id);
+              }
             }
           }
         }
       }
 
-      // 3. Ordenar por data e formatar
-      allEvents.sort((a, b) => a.startTimestamp - b.startTimestamp);
-      return this.formatEvents(allEvents);
+      // 3. Filtrar por tempo (apenas próximos 7 dias) e ordenar
+      const now = Math.floor(Date.now() / 1000);
+      const sevenDaysLater = now + (7 * 24 * 60 * 60);
+
+      const filteredEvents = allEvents.filter(event => 
+        event.startTimestamp >= (now - 3600 * 4) && // Inclui jogos que começaram há até 4h (Live)
+        event.startTimestamp <= sevenDaysLater
+      );
+
+      filteredEvents.sort((a, b) => a.startTimestamp - b.startTimestamp);
+      return this.formatEvents(filteredEvents);
     } catch (error) {
-      this.logger.error(`Erro na busca híbrida Sofascore: ${error.message}`);
+      this.logger.error(`Erro na busca refinada Sofascore: ${error.message}`);
       return [];
     }
   }
