@@ -159,8 +159,7 @@ export class AccountsService {
         id,
         userId,
         { previousBalance: new Prisma.Decimal(account.balance) },
-        { balance: new Prisma.Decimal(updatedAccount.balance), depositAmount: new Prisma.Decimal(amountDto.amount) },
-        tx,
+        { balance: new Prisma.Decimal(updatedAccount.balance), depositAmount: new Prisma.Decimal(amountDto.amount) }
       );
 
       await this.clearUserDashboardCache(userId, role);
@@ -218,8 +217,7 @@ export class AccountsService {
         id,
         userId,
         { balance: new Prisma.Decimal(account.balance) },
-        { balance: new Prisma.Decimal(updated.balance), withdrawAmount: new Prisma.Decimal(amountDto.amount) },
-        tx,
+        { balance: new Prisma.Decimal(updated.balance), withdrawAmount: new Prisma.Decimal(amountDto.amount) }
       );
 
       await this.clearUserDashboardCache(userId, role);
@@ -243,8 +241,7 @@ export class AccountsService {
         id,
         userId,
         { status: account.status, balance: Number(account.balance) },
-        { status: updated.status, balance: Number(updated.balance) },
-        tx,
+        { status: updated.status, balance: Number(updated.balance) }
       );
 
       await this.clearUserDashboardCache(userId, role);

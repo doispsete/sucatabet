@@ -208,7 +208,7 @@ export default function DashboardPage() {
   if (!summary || !club) return null;
 
   return (
-    <div className="space-y-8 px-3 md:px-6">
+    <div className="space-y-8 px-3 md:px-6 animate-glide">
       {/* Top Row — KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
         {/* Coluna Esquerda: Banca + Meta */}
@@ -374,7 +374,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Second Row — Performance & Clube365 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 animate-glide [animation-delay:200ms]">
         {/* Performance KPI (SVG Area Chart) */}
         <div className="md:col-span-2 lg:col-span-6 glass-card rounded-[40px] p-6 md:p-8 border-l border-[#00d1ff]/10 relative overflow-visible group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#00d1ff]/5 blur-[80px] rounded-full -mr-16 -mt-16 group-hover:bg-[#00d1ff]/10 transition-all duration-700"></div>
@@ -575,7 +575,7 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      <section className="glass-card rounded-[40px] border border-white/5 overflow-visible shadow-2xl group/table">
+      <section className="glass-card rounded-[40px] border border-white/5 overflow-visible shadow-2xl group/table animate-glide [animation-delay:400ms]">
         <div className="p-6 md:p-8 flex justify-between items-center border-b border-white/5 bg-white/[0.02]">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-[#00ff88]/10 rounded-xl">

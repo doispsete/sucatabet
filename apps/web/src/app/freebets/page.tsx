@@ -205,7 +205,7 @@ export default function FreebetsPage() {
   ];
 
   return (
-    <div className="px-3 md:px-6 space-y-12 pb-24 h-full flex flex-col">
+    <div className="px-3 md:px-6 space-y-12 pb-24 h-full flex flex-col animate-glide">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-4">
         <div className="space-y-4">
           <div className="flex items-center gap-3">

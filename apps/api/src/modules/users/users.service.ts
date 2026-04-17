@@ -155,7 +155,51 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
-    return this.prisma.user.delete({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        cpfProfiles: {
+          include: {
+            accounts: true
+          }
+        },
+        bankAccount: true,
+      }
+    });
+
+    if (!user) throw new NotFoundException('Usuário não encontrado');
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Limpar Auditoria
+      await tx.auditLog.deleteMany({ where: { executedBy: id } });
+
+      // 2. Limpar Freebets
+      await tx.freebet.deleteMany({ where: { userId: id } });
+
+      // 3. Limpar Operações (e Apostas vinculadas)
+      const ops = await tx.operation.findMany({ where: { userId: id } });
+      const opIds = ops.map(o => o.id);
+      await tx.bet.deleteMany({ where: { operationId: { in: opIds } } });
+      await tx.operation.deleteMany({ where: { userId: id } });
+
+      // 4. Limpar Contas e Perfis CPF
+      for (const profile of user.cpfProfiles) {
+        const accIds = profile.accounts.map(a => a.id);
+        await tx.bet.deleteMany({ where: { accountId: { in: accIds } } });
+        await tx.weeklyClub.deleteMany({ where: { accountId: { in: accIds } } });
+        await tx.account.deleteMany({ where: { cpfProfileId: profile.id } });
+      }
+      await tx.cpfProfile.deleteMany({ where: { userId: id } });
+
+      // 5. Limpar Banco Central e Transações
+      if (user.bankAccount) {
+        await tx.bankTransaction.deleteMany({ where: { bankAccountId: user.bankAccount.id } });
+        await tx.expense.deleteMany({ where: { bankAccountId: user.bankAccount.id } });
+        await tx.bankAccount.delete({ where: { id: user.bankAccount.id } });
+      }
+
+      // 6. Finalmente, deletar o usuário
+      return tx.user.delete({ where: { id } });
+    });
   }
 }

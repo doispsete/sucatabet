@@ -223,15 +223,39 @@
 }
 
 .animate-in {
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.fade-in {
-  animation-name: fadeIn;
+@keyframes slideUpFadePremium {
+  0% { transform: translateY(12px) scale(0.99); opacity: 0; filter: blur(4px); }
+  100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0); }
 }
 
-.slide-in-from-bottom-4 {
-  animation-name: slideInUp;
+.animate-glide {
+  opacity: 0;
+  animation: slideUpFadePremium 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.animate-stagger {
+  display: grid;
+}
+
+.animate-stagger > *:nth-child(1) { animation-delay: 50ms; }
+.animate-stagger > *:nth-child(2) { animation-delay: 100ms; }
+.animate-stagger > *:nth-child(3) { animation-delay: 150ms; }
+.animate-stagger > *:nth-child(4) { animation-delay: 200ms; }
+.animate-stagger > *:nth-child(5) { animation-delay: 250ms; }
+.animate-stagger > *:nth-child(n+6) { animation-delay: 300ms; }
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: scale(1.01); filter: blur(8px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+.page-transition {
+  animation: pageEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity, filter;
 }
 
 .animate-pulsar {

@@ -91,7 +91,9 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
           />
         </Suspense>
         <main className={`flex-1 overflow-y-auto pt-[76px] px-3 md:px-8 lg:px-10 custom-scrollbar relative ${isMobile ? 'pb-6' : 'pb-10'}`}>
-          {children}
+          <div key={pathname} className="page-transition min-h-full flex flex-col">
+            {children}
+          </div>
         </main>
       </div>
     </div>
