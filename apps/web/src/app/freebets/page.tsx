@@ -97,11 +97,7 @@ export default function FreebetsPage() {
       await createFreebet({
         accountId: accId,
         value: parseFloat(fbValue),
-        expiresAt: (() => {
-          const d = new Date(fbExpiresAt);
-          return new Date(d.getTime() + 3 * 60 * 60 * 1000).toISOString();
-        })(),
-        origin: fbOrigin,
+        expiresAt: new Date(fbExpiresAt).toISOString(),
       });
       toast.success("Freebet cadastrada com sucesso");
       setIsModalOpen(false);
@@ -129,10 +125,7 @@ export default function FreebetsPage() {
     try {
       await updateFreebet(editId, {
         value: parseFloat(editValue),
-        expiresAt: (() => {
-          const d = new Date(editExpiresAt);
-          return new Date(d.getTime() + 3 * 60 * 60 * 1000).toISOString();
-        })(),
+        expiresAt: new Date(editExpiresAt).toISOString(),
       });
       toast.success("Ativo atualizado com sucesso");
       setIsEditModalOpen(false);

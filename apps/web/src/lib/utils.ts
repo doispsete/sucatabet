@@ -33,9 +33,9 @@ export const formatDate = (date: Date | string | null): string => {
   const d = typeof date === 'string' ? new Date(date) : date;
   if (isNaN(d.getTime())) return '--/--/----';
   
-  const day = String(d.getUTCDate()).padStart(2, '0');
-  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
-  const year = d.getUTCFullYear();
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
   
   return `${day}/${month}/${year}`;
 };
@@ -48,8 +48,8 @@ export const formatDateShort = (date: Date | string | null): string => {
   const d = typeof date === 'string' ? new Date(date) : date;
   if (isNaN(d.getTime())) return '--/--';
   
-  const day = String(d.getUTCDate()).padStart(2, '0');
-  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
   
   return `${day}/${month}`;
 };
@@ -65,7 +65,7 @@ export const formatMonthAbbr = (date: Date | string | null): string => {
     // Manual months to avoid locale dependency
     const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
     // Ajuste para BRT (aproximado via UTC se necessário, mas aqui pegamos o mês do objeto Date)
-    return months[d.getUTCMonth()];
+    return months[d.getMonth()];
 };
 
 export const formatTime = (date: Date | string | null): string => {
@@ -73,8 +73,8 @@ export const formatTime = (date: Date | string | null): string => {
   const d = typeof date === 'string' ? new Date(date) : date;
   if (isNaN(d.getTime())) return '--:--';
   
-  const hours = String(d.getUTCHours()).padStart(2, '0');
-  const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
   
   return `${hours}:${minutes}`;
 };
