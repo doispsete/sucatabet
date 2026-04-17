@@ -38,6 +38,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
   const [notes, setNotes] = useState("");
   const [generatedFbValue, setGeneratedFbValue] = useState("");
   const [freebetId, setFreebetId] = useState<string | null>(null);
+  const { data: allFreebets } = useFreebets();
   const [bets, setBets] = useState<Array<{
     id: string;
     accountId: string;
@@ -166,17 +167,39 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
     }
   };
 
-  const accountOptions = (Array.isArray(accounts) ? [...accounts] : [])
-    .sort((a, b) => {
-      const houseA = a.bettingHouse?.name?.toUpperCase() || "";
-      const houseB = b.bettingHouse?.name?.toUpperCase() || "";
-      if (houseA !== houseB) return houseA.localeCompare(houseB, 'pt-BR');
-      return (a.cpfProfile?.name?.toUpperCase() || "").localeCompare(b.cpfProfile?.name?.toUpperCase() || "", 'pt-BR');
-    })
-    .map(acc => ({
-      value: acc.id,
-      label: `${acc.bettingHouse?.name?.toUpperCase()} — ${acc.cpfProfile?.name?.toUpperCase()}`
-    }));
+  const accountOptions = React.useMemo(() => {
+    return (Array.isArray(accounts) ? [...accounts] : [])
+      .sort((a, b) => {
+        const houseA = a.bettingHouse?.name?.toUpperCase() || "";
+        const houseB = b.bettingHouse?.name?.toUpperCase() || "";
+        if (houseA !== houseB) return houseA.localeCompare(houseB, 'pt-BR');
+        return (a.cpfProfile?.name?.toUpperCase() || "").localeCompare(b.cpfProfile?.name?.toUpperCase() || "", 'pt-BR');
+      })
+      .map(acc => ({
+        value: acc.id,
+        label: `${acc.bettingHouse?.name?.toUpperCase()} — ${acc.cpfProfile?.name?.toUpperCase()}`
+      }));
+  }, [accounts]);
+  
+  const availableFreebets = React.useMemo(() => {
+    if (type !== OperationType.EXTRACAO || !Array.isArray(allFreebets)) return [];
+    
+    // Identifica a conta que foi marcada como benefício
+    const benefitAccount = bets.find(b => b.isBenefit)?.accountId;
+    
+    return allFreebets
+      .filter(fb => {
+        // Apenas pendentes/expirando (não usadas/expiradas)
+        if (fb.status !== 'PENDENTE' && fb.status !== 'EXPIRANDO') return false;
+        // Se houver conta de benefício selecionada, filtra por ela
+        if (benefitAccount) return fb.accountId === benefitAccount;
+        return true;
+      })
+      .map(fb => ({
+        value: fb.id,
+        label: `R$ ${formatCurrency(fb.value)} — ${fb.account?.bettingHouse?.name?.toUpperCase()} (${fb.account?.cpfProfile?.name?.split(' ')[0]})`
+      }));
+  }, [allFreebets, type, bets]);
 
   return (
     <Modal
@@ -220,6 +243,17 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
                 onChange={e => setGeneratedFbValue(e.target.value)}
                 placeholder="0.00"
                 className="text-[#03D791] font-black border-[#03D791]/30"
+              />
+            </div>
+          )}
+          {type === OperationType.EXTRACAO && (
+            <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[#14d1ff]">Vincular Freebet</label>
+              <CustomSelect
+                value={freebetId || ""}
+                onChange={val => setFreebetId(val)}
+                options={availableFreebets}
+                placeholder={availableFreebets.length > 0 ? "SELECIONE A FREEBET" : "NENHUMA FREEBET DISPONÍVEL"}
               />
             </div>
           )}

@@ -286,12 +286,18 @@ export default function AdminPage() {
                   <tr key={user.id} className="hover:bg-white/[0.02] transition-colors group row-interact">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="relative w-11 h-11 rounded-full bg-[#2a2a2a] overflow-hidden border border-white/5 shadow-inner flex items-center justify-center">
-                          <Users className="w-5 h-5 text-[#b9cbbc]" />
-                          
-                          {/* Online Indicator */}
+                        <div className="relative w-10 h-10 shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#b9cbbc] border border-white/5 group-hover:border-[#00ff88]/20 transition-all overflow-hidden">
+                            {user.avatarUrl ? (
+                              <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <Users size={20} />
+                            )}
+                          </div>
                           {onlineUsers.includes(user.id) && (
-                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#00ff88] border-2 border-[#1a1a1a] rounded-full shadow-[0_0_10px_rgba(0,255,136,0.5)] animate-pulsar" />
+                            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-black flex items-center justify-center border-2 border-black">
+                               <div className="w-2 h-2 rounded-full bg-[#00ff88] animate-pulsar shadow-[0_0_8px_rgba(0,255,136,0.5)]"></div>
+                            </div>
                           )}
                         </div>
                         <div>
