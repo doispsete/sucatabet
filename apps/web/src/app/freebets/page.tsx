@@ -94,11 +94,10 @@ export default function FreebetsPage() {
   const handleCreateFreebet = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log('fbExpiresAt value:', fbExpiresAt);
       await createFreebet({
         accountId: accId,
         value: parseFloat(fbValue),
-        expiresAt: new Date(fbExpiresAt + 'T23:59:59-03:00').toISOString(),
+        expiresAt: new Date(fbExpiresAt.split('T')[0] + 'T23:59:59-03:00').toISOString(),
         origin: fbOrigin,
       });
       toast.success("Freebet cadastrada com sucesso");
@@ -125,7 +124,7 @@ export default function FreebetsPage() {
     e.preventDefault();
     if (!editId) return;
     try {
-      await updateFreebet(editId, { value: parseFloat(editValue), expiresAt: new Date(editExpiresAt + 'T23:59:59-03:00').toISOString() });
+      await updateFreebet(editId, { value: parseFloat(editValue), expiresAt: new Date(editExpiresAt.split('T')[0] + 'T23:59:59-03:00').toISOString() });
       toast.success("Ativo atualizado com sucesso");
       setIsEditModalOpen(false);
       refetchFreebets();

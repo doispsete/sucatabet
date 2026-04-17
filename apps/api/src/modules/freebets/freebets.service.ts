@@ -9,18 +9,18 @@ export class FreebetsService {
   constructor(
     private prisma: PrismaService,
     private auditLogs: AuditLogsService,
-  ) {}
+  ) { }
 
   private getStatus(freebet: any) {
     const now = new Date();
     const expiresAt = new Date(freebet.expiresAt);
-    
+
     if (freebet.usedAt) return 'USADA';
     if (expiresAt < now) return 'EXPIRADA';
-    
+
     const oneDayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
     if (expiresAt < oneDayFromNow) return 'EXPIRANDO';
-    
+
     return 'PENDENTE';
   }
 
@@ -78,7 +78,7 @@ export class FreebetsService {
       },
     });
 
-    await this.auditLogs.log(
+    this.auditLogs.log(
       'CREATE',
       'Freebet',
       freebet.id,
@@ -97,13 +97,13 @@ export class FreebetsService {
     const existing = await this.findOne(id, userId, role);
 
     const data = { ...updateFreebetDto };
-    
+
     if (data.status === 'USADA') {
       data.usedAt = new Date().toISOString();
     } else if (data.status === 'EXPIRADA') {
       data.expiresAt = new Date(Date.now() - 1000).toISOString();
     }
-    
+
     delete data.status;
 
     const updated = await this.prisma.freebet.update({
@@ -111,7 +111,7 @@ export class FreebetsService {
       data,
     });
 
-    await this.auditLogs.log(
+    this.auditLogs.log(
       'UPDATE',
       'Freebet',
       id,

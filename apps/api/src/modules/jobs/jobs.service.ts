@@ -12,13 +12,13 @@ export class JobsService {
   constructor(
     private prisma: PrismaService,
     private auditLogs: AuditLogsService,
-  ) {}
+  ) { }
 
   // 1. Reset Semanal do Clube - Segunda-feira às 00:00 BRT (03:00 UTC)
   @Cron('0 3 * * 1')
   async handleWeeklyReset() {
     this.logger.log('Iniciando Reset Semanal do Clube...');
-    
+
     const now = new Date();
     const startOfWeek = getStartOfWeekBR(now);
 
@@ -35,7 +35,7 @@ export class JobsService {
         },
       });
 
-      await this.auditLogs.log(
+      this.auditLogs.log(
         'RESET',
         'WeeklyClub',
         account.id,
@@ -44,7 +44,7 @@ export class JobsService {
         { weekStart: startOfWeek },
       );
     }
-    
+
     this.logger.log('Reset Semanal concluído.');
   }
 
@@ -93,12 +93,12 @@ export class JobsService {
       // No spec, isso é consumido pelo dashboard.
     }
   }
-  
+
   // 4. Reset Mensal de Despesas - Dia 1 às 00:00
   @Cron('0 0 1 * *')
   async handleMonthlyExpenseReset() {
     this.logger.log('Iniciando Reset Mensal de Despesas...');
-    
+
     const result = await this.prisma.expense.updateMany({
       where: {
         recurring: true,
