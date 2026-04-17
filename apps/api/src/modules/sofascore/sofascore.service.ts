@@ -6,19 +6,23 @@ export class SofascoreService {
   private readonly baseUrl = 'https://api.sofascore.com/api/v1';
   private readonly userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36';
 
-  private async fetchWithRateLimit(url: string) {
-    // Implementação básica de rate limit simples: espera 1s antes de cada chamada
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  private async fetchWithRateLimit(url: string, skipDelay = false) {
+    if (!skipDelay) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
     
     try {
       const response = await fetch(url, {
         headers: {
           'User-Agent': this.userAgent,
           'Accept': 'application/json',
+          'Origin': 'https://www.sofascore.com',
+          'Referer': 'https://www.sofascore.com/',
         },
       });
 
       if (response.status === 429 || response.status === 403) {
+        this.logger.error(`BLOQUEIO SOFASCORE: IP da VPS pode estar bloqueado (${response.status}) na URL: ${url}`);
         throw new HttpException('Sofascore temporariamente indisponível', HttpStatus.SERVICE_UNAVAILABLE);
       }
 
@@ -36,20 +40,28 @@ export class SofascoreService {
   }
 
   async searchGames(term: string) {
-    const dates: string[] = [];
     const today = new Date();
+    const dates: string[] = [];
     
-    for (let i = 0; i < 7; i++) {
+    // Vamos buscar apenas os próximos 4 dias para garantir velocidade (0, 1, 2, 3)
+    for (let i = 0; i < 4; i++) {
         const date = new Date(today);
         date.setDate(today.getDate() + i);
         dates.push(date.toISOString().split('T')[0]);
     }
 
-    const allEvents: any[] = [];
     const searchTerm = term.toLowerCase();
+    
+    // Busca os 4 dias em paralelo para evitar timeout de 7s
+    // O delay agora é aplicado apenas se não for a primeira leva paralela
+    const dayPromises = dates.map((date, index) => 
+        this.fetchWithRateLimit(`${this.baseUrl}/sport/football/scheduled-events/${date}`, true)
+    );
 
-    for (const date of dates) {
-        const data: any = await this.fetchWithRateLimit(`${this.baseUrl}/sport/football/scheduled-events/${date}`);
+    const allDaysData = await Promise.all(dayPromises);
+    const allEvents: any[] = [];
+
+    for (const data of allDaysData) {
         if (data?.events) {
             const filtered = data.events.filter((event: any) => 
                 event.homeTeam.name.toLowerCase().includes(searchTerm) || 
