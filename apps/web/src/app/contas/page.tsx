@@ -227,7 +227,7 @@ export default function AccountsPage() {
   ], [summary]);
 
   return (
-    <div className="space-y-12 pb-20 pt-4">
+    <div className="space-y-12 pb-20 pt-4 animate-glide">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -257,7 +257,7 @@ export default function AccountsPage() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-glide [animation-delay:150ms]">
         {summaryLoading ? (
           Array(3).fill(0).map((_, i) => <SkeletonCard key={i} />)
         ) : (
