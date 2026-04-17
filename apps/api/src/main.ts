@@ -59,7 +59,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(helmet({
     contentSecurityPolicy: {
-      reportOnly: true, // Apenas reporta, não bloqueia (evita quebrar o frontend Next.js por enquanto)
+      reportOnly: false,
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
