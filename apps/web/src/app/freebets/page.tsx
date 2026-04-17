@@ -98,7 +98,7 @@ export default function FreebetsPage() {
         accountId: accId,
         value: parseFloat(fbValue),
         origin: fbOrigin,
-        expiresAt: new Date(fbExpiresAt).toISOString(),
+        expiresAt: new Date(fbExpiresAt + 'T23:59:59-03:00').toISOString(),
       });
       toast.success("Freebet cadastrada com sucesso");
       setIsModalOpen(false);
