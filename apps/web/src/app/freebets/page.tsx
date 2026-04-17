@@ -97,7 +97,10 @@ export default function FreebetsPage() {
       await createFreebet({
         accountId: accId,
         value: parseFloat(fbValue),
-        expiresAt: new Date(fbExpiresAt + 'T23:59:59-03:00').toISOString(),
+        expiresAt: (() => {
+          const d = new Date(fbExpiresAt);
+          return new Date(d.getTime() + 3 * 60 * 60 * 1000).toISOString();
+        })(),
         origin: fbOrigin,
       });
       toast.success("Freebet cadastrada com sucesso");
@@ -124,7 +127,13 @@ export default function FreebetsPage() {
     e.preventDefault();
     if (!editId) return;
     try {
-      await updateFreebet(editId, { value: parseFloat(editValue), expiresAt: new Date(fbExpiresAt + 'T23:59:59-03:00').toISOString(), });
+      await updateFreebet(editId, {
+        value: parseFloat(editValue),
+        expiresAt: (() => {
+          const d = new Date(editExpiresAt);
+          return new Date(d.getTime() + 3 * 60 * 60 * 1000).toISOString();
+        })(),
+      });
       toast.success("Ativo atualizado com sucesso");
       setIsEditModalOpen(false);
       refetchFreebets();
@@ -132,7 +141,6 @@ export default function FreebetsPage() {
       toast.error("Erro ao atualizar freebet");
     }
   };
-
   const { data: opData } = useOperations({ limit: 1000 });
   const operations = opData?.data || [];
 

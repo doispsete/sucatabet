@@ -412,10 +412,8 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
       newDate.setHours(12);
       newDate.setMinutes(0);
     }
-    const y = newDate.getFullYear();
-    const m = String(newDate.getMonth() + 1).padStart(2, '0');
-    const d = String(newDate.getDate()).padStart(2, '0');
-    onChange(`${y}-${m}-${d}`);
+    onChange(newDate.toISOString());
+
   };
 
   const handleTimeChange = (type: 'h' | 'm', value: number, isDirect = false) => {
@@ -432,10 +430,7 @@ export function CustomDatePicker({ value, onChange, placeholder = "SELECIONAR DA
       if (newM < 0) newM = (isDirect ? 0 : 55);
       newDate.setMinutes(newM);
     }
-    const y = newDate.getFullYear();
-    const m = String(newDate.getMonth() + 1).padStart(2, '0');
-    const d = String(newDate.getDate()).padStart(2, '0');
-    onChange(`${y}-${m}-${d}`);
+    onChange(newDate.toISOString());
   };
 
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
