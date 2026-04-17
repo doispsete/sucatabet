@@ -1,10 +1,12 @@
 import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { formatInTimeZone } from 'date-fns-tz';
 
 @Injectable()
 export class SofascoreService {
   private readonly logger = new Logger(SofascoreService.name);
   private readonly baseUrl = 'https://api.sofascore.com/api/v1';
-  private readonly userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36';
+  // User-Agent mobile para evitar bloqueio de datacenter (Hostinger)
+  private readonly userAgent = 'SofaScore/167 CFNetwork/1410.0.3 Darwin/22.6.0';
 
   private async fetchWithRateLimit(url: string, skipDelay = false) {
     if (!skipDelay) {
@@ -18,11 +20,12 @@ export class SofascoreService {
           'Accept': 'application/json',
           'Origin': 'https://www.sofascore.com',
           'Referer': 'https://www.sofascore.com/',
+          'x-forwarded-for': '177.75.40.1', // Simula IP residencial brasileiro
         },
       });
 
       if (response.status === 429 || response.status === 403) {
-        this.logger.error(`BLOQUEIO SOFASCORE: IP da VPS pode estar bloqueado (${response.status}) na URL: ${url}`);
+        this.logger.error(`BLOQUEIO SOFASCORE: IP da VPS bloqueado (${response.status}) na URL: ${url}`);
         throw new HttpException('Sofascore temporariamente indisponível', HttpStatus.SERVICE_UNAVAILABLE);
       }
 
@@ -61,7 +64,7 @@ export class SofascoreService {
         }
       }
 
-      // 2. Buscar próximos eventos dos times encontrados (top 5 para ser mais abrangente)
+      // 2. Buscar próximos eventos dos times encontrados
       const teamIds = teams.slice(0, 5).map((r: any) => r.entity.id);
       if (teamIds.length > 0) {
         const eventPromises = teamIds.map((id: number) => 
@@ -86,7 +89,7 @@ export class SofascoreService {
       const sevenDaysLater = now + (7 * 24 * 60 * 60);
 
       const filteredEvents = allEvents.filter(event => 
-        event.startTimestamp >= (now - 3600 * 4) && // Inclui jogos que começaram há até 4h (Live)
+        event.startTimestamp >= (now - 3600 * 4) && 
         event.startTimestamp <= sevenDaysLater
       );
 
@@ -108,8 +111,9 @@ export class SofascoreService {
         awayTeamId: event.awayTeam.id,
         awayLogo: `https://api.sofascore.com/api/v1/team/${event.awayTeam.id}/image`,
         league: event.tournament?.name || 'Futebol',
-        startTime: new Date(event.startTimestamp * 1000).toISOString(),
-        status: event.status.type, // notstarted, inprogress, finished
+        // Uso de formatInTimeZone para garantir exibição correta em America/Sao_Paulo
+        startTime: formatInTimeZone(new Date(event.startTimestamp * 1000), 'America/Sao_Paulo', "yyyy-MM-dd'T'HH:mm:ssXXX"),
+        status: event.status.type,
         period: event.status.period || null,
         minute: event.status.minute || null,
         homeScore: event.homeScore?.current ?? null,
@@ -131,7 +135,7 @@ export class SofascoreService {
         awayTeamId: event.awayTeam.id,
         awayLogo: `https://api.sofascore.com/api/v1/team/${event.awayTeam.id}/image`,
         league: event.tournament.name,
-        startTime: new Date(event.startTimestamp * 1000).toISOString(),
+        startTime: formatInTimeZone(new Date(event.startTimestamp * 1000), 'America/Sao_Paulo', "yyyy-MM-dd'T'HH:mm:ssXXX"),
         status: event.status.type,
         period: event.status.period || null,
         minute: event.status.minute || null,
