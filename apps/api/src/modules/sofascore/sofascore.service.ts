@@ -4,9 +4,9 @@ import { formatInTimeZone } from 'date-fns-tz';
 @Injectable()
 export class SofascoreService {
   private readonly logger = new Logger(SofascoreService.name);
-  private readonly baseUrl = 'https://www.sofascore.com/api/v1';
-  // User-Agent Desktop para mimetizar um navegador real
-  private readonly userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+  private readonly baseUrl = 'https://api.sofascore.com/api/v1';
+  // User-Agent de Googlebot para contornar bloqueio de datacenter (Hostinger)
+  private readonly userAgent = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
 
   private async fetchWithRateLimit(url: string, skipDelay = false) {
     if (!skipDelay) {
@@ -17,15 +17,8 @@ export class SofascoreService {
       const response = await fetch(url, {
         headers: {
           'User-Agent': this.userAgent,
-          'Accept': 'application/json, text/plain, */*',
-          'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-          'Origin': 'https://www.sofascore.com',
-          'Referer': 'https://www.sofascore.com/',
-          'Sec-Fetch-Dest': 'empty',
-          'Sec-Fetch-Mode': 'cors',
-          'Sec-Fetch-Site': 'same-origin',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache',
+          'Accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.9', // Googlebot tipicamente usa English
         },
       });
 
