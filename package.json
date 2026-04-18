@@ -14,8 +14,8 @@
     "clean": "npx rimraf apps/api/dist apps/web/.next"
   },
   "dependencies": {
-    "@prisma/client": "7.6.0",
-    "prisma": "7.6.0"
+    "@prisma/client": "^7.6.0",
+    "prisma": "^7.6.0"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
