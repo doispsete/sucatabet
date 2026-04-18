@@ -5,7 +5,7 @@ import { SofascoreService } from './sofascore.service';
 @Injectable()
 export class SofascorePollingService implements OnModuleInit {
   private readonly logger = new Logger(SofascorePollingService.name);
-  private readonly POLLING_INTERVAL = 60000; // 60 segundos
+  private readonly POLLING_INTERVAL = 20000; // 20 segundos
 
   constructor(
     private prisma: PrismaService,
@@ -70,8 +70,8 @@ export class SofascorePollingService implements OnModuleInit {
         }
       }
       
-      // Delay de 1s para respeitar o rate limit entre consultas de eventos
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Delay de 300ms para respeitar o rate limit entre consultas de eventos
+      await new Promise(resolve => setTimeout(resolve, 300));
     }
   }
 }

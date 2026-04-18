@@ -30,7 +30,8 @@ export function useDashboardClub() {
 export function useOperations(params?: { status?: string; page?: number; limit?: number; [key: string]: unknown }) {
   const { data, isLoading, error, refetch } = useFetch(
     () => services.operationsService.list(params),
-    [params?.status, params?.page, params?.limit, params?.search]
+    [params?.status, params?.page, params?.limit, params?.search],
+    { polling: 10000 }
   );
 
   const { mutate: create, isMutating: isCreating, mutationError: createError, clearError: clearCreateError } = useMutation(
