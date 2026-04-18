@@ -217,12 +217,15 @@ export default function AdminPage() {
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="group relative flex items-center justify-center bg-[#00ff88] text-black h-[72px] px-12 rounded-[25px] text-[11px] font-black uppercase tracking-[0.4em] italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,255,136,0.2)] active:scale-95 transition-all overflow-hidden"
+          className="group relative flex items-center justify-center bg-[#00ff88] text-black h-[72px] px-20 rounded-[25px] text-[11px] font-black uppercase italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,255,136,0.2)] active:scale-95 transition-all overflow-hidden"
         >
-          <div className="absolute left-6 top-1/2 -translate-y-1/2 opacity-60 group-hover:opacity-100 transition-opacity">
-            <UserPlus size={20} />
+          {/* Consolidated Content V9 */}
+          <div className="flex items-center gap-3 -translate-x-[1px]">
+            <UserPlus size={20} className="text-black opacity-60 group-hover:opacity-100 transition-opacity" />
+            <span className="tracking-[0.4em] pl-[0.4em] whitespace-nowrap">
+              Novo Operador
+            </span>
           </div>
-          <span className="pl-[0.4em] -translate-x-[1px]">Novo Operador</span>
         </button>
       </header>
 
@@ -328,7 +331,8 @@ export default function AdminPage() {
                       </span>
                     </td>
                     <td className="px-8 py-6 text-center">
-                      <div className="flex flex-col items-center justify-center gap-0.5">
+                      <div className="flex flex-col items-center justify-center gap-0.5 opacity-20">
+                        {/* 
                         <span className="text-[10px] font-black text-[#e5e2e1] italic tracking-tight uppercase leading-none">
                           {formatRelativeDate(user.lastLoginAt ?? null)}
                         </span>
@@ -337,6 +341,8 @@ export default function AdminPage() {
                              {formatDate(user.lastLoginAt)}
                           </span>
                         )}
+                        */}
+                        <span className="text-[10px] font-black text-[#e5e2e1] italic tracking-tight uppercase leading-none">MODO DEV</span>
                       </div>
                     </td>
                     <td className="px-8 py-6 text-center">

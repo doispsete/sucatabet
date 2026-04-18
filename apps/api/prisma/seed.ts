@@ -48,6 +48,9 @@ async function main() {
       password: adminPassword,
       name: 'ADMINISTRADOR LOCAL',
       role: UserRole.ADMIN,
+      status: 'ACTIVE',
+      plan: 'PRO',
+      approvedAt: new Date(),
     },
   });
   console.log('✓ Admin criado: admin@sucatabet.com / Admin@2024');

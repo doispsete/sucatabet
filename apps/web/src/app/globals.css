@@ -327,7 +327,7 @@ input[type=number] {
   appearance: textfield;
 }
 
-/* Fix for italic text cutting off */
+/* Fix for italic text cutting off - Removed intrusive padding-right */
 .italic {
-  padding-right: 0.25em !important;
+  /* padding-right: 0.25em !important; -- Removed in V7 for geometric perfection */
 }

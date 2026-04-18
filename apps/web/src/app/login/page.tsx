@@ -114,16 +114,20 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="relative flex items-center justify-center h-16 mt-6 bg-gradient-to-r from-[#03d791] to-[#00D1FF] text-black border-none rounded-3xl text-[11px] font-black uppercase tracking-[0.3em] italic overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-[0_15px_40px_rgba(3,215,145,0.3)] hover:scale-[1.02] active:scale-[0.98]"
+              className="group/btn relative flex items-center justify-center bg-gradient-to-r from-[#03d791] to-[#00D1FF] text-black border-none rounded-3xl h-16 mt-6 px-16 text-[11px] font-black uppercase italic overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-[0_15px_40px_rgba(3,215,145,0.3)] hover:scale-[1.02] active:scale-[0.98]"
             >
-               <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-30 group-hover/btn:opacity-100 group-hover/btn:translate-x-2 transition-all duration-500">
+               {/* Consolidated Content V9 */}
+               <div className="flex items-center gap-3 -translate-x-[1px]">
+                  <span className="tracking-[0.3em] pl-[0.3em] whitespace-nowrap">
+                    {loading ? 'AUTORIZANDO...' : 'INICIAR SESSÃO'}
+                  </span>
+                  
                   {loading ? (
-                    <div className="w-5 h-5 border-2 border-black border-r-transparent rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-2 border-black border-r-transparent rounded-full animate-spin" />
                   ) : (
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-5 h-5 opacity-30 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all duration-300" />
                   )}
                </div>
-               <span className="pl-[0.3em] -translate-x-[1px] whitespace-nowrap">{loading ? 'AUTORIZANDO...' : 'INICIAR SESSÃO'}</span>
             </button>
 
             <div className="text-center mt-6">

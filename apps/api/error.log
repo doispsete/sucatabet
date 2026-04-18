@@ -8612,3 +8612,103 @@ Argument `where` of type UserWhereUniqueInput needs at least one of `id`, `email
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-execution-context.js:46:28
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@nestjs\core\router\router-proxy.js:9:17
 
+[2026-04-18T04:23:03.327Z] POST /api/operations
+PrismaClientValidationError: 
+Invalid `tx.operation.create()` invocation in
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\operations\operations.service.js:235:50
+
+  232         cost
+  233     });
+  234 }
+→ 235 const operation = await tx.operation.create({
+        data: {
+          type: "NORMAL",
+          category: "RISCO",
+          expectedProfit: new Prisma.Decimal("333.5"),
+          description: "PA 2P",
+          generatedFbValue: null,
+          userId: "cc387282-7827-4c94-a62b-bd1be2e4fdd4",
+          status: "PENDING",
+          sofascoreEventId: "14083261",
+          ~~~~~~~~~~~~~~~~
+          sofascoreStatus: "notstarted",
+          sofascoreHomeScore: undefined,
+          sofascoreAwayScore: undefined,
+          sofascoreHomeName: "FC Barcelona",
+          sofascoreAwayName: "Celta Vigo",
+          sofascoreLeague: "LaLiga",
+          sofascoreStartTime: new Date("2026-04-22T19:30:00.000Z"),
+          sofascoreHomeLogo: "https://api.sofascore.com/api/v1/team/2817/image",
+          sofascoreAwayLogo: "https://api.sofascore.com/api/v1/team/2821/image",
+      ?   id?: String,
+      ?   result?: OperationResult | Null,
+      ?   realProfit?: Decimal | Null,
+      ?   profitDifference?: Decimal | Null,
+      ?   createdAt?: DateTime,
+      ?   bets?: BetUncheckedCreateNestedManyWithoutOperationInput,
+      ?   freebet?: FreebetUncheckedCreateNestedOneWithoutOperationInput
+        }
+      })
+
+Unknown argument `sofascoreEventId`. Available options are marked with ?.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\operations\operations.service.js:235:31
+    at async Proxy._transactionWithCallback (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:785:18)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-04-18T05:53:14.340Z] POST /api/operations
+PrismaClientValidationError: 
+Invalid `tx.operation.create()` invocation in
+C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\operations\operations.service.js:235:50
+
+  232         cost
+  233     });
+  234 }
+→ 235 const operation = await tx.operation.create({
+        data: {
+          type: "NORMAL",
+          category: "RISCO",
+          expectedProfit: new Prisma.Decimal("88"),
+          description: "Flamengo x Bahia",
+          generatedFbValue: null,
+          userId: "cc387282-7827-4c94-a62b-bd1be2e4fdd4",
+          status: "PENDING",
+          sofascoreEventId: "15235519",
+          ~~~~~~~~~~~~~~~~
+          sofascoreStatus: "notstarted",
+          sofascoreHomeScore: undefined,
+          sofascoreAwayScore: undefined,
+          sofascoreHomeName: "Flamengo",
+          sofascoreAwayName: "Bahia",
+          sofascoreLeague: "Brasileirão Betano",
+          sofascoreStartTime: new Date("2026-04-19T22:30:00.000Z"),
+          sofascoreHomeLogo: "https://api.sofascore.com/api/v1/team/5981/image",
+          sofascoreAwayLogo: "https://api.sofascore.com/api/v1/team/1955/image",
+      ?   id?: String,
+      ?   result?: OperationResult | Null,
+      ?   realProfit?: Decimal | Null,
+      ?   profitDifference?: Decimal | Null,
+      ?   createdAt?: DateTime,
+      ?   bets?: BetUncheckedCreateNestedManyWithoutOperationInput,
+      ?   freebet?: FreebetUncheckedCreateNestedOneWithoutOperationInput
+        }
+      })
+
+Unknown argument `sofascoreEventId`. Available options are marked with ?.
+    at throwValidationException (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at Gr.handleRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at Gr.handleAndLogRequestError (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\operations\operations.service.js:235:31
+    at async Proxy._transactionWithCallback (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:785:18)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-proxy.js:9:17
+

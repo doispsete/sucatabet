@@ -149,12 +149,15 @@ function OperationsContent() {
 
           <button
             onClick={() => openNewOperation()}
-            className="group relative flex items-center justify-center bg-[#03D791] text-black h-[60px] px-12 rounded-[22px] text-[11px] font-black uppercase tracking-[0.3em] italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,215,145,0.2)] active:scale-95 transition-all overflow-hidden"
+            className="group relative flex items-center justify-center bg-[#03D791] text-black h-[60px] px-14 rounded-[22px] text-[11px] font-black uppercase italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,215,145,0.2)] active:scale-95 transition-all overflow-hidden"
           >
-            <div className="absolute left-6 top-1/2 -translate-y-1/2 opacity-60 group-hover:opacity-100 transition-opacity">
-              <Plus size={18} />
+            {/* Consolidated Icon + Text Group */}
+            <div className="flex items-center gap-3 -translate-x-[1px]">
+              <Plus size={18} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+              <span className="tracking-[0.3em] pl-[0.3em] whitespace-nowrap">
+                Nova Operação
+              </span>
             </div>
-            <span className="pl-[0.3em] -translate-x-[1px] whitespace-nowrap">Nova Operação</span>
           </button>
         </div>
       </header>

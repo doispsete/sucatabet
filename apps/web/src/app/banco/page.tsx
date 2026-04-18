@@ -266,26 +266,23 @@ export default function BancoPage() {
         </div>
       )}
       
-      <header className="relative py-10 mb-8 border-b border-white/5 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -mr-64 -mt-64" />
-        <div className="relative z-10">
-          <div className="flex items-center gap-4 mb-3">
-            <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20">
-              <PiggyBank className="w-8 h-8 text-primary shadow-[0_0_15px_rgba(3,215,145,0.4)]" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
-                Gestão Financeira
-              </h1>
-              <p className="text-[11px] text-[#b9cbbc]/60 font-black uppercase tracking-[0.4em] mt-2 italic flex items-center gap-2">
-                <span className="w-8 h-px bg-primary/30" /> CENTRO DE LUCROS
-              </p>
-            </div>
+      <header className="relative py-12 mb-10 overflow-hidden">
+        
+        <div className="relative z-10 flex flex-col">
+          <div className="flex items-center gap-3 mb-1">
+            <div className="w-8 h-[1px] bg-primary shadow-[0_0_10px_#03D791]" />
+            <span className="text-[10px] font-black tracking-[0.4em] text-primary uppercase italic pl-[0.4em] -translate-x-[1px]">
+              Centro de Lucros
+            </span>
           </div>
+          <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter leading-none text-white uppercase">
+            Gestão <span className="text-primary">Financeira</span>
+          </h1>
+          
           {isBankLoading && bankSummary && (
-            <div className="flex items-center gap-2 text-[9px] font-black text-primary uppercase tracking-widest mt-4">
+            <div className="flex items-center gap-2 text-[9px] font-black text-primary uppercase tracking-widest mt-6 bg-primary/5 w-fit px-4 py-1.5 rounded-full border border-primary/10">
               <div className="w-3 h-3 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-              Atualizando dados bancários...
+              Sincronizando Saldos...
             </div>
           )}
         </div>
@@ -330,11 +327,11 @@ export default function BancoPage() {
 
         {/* Card Médio (1/3 - 4 Colunas) */}
         <div className="lg:col-span-4 space-y-6">
-          {/* Despesas */}
-          <div className="glass-card p-8 rounded-[35px] border border-white/5 flex flex-col justify-between group relative overflow-hidden bg-red-500/5 hover:bg-red-500/10 transition-all border-l-4 border-l-red-500/30">
+          {/* Despesas - Refinado LiquidGlass */}
+          <div className="glass-card p-8 rounded-[35px] border border-white/5 flex flex-col justify-between group relative overflow-hidden bg-white/[0.02] hover:bg-white/[0.04] transition-all border-l-4 border-l-red-500/20">
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-6">
-                <p className="text-[9px] font-black text-red-500/60 uppercase tracking-[0.4em] italic pr-[0.4em] w-full text-center lg:text-left">DESPESAS DO MÊS</p>
+                <p className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.4em] italic pr-[0.4em] w-full text-center lg:text-left">DESPESAS DO MÊS</p>
                 <div className="p-2 bg-red-500/10 rounded-xl border border-red-500/20"><Receipt className="text-red-500 w-5 h-5" /></div>
               </div>
               <h3 className="text-4xl font-black text-white italic tracking-tighter">R$ {formatCurrency(expenseStats.total)}</h3>

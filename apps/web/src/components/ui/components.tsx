@@ -69,18 +69,19 @@ interface LoadingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 export function LoadingButton({ children, isLoading, className, ...props }: LoadingButtonProps) {
+  const isItalic = className?.includes('italic');
   return (
     <button
       disabled={isLoading || props.disabled}
       className={`relative flex items-center justify-center transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100 overflow-hidden ${className}`}
       {...props}
     >
-      {isLoading && (
-        <div className="absolute left-6 top-1/2 -translate-y-1/2">
-          <Loader2 className="w-4 h-4 animate-spin text-current" />
-        </div>
-      )}
-      <span className="w-full text-center">{isLoading ? 'AGUARDE...' : children}</span>
+      <div className={`flex items-center gap-2 -translate-x-[1px] ${isItalic ? 'tracking-[0.3em] pl-[0.3em]' : ''}`}>
+        {isLoading && <Loader2 className="w-4 h-4 animate-spin text-current" />}
+        <span className="whitespace-nowrap">
+          {isLoading ? 'AGUARDE...' : children}
+        </span>
+      </div>
     </button>
   );
 }
@@ -295,25 +296,23 @@ export function ConfirmDialog({
         <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-2">{title}</h3>
         <p className="text-xs text-[#b9cbbc] font-medium opacity-60 mb-10 px-4">{message}</p>
 
-        <div className="flex gap-4">
           <button
             onClick={onClose}
-            className="flex-1 py-4 rounded-2xl bg-white/5 text-[#b9cbbc] text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all italic border border-white/5"
+            className="group relative flex-1 py-4 flex items-center justify-center rounded-2xl bg-white/5 text-[#b9cbbc] text-[10px] font-black uppercase hover:bg-white/10 transition-all italic border border-white/5 overflow-hidden"
           >
-            {cancelLabel}
+            <span className="tracking-[0.3em] pl-[0.3em]">{cancelLabel}</span>
           </button>
           <button
             onClick={() => {
               onConfirm();
               onClose();
             }}
-            className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all italic shadow-2xl
+            className={`group relative flex-1 py-4 flex items-center justify-center rounded-2xl font-black text-[10px] uppercase transition-all italic shadow-2xl overflow-hidden
               ${type === 'danger' ? 'bg-red-500 text-white shadow-red-500/20' : 'bg-[#03D791] text-black shadow-[#03D791]/20'}
             `}
           >
-            {confirmLabel}
+            <span className="tracking-[0.3em] pl-[0.3em]">{confirmLabel}</span>
           </button>
-        </div>
       </div>
     </div>,
     document.body
