@@ -359,6 +359,7 @@ export function useSofascorePolling(operations: any[]) {
 
     // Deduplica por eventId
     const uniqueEventIds = Array.from(new Set(activeOps.map(op => op.sofascoreEventId)));
+    console.log(`[SofascorePolling] Verificando ${uniqueEventIds.length} eventos ativos...`, uniqueEventIds);
 
     for (const eventId of uniqueEventIds) {
       try {
@@ -366,9 +367,11 @@ export function useSofascorePolling(operations: any[]) {
         const cacheRes = await services.sofascoreService.getCache(eventId);
         
         if (cacheRes.cached) {
-          // Cache hit: os dados já estão no backend e as operações já foram sincronizadas via updateMany no POST anterior
+          console.log(`[SofascorePolling] Cache HIT para ${eventId}. Pulando fetch externo.`);
           continue; 
         }
+
+        console.log(`[SofascorePolling] Cache MISS para ${eventId}. Buscando no Sofascore...`);
 
         // PASSO 2: Cache Miss -> Request ao Sofascore (via Browser do Usuário)
         const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`, {
@@ -376,12 +379,16 @@ export function useSofascorePolling(operations: any[]) {
           referrerPolicy: 'no-referrer'
         });
 
-        if (!response.ok) continue;
+        if (!response.ok) {
+          console.warn(`[SofascorePolling] Falha ao buscar evento ${eventId}: ${response.status}`);
+          continue;
+        }
 
         const data = await response.json();
         if (!data?.event) continue;
 
         const event = data.event;
+        console.log(`[SofascorePolling] Dados recebidos para ${eventId}: ${event.homeTeam?.name} ${event.homeScore?.current}x${event.awayScore?.current} ${event.awayTeam?.name}`);
 
         // Mapeamento conforme especificação V15
         const mapearPeriod = (p: number) => {
@@ -389,6 +396,7 @@ export function useSofascorePolling(operations: any[]) {
           if (p === 2) return "2T";
           if (p === 3) return "ET";
           if (p === 4) return "AP";
+          if (p === 5) return "PEN";
           return null;
         };
 
@@ -407,13 +415,14 @@ export function useSofascorePolling(operations: any[]) {
         };
 
         // PASSO 3: Alimentar Cache (Backend salva o cache e atualiza o banco)
-        await services.sofascoreService.setCache(eventId, mappedData);
+        const saveRes = await services.sofascoreService.setCache(eventId, mappedData);
+        console.log(`[SofascorePolling] Cache sincronizado para ${eventId}. Ops afetadas: ${saveRes.updatedOperations}`);
 
         // Delay entre requisições para evitar rate limit do Sofascore
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 300));
 
       } catch (error) {
-        console.error(`[SofascorePolling] Erro para evento ${eventId}:`, error);
+        console.error(`[SofascorePolling] Erro crítico para evento ${eventId}:`, error);
       }
     }
 
