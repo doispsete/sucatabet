@@ -131,8 +131,8 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
     );
   }
 
-  // IN PROGRESS (SOFASCORE STYLE - V25 REFINED)
-  if (status === 'inprogress') {
+  // INLINE RENDERER (V27)
+  const renderInlineMatch = (showLiveBadge: boolean) => {
     // Tradução e limpeza robusta de período interna (fallback do componente)
     const getCleanPeriod = (p: string | null | undefined) => {
       if (!p) return null;
@@ -149,93 +149,67 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
     };
 
     const displayPeriod = getCleanPeriod(period);
+    const minuteStr = String(minute || '');
 
     return (
-      <div className={`flex flex-col items-center gap-1.5 w-full ${className}`}>
-        <div className="flex items-center justify-center gap-3 w-full">
-          {/* Home Team */}
-          <div className="flex items-center gap-2 flex-1 justify-end min-w-0">
-            <span className="text-white font-black text-[13px] tracking-tight truncate">
-              {homeName}
-            </span>
-            <img 
-              src={homeLogo || ''} 
-              referrerPolicy="no-referrer"
-              onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
-              className="w-6 h-6 rounded-full border border-white/10 bg-black/40 p-0.5" 
-              alt=""
-            />
-          </div>
+      <div className={`flex items-center gap-2.5 bg-white/[0.03] px-3 py-1.5 rounded-xl border border-white/5 whitespace-nowrap max-w-full ${className}`}>
+        {/* Home Team */}
+        <span className="text-white font-black text-[11px] uppercase tracking-tight truncate max-w-[100px] text-right">
+          {homeName}
+        </span>
+        <img 
+          src={homeLogo || ''} 
+          referrerPolicy="no-referrer"
+          onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
+          className="w-5 h-5 object-contain shrink-0 border border-white/5 rounded-full p-0.5 bg-black/20" 
+          alt=""
+        />
 
-          {/* Score & Time Section */}
-          <div className="flex flex-col items-center gap-0.5 min-w-[80px]">
-            {/* Score */}
-            <div className="flex items-center gap-2 text-[#00ff88] font-black italic text-xl tabular-nums leading-none">
-              <span>{homeScore ?? 0}</span>
-              <span className="text-white/20 font-sans text-xs not-italic">-</span>
-              <span>{awayScore ?? 0}</span>
-            </div>
-            
-            {/* Time / Period Badge */}
-            <div className="flex items-center gap-1.5">
-              <div className="animate-pulse flex items-center gap-1 text-[#00ff88] text-[10px] font-black tracking-tighter uppercase whitespace-nowrap">
-                {minute ? <span>{minute}{String(minute).includes('+') ? '' : '\''}</span> : null}
-                {displayPeriod && !String(minute || '').includes(displayPeriod) ? (
-                  <span className="bg-[#00ff88]/10 px-1 py-0.5 rounded border border-[#00ff88]/20">{displayPeriod}</span>
-                ) : null}
-                {!minute && !displayPeriod && <span>LIVE</span>}
-              </div>
-            </div>
-          </div>
-
-          {/* Away Team */}
-          <div className="flex items-center gap-2 flex-1 justify-start min-w-0">
-            <img 
-              src={awayLogo || ''} 
-              referrerPolicy="no-referrer"
-              onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
-              className="w-6 h-6 rounded-full border border-white/10 bg-black/40 p-0.5" 
-              alt=""
-            />
-            <span className="text-white font-black text-[13px] tracking-tight truncate">
-              {awayName}
-            </span>
-          </div>
+        {/* Score */}
+        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-black/40 rounded-lg border border-white/5 font-mono shadow-inner">
+           <span className="text-base font-black italic text-white leading-none drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
+             {homeScore ?? 0}
+           </span>
+           <span className="text-[10px] text-white/20 font-black italic">x</span>
+           <span className="text-base font-black italic text-[#00ff88] leading-none drop-shadow-[0_0_8px_rgba(0,255,136,0.3)]">
+             {awayScore ?? 0}
+           </span>
         </div>
+
+        {/* Away Team */}
+        <img 
+          src={awayLogo || ''} 
+          referrerPolicy="no-referrer"
+          onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
+          className="w-5 h-5 object-contain shrink-0 border border-white/5 rounded-full p-0.5 bg-black/20" 
+          alt=""
+        />
+        <span className="text-white font-black text-[11px] uppercase tracking-tight truncate max-w-[100px] text-left">
+          {awayName}
+        </span>
+
+        {/* Live Indicator (only for progress) */}
+        {showLiveBadge && (
+          <div className="flex items-center gap-1.5 ml-1">
+            {minute ? (
+              <span className="text-[9px] font-black italic text-[#00ff88] animate-pulse">
+                {minuteStr}{minuteStr.includes('+') ? '' : '\''}
+              </span>
+            ) : null}
+            {displayPeriod && !minuteStr.includes(displayPeriod) ? (
+              <span className="text-[8px] font-black text-[#00ff88] bg-[#00ff88]/10 px-1 py-0.5 rounded border border-[#00ff88]/20 uppercase italic">
+                {displayPeriod}
+              </span>
+            ) : null}
+            {!minute && !displayPeriod && <span className="text-[8px] font-black text-[#00ff88] animate-pulse">LIVE</span>}
+          </div>
+        )}
       </div>
     );
-  }
+  };
 
-  // FINISHED
-  if (status === 'finished') {
-    return (
-      <div className={`flex flex-col items-center gap-1.5 ${className}`}>
-        <div className="flex items-center gap-4 bg-white/[0.03] px-4 py-2 rounded-2xl border border-white/5 opacity-80">
-          <div className="flex items-center gap-2">
-            <img src={homeLogo || ''} alt="" className="w-5 h-5 object-contain" />
-            <span className="text-[10px] font-black italic text-white uppercase tracking-tighter">{abbreviate(homeName)}</span>
-          </div>
-          
-          <div className="flex items-center gap-2 font-mono">
-            <span className="text-xl font-black italic text-white">{homeScore ?? 0}</span>
-            <span className="text-[10px] text-white/20 font-black italic">x</span>
-            <span className="text-xl font-black italic text-[#00ff88]">{awayScore ?? 0}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black italic text-white uppercase tracking-tighter">{abbreviate(awayName)}</span>
-            <img src={awayLogo || ''} alt="" className="w-5 h-5 object-contain" />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="text-[8px] font-black italic text-white/30 uppercase tracking-[0.2em] bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
-            FIM
-          </span>
-        </div>
-      </div>
-    );
-  }
+  if (status === 'inprogress') return renderInlineMatch(true);
+  if (status === 'finished') return renderInlineMatch(false);
 
   return null;
 };
