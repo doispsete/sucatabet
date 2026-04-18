@@ -15,33 +15,30 @@ export class SofascoreController {
 
   @Get('cache/:eventId')
   getCache(@Param('eventId') eventId: string) {
-    const data = this.sofascoreService.getEventFromCache(eventId);
-    if (!data) return { cached: false };
-    return { cached: true, data };
+    const cached = this.sofascoreService.getEventFromCache(eventId);
+    if (cached) return { cached: true, ...cached };
+    return { cached: false };
   }
 
   @Post('cache/:eventId')
-  async setCache(@Param('eventId') eventId: string, @Body() data: any) {
-    this.sofascoreService.setEventCache(eventId, data);
+  async setCache(@Param('eventId') eventId: string, @Body() body: any) {
+    this.sofascoreService.setEventCache(eventId, body);
     
-    // Atualiza todas as operações ligadas a este evento (Requisito V15)
-    const updateData = {
-      sofascoreStatus: String(data.status || 'notstarted'),
-      sofascoreHomeScore: data.homeScore !== null ? Number(data.homeScore) : null,
-      sofascoreAwayScore: data.awayScore !== null ? Number(data.awayScore) : null,
-      sofascorePeriod: data.period !== null ? String(data.period) : null,
-      sofascoreMinute: data.minute !== null ? Number(data.minute) : null,
-      sofascoreHomeLogo: data.homeLogo,
-      sofascoreAwayLogo: data.awayLogo,
-      sofascoreStartTime: data.startTime,
-    };
-
+    // Atualizar todas as operações com esse eventId no banco (Requisito ═════)
     const result = await this.prisma.operation.updateMany({
-      where: { sofascoreEventId: eventId },
-      data: updateData as any,
+      where: { sofascoreEventId: eventId } as any,
+      data: {
+        sofascoreStatus: body.status,
+        sofascoreHomeScore: body.homeScore,
+        sofascoreAwayScore: body.awayScore,
+        sofascorePeriod: body.period,
+        sofascoreMinute: body.minute,
+        sofascoreHomeLogo: body.homeLogo,
+        sofascoreAwayLogo: body.awayLogo,
+      } as any,
     });
 
-    this.logger.log(`[Sofascore] ✅ CACHE ATUALIZADO para o evento ${eventId} (${data.homeTeam} x ${data.awayTeam} - ${data.homeScore}x${data.awayScore}). Operações afetadas: ${result.count}`);
+    this.logger.log(`[Sofascore] ✅ CACHE ATUALIZADO para o evento ${eventId} (${body.homeTeam} x ${body.awayTeam}). Operações afetadas: ${result.count}`);
     
     return { ok: true, updatedOperations: result.count };
   }

@@ -392,7 +392,7 @@ export function useSofascorePolling(operations: any[]) {
         console.log(`[SofascorePolling] Dados recebidos para ${eventId}: ${event.homeTeam?.name} ${event.homeScore?.current}x${event.awayScore?.current} ${event.awayTeam?.name}`);
 
         // Mapeamento conforme especificação V15/V21-V25 (Cálculo Manual)
-        const getSimplifiedPeriod = (status: any, time: any, periodStart: number | null, league: string) => {
+        const getSimplifiedPeriod = (status: any, time: any, currentPeriodStartTimestamp: number | null, league: string) => {
           if (!status) return { periodLabel: null, minute: null };
 
           const leagueLower = league?.toLowerCase() || '';
@@ -402,13 +402,12 @@ export function useSofascorePolling(operations: any[]) {
 
           // Lógica de minuto manual (V25)
           let minute: string | null = null;
-          if (periodStart && time?.initial !== undefined && time?.initial !== null) {
-            const now = Math.floor(Date.now() / 1000);
-            const elapsed = now - periodStart;
+          if (currentPeriodStartTimestamp && time?.initial !== undefined) {
+            const elapsed = Math.floor(Date.now() / 1000) - currentPeriodStartTimestamp;
             const totalMinutes = Math.floor((time.initial + elapsed) / 60);
             
-            if (p === 1 && totalMinutes >= 45) minute = "45+";
-            else if (p === 2 && totalMinutes >= 90) minute = "90+";
+            if (p === 1 && totalMinutes > 45) minute = "45+";
+            else if (p === 2 && totalMinutes > 90) minute = "90+";
             else minute = String(totalMinutes);
           }
 

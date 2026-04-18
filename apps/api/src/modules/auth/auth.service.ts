@@ -89,8 +89,8 @@ export class AuthService {
       const token = this.jwtService.sign(payload);
       console.log(`[AUTH] Token gerado com sucesso.`);
 
-      // Atualiza último acesso
-      await this.prisma.user.update({
+      // Atualiza último acesso ANTES do return (Requisito ═════)
+      const updatedUser = await this.prisma.user.update({
         where: { id: user.id },
         data: { lastLoginAt: new Date() },
       });
@@ -98,12 +98,13 @@ export class AuthService {
       return {
         access_token: token,
         user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          plan: user.plan,
-          avatarUrl: user.avatarUrl,
+          id: updatedUser.id,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          role: updatedUser.role,
+          plan: updatedUser.plan,
+          avatarUrl: updatedUser.avatarUrl,
+          lastLoginAt: updatedUser.lastLoginAt,
         },
       };
     } catch (error) {
