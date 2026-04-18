@@ -62,10 +62,12 @@ export const operationsService = {
   void: (id: string) => api.patch<T.Operation>(`/operations/${id}/void`),
   delete: (id: string) => api.delete<void>(`/operations/${id}`),
   linkGame: (id: string, sofascoreEventId: string) => api.patch<T.Operation>(`/operations/${id}/link-game`, { sofascoreEventId }),
+  updateScore: (id: string, body: any) => api.patch<T.Operation>(`/operations/${id}/update-score`, body),
 };
 
 export const sofascoreService = {
-  // A busca agora é feita diretamente no componente GameSearch.tsx via fetch do navegador
+  getCache: (eventId: string) => api.get<any>(`/sofascore/cache/${eventId}`),
+  setCache: (eventId: string, data: any) => api.post<any>(`/sofascore/cache/${eventId}`, data),
 };
 
 export const freebetsService = {

@@ -14,7 +14,7 @@ import {
   Shovel
 } from "lucide-react";
 import { MatchIndicator } from "@/components/MatchIndicator";
-import { useOperations, useDashboardSummary } from "@/lib/hooks";
+import { useOperations, useDashboardSummary, useSofascorePolling } from "@/lib/hooks";
 import { SkeletonOperationRow, EmptyState, CustomSelect } from "@/components/ui/components";
 import { OperationStatus } from "@/lib/api/types";
 import { NewOperationModal } from "@/components/modals/NewOperationModal";
@@ -51,6 +51,9 @@ function OperationsContent() {
     limit: 20,
     search
   });
+
+  // Polling Sofascore V15 - Shared Cache Implementation
+  useSofascorePolling(opsResponse?.data || []);
 
   // Handle deep linking from dashboard
   useEffect(() => {

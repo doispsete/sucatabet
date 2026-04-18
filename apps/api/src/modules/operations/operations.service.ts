@@ -788,4 +788,30 @@ export class OperationsService {
     await this.auditLogs.log('UPDATE', 'Operation', id, userId, operation, updated);
     return updated;
   }
+
+  async updateScore(id: string, userId: string, data: any) {
+    const operation = await this.prisma.operation.findUnique({
+      where: { id },
+    });
+
+    if (!operation || operation.userId !== userId) {
+      throw new ForbiddenException('Acesso negado');
+    }
+
+    const updateData = {
+      sofascoreStatus: String(data.status || 'notstarted'),
+      sofascoreHomeScore: data.homeScore !== null ? Number(data.homeScore) : null,
+      sofascoreAwayScore: data.awayScore !== null ? Number(data.awayScore) : null,
+      sofascorePeriod: data.period !== null ? String(data.period) : null,
+      sofascoreMinute: data.minute !== null ? Number(data.minute) : null,
+      sofascoreHomeLogo: data.homeLogo,
+      sofascoreAwayLogo: data.awayLogo,
+      sofascoreStartTime: data.startTime,
+    };
+
+    return this.prisma.operation.update({
+      where: { id },
+      data: updateData as any,
+    });
+  }
 }

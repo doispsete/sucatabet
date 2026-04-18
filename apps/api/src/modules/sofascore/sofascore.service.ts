@@ -4,6 +4,38 @@ import { formatInTimeZone } from 'date-fns-tz';
 @Injectable()
 export class SofascoreService {
   private readonly logger = new Logger(SofascoreService.name);
+  private cache = new Map<string, { data: any, cachedAt: number, ttl: number }>();
+
+  getEventFromCache(eventId: string) {
+    const cached = this.cache.get(eventId);
+    if (!cached) return null;
+
+    const now = Date.now();
+    const age = now - cached.cachedAt;
+
+    if (age > cached.ttl) {
+      this.cache.delete(eventId);
+      return null;
+    }
+
+    return cached.data;
+  }
+
+  setEventCache(eventId: string, data: any) {
+    let ttl = 60000; // 60s default (notstarted)
+    
+    if (data.status === 'inprogress') {
+      ttl = 3000; // 3s for live games
+    } else if (data.status === 'finished') {
+      ttl = 100 * 365 * 24 * 60 * 60 * 1000; // 100 years (v15 requirement: infinite)
+    }
+
+    this.cache.set(eventId, {
+      data,
+      cachedAt: Date.now(),
+      ttl
+    });
+  }
 
   async getEventDetails(eventId: string) {
     try {

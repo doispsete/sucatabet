@@ -13,7 +13,9 @@ export class SofascorePollingService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.startPolling();
+    // Polling migrado para o frontend com cache compartilhado
+    // Ver: sofascore.controller.ts POST /sofascore/cache/:eventId
+    this.logger.log('[Sofascore] Polling backend desativado — usando client-side polling com cache compartilhado');
   }
 
   private startPolling() {

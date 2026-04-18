@@ -339,3 +339,108 @@ export function useUpdateBankGoal() {
 
   return { updateGoal: mutate, isMutating, mutationError };
 }
+
+// 5. Sofascore Shared Polling Hook (V15)
+import { useEffect, useRef } from 'react';
+
+export function useSofascorePolling(operations: any[]) {
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isTabVisible = useRef(true);
+
+  // Filtra operações ativas (pendentes e com ID)
+  const activeOps = operations.filter(op => 
+    op.status === 'PENDING' && 
+    op.sofascoreEventId && 
+    op.sofascoreStatus !== 'finished'
+  );
+
+  const poll = async () => {
+    if (!isTabVisible.current || activeOps.length === 0) return;
+
+    // Deduplica por eventId
+    const uniqueEventIds = Array.from(new Set(activeOps.map(op => op.sofascoreEventId)));
+
+    for (const eventId of uniqueEventIds) {
+      try {
+        // PASSO 1: Verificar Cache no Backend
+        const cacheRes = await services.sofascoreService.getCache(eventId);
+        
+        if (cacheRes.cached) {
+          // Cache hit: os dados já estão no backend e as operações já foram sincronizadas via updateMany no POST anterior
+          continue; 
+        }
+
+        // PASSO 2: Cache Miss -> Request ao Sofascore (via Browser do Usuário)
+        const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`, {
+          headers: { 'Accept': 'application/json' },
+          referrerPolicy: 'no-referrer'
+        });
+
+        if (!response.ok) continue;
+
+        const data = await response.json();
+        if (!data?.event) continue;
+
+        const event = data.event;
+
+        // Mapeamento conforme especificação V15
+        const mapearPeriod = (p: number) => {
+          if (p === 1) return "1T";
+          if (p === 2) return "2T";
+          if (p === 3) return "ET";
+          if (p === 4) return "AP";
+          return null;
+        };
+
+        const mappedData = {
+          eventId: String(event.id),
+          status: event.status?.type || 'notstarted',
+          homeTeam: event.homeTeam?.name,
+          awayTeam: event.awayTeam?.name,
+          homeScore: event.homeScore?.current ?? null,
+          awayScore: event.awayScore?.current ?? null,
+          period: mapearPeriod(event.status?.period),
+          minute: event.status?.minute ?? null,
+          homeLogo: `https://api.sofascore.com/api/v1/team/${event.homeTeam?.id}/image`,
+          awayLogo: `https://api.sofascore.com/api/v1/team/${event.awayTeam?.id}/image`,
+          startTime: new Date(event.startTimestamp * 1000).toISOString()
+        };
+
+        // PASSO 3: Alimentar Cache (Backend salva o cache e atualiza o banco)
+        await services.sofascoreService.setCache(eventId, mappedData);
+
+        // Delay entre requisições para evitar rate limit do Sofascore
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+      } catch (error) {
+        console.error(`[SofascorePolling] Erro para evento ${eventId}:`, error);
+      }
+    }
+
+    // Notifica sistema local para re-buscar dados das operações atualizadas
+    window.dispatchEvent(new CustomEvent('refetch-data'));
+  };
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      isTabVisible.current = document.visibilityState === 'visible';
+      if (isTabVisible.current) poll(); // Poll imediato ao voltar
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Determina intervalo adaptativo
+    const hasLive = activeOps.some(op => op.sofascoreStatus === 'inprogress');
+    const intervalTime = hasLive ? 3000 : 60000;
+
+    if (activeOps.length > 0) {
+      intervalRef.current = setInterval(poll, intervalTime);
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [JSON.stringify(activeOps.map(op => ({ id: op.id, status: op.sofascoreStatus })))]);
+}
+
