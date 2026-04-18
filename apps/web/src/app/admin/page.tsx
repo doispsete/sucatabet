@@ -16,6 +16,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useUsers, useAuth, useUpdateUserStatus } from "@/lib/hooks";
+import { formatDate, formatRelativeDate } from "@/lib/utils";
 import { SkeletonRow, EmptyState, Modal, LoadingButton, toast, Input, CustomSelect, ConfirmDialog } from "@/components/ui/components";
 import { UserRole, User, UserStatus, UserPlan } from "@/lib/api/types";
 
@@ -216,10 +217,12 @@ export default function AdminPage() {
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="group flex items-center justify-center gap-4 bg-[#00ff88] text-black px-12 py-6 rounded-[25px] text-[11px] font-black uppercase tracking-[0.4em] italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,255,136,0.2)] active:scale-95 transition-all"
+          className="group relative flex items-center justify-center bg-[#00ff88] text-black h-[72px] px-12 rounded-[25px] text-[11px] font-black uppercase tracking-[0.4em] italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,255,136,0.2)] active:scale-95 transition-all overflow-hidden"
         >
-          <UserPlus size={20} />
-          Novo Operador
+          <div className="absolute left-6 top-1/2 -translate-y-1/2 opacity-60 group-hover:opacity-100 transition-opacity">
+            <UserPlus size={20} />
+          </div>
+          <span className="pl-[0.4em] -translate-x-[1px]">Novo Operador</span>
         </button>
       </header>
 
@@ -268,6 +271,7 @@ export default function AdminPage() {
                 <th className="px-8 py-4 font-black">Email / Login</th>
                 <th className="px-8 py-4 font-black">Cargo / Permissões</th>
                 <th className="px-8 py-4 font-black text-center">Plano</th>
+                <th className="px-8 py-4 font-black text-center">Último Acesso</th>
                 <th className="px-8 py-4 font-black text-center">Status</th>
                 <th className="px-8 py-4 font-black text-right">Ações</th>
               </tr>
@@ -315,13 +319,25 @@ export default function AdminPage() {
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-8 py-6 text-center">
+                     <td className="px-8 py-6 text-center">
                        <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all
                         ${user.plan === UserPlan.PRO ? 'bg-[#ffd966]/5 text-[#ffd966] border-[#ffd966]/20' : 
                           user.plan === UserPlan.BASIC ? 'bg-[#b9cbbc]/5 text-white border-white/20' : 
                           'bg-white/5 text-[#b9cbbc] border-white/5'}`}>
                         {user.plan || 'FREE'}
                       </span>
+                    </td>
+                    <td className="px-8 py-6 text-center">
+                      <div className="flex flex-col items-center justify-center gap-0.5">
+                        <span className="text-[10px] font-black text-[#e5e2e1] italic tracking-tight uppercase leading-none">
+                          {formatRelativeDate(user.lastLoginAt ?? null)}
+                        </span>
+                        {user.lastLoginAt && (
+                          <span className="text-[8px] text-[#b9cbbc] opacity-20 font-bold uppercase tracking-widest leading-none">
+                             {formatDate(user.lastLoginAt)}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-8 py-6 text-center">
                       <div className="flex items-center justify-center gap-2.5">

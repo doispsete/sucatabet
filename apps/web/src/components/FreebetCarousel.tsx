@@ -181,7 +181,7 @@ export function FreebetCarousel({
             <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center mb-6 group-hover/add:bg-[#03d791]/10 group-hover/add:scale-110 transition-all duration-500 border border-white/5 group-hover/add:border-[#03d791]/20">
               <Plus size={32} className="text-[#b9cbbc]/20 group-hover/add:text-[#03d791] group-hover/add:rotate-90 transition-all duration-500" />
             </div>
-            <p className="text-[11px] font-black uppercase tracking-[0.4em] text-[#b9cbbc]/40 group-hover/add:text-[#03d791] italic text-center leading-relaxed">
+            <p className="text-[11px] font-black uppercase tracking-[0.4em] text-[#b9cbbc]/40 group-hover/add:text-[#03d791] italic text-center leading-relaxed pl-[0.4em] -translate-x-[1px]">
               Registrar<br /><span className="text-white group-hover/add:text-[#03d791]">Entrada Manual</span>
             </p>
           </button>

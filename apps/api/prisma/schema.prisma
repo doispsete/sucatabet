@@ -79,6 +79,7 @@ model User {
   logs                 AuditLog[]
   freebets             Freebet[]
   bankAccount          BankAccount?
+  lastLoginAt          DateTime?
 }
 
 model CpfProfile {

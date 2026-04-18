@@ -69,6 +69,7 @@ export interface User {
   plan: UserPlan;
   avatarUrl?: string;
   approvedAt?: string;
+  lastLoginAt?: string;
   createdAt: string;
 }
 

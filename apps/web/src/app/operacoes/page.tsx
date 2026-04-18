@@ -154,7 +154,7 @@ function OperationsContent() {
             <div className="absolute left-6 top-1/2 -translate-y-1/2 opacity-60 group-hover:opacity-100 transition-opacity">
               <Plus size={18} />
             </div>
-            <span className="pr-[0.3em] whitespace-nowrap">Nova Operação</span>
+            <span className="pl-[0.3em] -translate-x-[1px] whitespace-nowrap">Nova Operação</span>
           </button>
         </div>
       </header>

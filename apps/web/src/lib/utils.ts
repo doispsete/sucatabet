@@ -84,3 +84,24 @@ export const formatCpf6 = (cpf: string): string => {
   const digits = cpf.replace(/\D/g, '').slice(0, 6);
   return digits.replace(/(\d{3})(\d{0,3})/, (_, p1, p2) => p1 + (p2 ? '.' + p2 : ''));
 };
+
+export const formatRelativeDate = (date: Date | string | null): string => {
+  if (!date) return 'Nunca';
+  const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return 'Nunca';
+
+  const now = new Date();
+  const diffInMs = now.getTime() - d.getTime();
+  const diffInSecs = Math.floor(diffInMs / 1000);
+  const diffInMins = Math.floor(diffInSecs / 60);
+  const diffInHours = Math.floor(diffInMins / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInSecs < 60) return 'Agora mesmo';
+  if (diffInMins < 60) return `há ${diffInMins} min`;
+  if (diffInHours < 24) return `há ${diffInHours}h`;
+  if (diffInDays === 1) return 'Ontem';
+  if (diffInDays < 7) return `há ${diffInDays} dias`;
+  
+  return formatDate(d);
+};

@@ -28,28 +28,28 @@ export function AnimatedFavicon() {
       
       const zapColor = '#00ff88';
       
-      // Glow effect - More intense for 64x64
-      ctx.shadowBlur = glowSize * 2;
+      // Glow effect - Optimized for official shape
+      ctx.shadowBlur = glowSize * 1.5;
       ctx.shadowColor = zapColor;
       
       ctx.beginPath();
       ctx.fillStyle = zapColor;
       
-      // Draw lightning bolt shape (scaled to 64x64)
-      ctx.moveTo(36, 4);    // Top
-      ctx.lineTo(16, 36);   // Middle left
-      ctx.lineTo(30, 36);   // Inset
-      ctx.lineTo(28, 60);   // Bottom
-      ctx.lineTo(48, 28);   // Middle right
-      ctx.lineTo(34, 28);   // Inset
+      // Official SucataBet Zap shape (thicker, boxy)
+      ctx.moveTo(40, 4);   
+      ctx.lineTo(14, 34);  
+      ctx.lineTo(30, 34);  
+      ctx.lineTo(26, 60);  
+      ctx.lineTo(52, 30);  
+      ctx.lineTo(36, 30);  
       ctx.closePath();
       
       ctx.fill();
       
-      // Inner fill for "bolt" look
+      // Inner fill for secondary highlight
       ctx.shadowBlur = 0;
       ctx.fillStyle = '#ffffff';
-      ctx.globalAlpha = 0.4;
+      ctx.globalAlpha = 0.3;
       ctx.fill();
       ctx.globalAlpha = 1.0;
 

@@ -123,7 +123,7 @@ export default function LoginPage() {
                     <ArrowRight className="w-5 h-5" />
                   )}
                </div>
-               <span className="pr-[0.3em] whitespace-nowrap">{loading ? 'AUTORIZANDO...' : 'INICIAR SESSÃO'}</span>
+               <span className="pl-[0.3em] -translate-x-[1px] whitespace-nowrap">{loading ? 'AUTORIZANDO...' : 'INICIAR SESSÃO'}</span>
             </button>
 
             <div className="text-center mt-6">

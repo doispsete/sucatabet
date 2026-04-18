@@ -297,7 +297,7 @@ export default function BancoPage() {
         <div className="lg:col-span-8 glass-card p-6 md:p-10 rounded-[32px] md:rounded-[45px] border border-white/5 relative overflow-hidden group shadow-3xl bg-white/[0.02]">
           <div className="flex justify-between items-start mb-12 relative z-10">
             <div>
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-4 italic flex items-center justify-center lg:justify-start gap-2 pr-[0.5em] w-full">
+              <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-4 italic flex items-center justify-center lg:justify-start gap-2 pl-[0.5em] -translate-x-[1px] w-full">
                 <span className="w-8 h-[2px] bg-primary rounded-full" /> PATRIMÔNIO TOTAL
               </p>
               <h3 className="text-4xl md:text-7xl font-black text-white italic tracking-tighter leading-none mb-4">
@@ -317,11 +317,11 @@ export default function BancoPage() {
           
           <div className="grid grid-cols-2 gap-12 pt-8 border-t border-white/5 relative z-10">
             <div className="space-y-2">
-              <p className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.3em] italic">Saldo Bancário</p>
+              <p className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.3em] italic pl-[0.3em] -translate-x-[1px]">Saldo Bancário</p>
               <p className="text-2xl font-black text-white italic tracking-tight">R$ {formatCurrency(bankSummary.balance)}</p>
             </div>
             <div className="space-y-2">
-              <p className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.3em] italic">Em Bancas</p>
+              <p className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.3em] italic pl-[0.3em] -translate-x-[1px]">Em Bancas</p>
               <p className="text-2xl font-black text-white/50 italic tracking-tight">R$ {formatCurrency(bankSummary.totalInAccounts)}</p>
             </div>
           </div>
