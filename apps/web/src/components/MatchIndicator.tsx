@@ -14,7 +14,7 @@ interface MatchIndicatorProps {
     sofascoreHomeLogo?: string | null | undefined;
     sofascoreAwayLogo?: string | null | undefined;
     sofascorePeriod?: string | null | undefined;
-    sofascoreMinute?: number | null | undefined;
+    sofascoreMinute?: string | number | null | undefined;
   };
   className?: string;
 }
@@ -131,48 +131,56 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
     );
   }
 
-  // IN PROGRESS
+  // IN PROGRESS (SOFASCORE STYLE - V24)
   if (status === 'inprogress') {
     return (
-      <div className={`flex items-center gap-4 text-xs font-black flex-1 ${className}`}>
-        {/* Logos combinados (IGUAL AO NOTSTARTED) */}
-        <div className="flex -space-x-1.5 shrink-0">
-          <img 
-            src={homeLogo || ''} 
-            referrerPolicy="no-referrer"
-            onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
-            className="w-6 h-6 rounded-full border-2 border-black bg-black shadow-lg" 
-            alt=""
-          />
-          <img 
-            src={awayLogo || ''} 
-            referrerPolicy="no-referrer"
-            onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
-            className="w-6 h-6 rounded-full border-2 border-black bg-black shadow-lg" 
-            alt=""
-          />
-        </div>
-
-        {/* Informações fixas + Badge pulsante */}
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="flex flex-col min-w-0">
-            <span className="text-[#00ff88] font-black italic text-sm tracking-tight truncate">
-              {homeName} x {awayName}
+      <div className={`flex flex-col items-center gap-1.5 w-full ${className}`}>
+        <div className="flex items-center justify-center gap-3 w-full">
+          {/* Home Team */}
+          <div className="flex items-center gap-2 flex-1 justify-end min-w-0">
+            <span className="text-white font-black text-[13px] tracking-tight truncate">
+              {homeName}
             </span>
+            <img 
+              src={homeLogo || ''} 
+              referrerPolicy="no-referrer"
+              onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
+              className="w-6 h-6 rounded-full border border-white/10 bg-black/40 p-0.5" 
+              alt=""
+            />
           </div>
 
-          {/* Badge pulsante (APENAS ESTE PULSA) */}
-          <div className="animate-pulse bg-[#00ff88]/5 px-2 py-0.5 rounded border border-[#00ff88]/30 shrink-0 shadow-[0_0_10px_rgba(0,255,136,0.1)]">
-            <span className="text-[#00ff88] text-[9px] uppercase tracking-tighter">
-              {period || 'LIVE'} {minute ? `${minute}` : ''}
-            </span>
+          {/* Score & Time Section */}
+          <div className="flex flex-col items-center gap-0.5 min-w-[80px]">
+            {/* Score */}
+            <div className="flex items-center gap-2 text-[#00ff88] font-black italic text-xl tabular-nums leading-none">
+              <span>{homeScore ?? 0}</span>
+              <span className="text-white/20 font-sans text-xs not-italic">-</span>
+              <span>{awayScore ?? 0}</span>
+            </div>
+            
+            {/* Time / Period Badge */}
+            <div className="flex items-center gap-1.5">
+              <div className="animate-pulse flex items-center gap-1 text-[#00ff88] text-[10px] font-black tracking-tighter uppercase whitespace-nowrap">
+                {minute ? <span>{minute}&apos;</span> : null}
+                {period && !String(minute || '').includes(period) ? <span className="bg-[#00ff88]/10 px-1 py-0.5 rounded border border-[#00ff88]/20">{period}</span> : null}
+                {!minute && !period && <span>LIVE</span>}
+              </div>
+            </div>
           </div>
 
-          {/* Placar Box */}
-          <div className="bg-black/80 px-2 py-0.5 rounded-md min-w-[3em] text-center font-mono text-white text-[11px] border border-white/5 flex items-center justify-center gap-1.5 shadow-xl ml-auto sm:ml-0">
-            <span className="font-black">{homeScore ?? 0}</span>
-            <span className="opacity-20 scale-75">x</span>
-            <span className="font-black">{awayScore ?? 0}</span>
+          {/* Away Team */}
+          <div className="flex items-center gap-2 flex-1 justify-start min-w-0">
+            <img 
+              src={awayLogo || ''} 
+              referrerPolicy="no-referrer"
+              onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
+              className="w-6 h-6 rounded-full border border-white/10 bg-black/40 p-0.5" 
+              alt=""
+            />
+            <span className="text-white font-black text-[13px] tracking-tight truncate">
+              {awayName}
+            </span>
           </div>
         </div>
       </div>
