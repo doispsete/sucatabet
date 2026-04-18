@@ -134,17 +134,42 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
   // IN PROGRESS
   if (status === 'inprogress') {
     return (
-      <div className={`flex items-center gap-1.5 text-[10px] font-black text-[#00ff88] animate-pulse ${className}`}>
-        <span className="bg-[#00ff88]/10 px-1 rounded uppercase tracking-tighter">
+      <div className={`flex items-center gap-2 text-[10px] font-black text-[#00ff88] animate-pulse ${className}`}>
+        <span className="bg-[#00ff88]/10 px-1.5 py-0.5 rounded uppercase tracking-tighter border border-[#00ff88]/20 shrink-0">
           {period || 'LIVE'} {minute ? `${minute}'` : ''}
         </span>
-        <span className="flex items-center gap-1">
-          <span>{abbreviate(homeName)}</span>
-          <span className="bg-white/10 px-1 rounded min-w-[2.5em] text-center font-mono">
-            {homeScore ?? 0} x {awayScore ?? 0}
-          </span>
-          <span>{abbreviate(awayName)}</span>
-        </span>
+        
+        <div className="flex items-center gap-2 ml-1">
+          <div className="flex items-center gap-1.5">
+            <img 
+              src={homeLogo || ''} 
+              referrerPolicy="no-referrer"
+              onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
+              className="w-4 h-4 rounded-full border border-black/40 bg-black/40" 
+              alt=""
+            />
+            <span className="italic uppercase tracking-tighter hidden sm:inline">{homeName}</span>
+            <span className="italic uppercase tracking-tighter sm:hidden">{abbreviate(homeName)}</span>
+          </div>
+
+          <div className="bg-white/10 px-2 py-0.5 rounded-md min-w-[3em] text-center font-mono text-white text-[11px] border border-white/5 flex items-center justify-center gap-1.5 shadow-lg">
+            <span>{homeScore ?? 0}</span>
+            <span className="opacity-30 scale-75">X</span>
+            <span>{awayScore ?? 0}</span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="italic uppercase tracking-tighter hidden sm:inline">{awayName}</span>
+            <span className="italic uppercase tracking-tighter sm:hidden">{abbreviate(awayName)}</span>
+            <img 
+              src={awayLogo || ''} 
+              referrerPolicy="no-referrer"
+              onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
+              className="w-4 h-4 rounded-full border border-black/40 bg-black/40" 
+              alt=""
+            />
+          </div>
+        </div>
       </div>
     );
   }

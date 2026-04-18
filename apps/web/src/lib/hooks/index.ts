@@ -390,12 +390,12 @@ export function useSofascorePolling(operations: any[]) {
         const event = data.event;
         console.log(`[SofascorePolling] Dados recebidos para ${eventId}: ${event.homeTeam?.name} ${event.homeScore?.current}x${event.awayScore?.current} ${event.awayTeam?.name}`);
 
-        // Mapeamento conforme especificação V15
-        const mapearPeriod = (p: number) => {
-          if (p === 1) return "1T";
-          if (p === 2) return "2T";
-          if (p === 3) return "ET";
-          if (p === 4) return "AP";
+        // Mapeamento conforme especificação V15/V21
+        const mapearPeriod = (p: number, league: string) => {
+          const isBasketball = league?.toLowerCase().includes('nba') || league?.toLowerCase().includes('basquete') || league?.toLowerCase().includes('nbb');
+          const prefix = isBasketball ? 'Q' : 'T';
+
+          if (p >= 1 && p <= 4) return `${p}${prefix}`;
           if (p === 5) return "PEN";
           return null;
         };
@@ -407,7 +407,7 @@ export function useSofascorePolling(operations: any[]) {
           awayTeam: event.awayTeam?.name,
           homeScore: event.homeScore?.current ?? null,
           awayScore: event.awayScore?.current ?? null,
-          period: mapearPeriod(event.status?.period),
+          period: mapearPeriod(event.status?.period, event.tournament?.name || ''),
           minute: event.status?.minute ?? null,
           homeLogo: `https://api.sofascore.com/api/v1/team/${event.homeTeam?.id}/image`,
           awayLogo: `https://api.sofascore.com/api/v1/team/${event.awayTeam?.id}/image`,
