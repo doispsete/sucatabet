@@ -367,11 +367,11 @@ export function useSofascorePolling(operations: any[]) {
         const cacheRes = await services.sofascoreService.getCache(eventId);
         
         if (cacheRes.cached) {
-          console.log(`[SofascorePolling] Cache HIT para ${eventId}. Pulando fetch externo.`);
+          // console.log(`[SofascorePolling] Cache HIT para ${eventId}. Pulando fetch externo.`);
           continue; 
         }
 
-        console.log(`[SofascorePolling] Cache MISS para ${eventId}. Buscando no Sofascore...`);
+        console.log(`[SofascorePolling] 🚨 CACHE MISS para ${eventId}. Iniciando fetch externo via browser...`);
 
         // PASSO 2: Cache Miss -> Request ao Sofascore (via Browser do Usuário)
         const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`, {
@@ -380,7 +380,8 @@ export function useSofascorePolling(operations: any[]) {
         });
 
         if (!response.ok) {
-          console.warn(`[SofascorePolling] Falha ao buscar evento ${eventId}: ${response.status}`);
+          console.error(`[SofascorePolling] ❌ ERRO ao buscar evento ${eventId} no Sofascore: Status ${response.status}`);
+          if (response.status === 403) console.error("[SofascorePolling] 🚫 Bloqueio SofaScore detectado (403). Tentando via proxy em breve...");
           continue;
         }
 

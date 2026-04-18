@@ -74,6 +74,7 @@ model User {
   stripeSubscriptionId String?      @unique
   avatarUrl            String?
   approvedAt           DateTime?
+  lastLoginAt          DateTime?
   cpfProfiles          CpfProfile[]
   operations           Operation[]
   logs                 AuditLog[]

@@ -41,7 +41,7 @@ export class SofascoreController {
       data: updateData as any,
     });
 
-    this.logger.log(`[Sofascore] Cache alimentado para evento ${eventId} (${data.homeTeam} x ${data.awayTeam} - ${data.homeScore}x${data.awayScore}). Operações atualizadas: ${result.count}`);
+    this.logger.log(`[Sofascore] ✅ CACHE ATUALIZADO para o evento ${eventId} (${data.homeTeam} x ${data.awayTeam} - ${data.homeScore}x${data.awayScore}). Operações afetadas: ${result.count}`);
     
     return { ok: true, updatedOperations: result.count };
   }

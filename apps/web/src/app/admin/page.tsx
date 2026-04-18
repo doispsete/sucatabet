@@ -331,8 +331,7 @@ export default function AdminPage() {
                       </span>
                     </td>
                     <td className="px-8 py-6 text-center">
-                      <div className="flex flex-col items-center justify-center gap-0.5 opacity-20">
-                        {/* 
+                      <div className="flex flex-col items-center justify-center gap-0.5 opacity-60">
                         <span className="text-[10px] font-black text-[#e5e2e1] italic tracking-tight uppercase leading-none">
                           {formatRelativeDate(user.lastLoginAt ?? null)}
                         </span>
@@ -341,8 +340,6 @@ export default function AdminPage() {
                              {formatDate(user.lastLoginAt)}
                           </span>
                         )}
-                        */}
-                        <span className="text-[10px] font-black text-[#e5e2e1] italic tracking-tight uppercase leading-none">MODO DEV</span>
                       </div>
                     </td>
                     <td className="px-8 py-6 text-center">
