@@ -65,7 +65,7 @@ export const operationsService = {
 };
 
 export const sofascoreService = {
-  search: (query: string) => api.get<any[]>(`/sofascore/search?q=${query}`),
+  // A busca agora é feita diretamente no componente GameSearch.tsx via fetch do navegador
 };
 
 export const freebetsService = {

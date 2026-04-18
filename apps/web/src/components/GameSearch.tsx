@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { sofascoreService } from '../lib/api/services';
 import { Search, Loader2, Calendar, Trophy } from 'lucide-react';
 
 interface GameSearchProps {
@@ -11,19 +10,78 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSearch = useCallback(async (q: string) => {
     if (q.length < 3) {
       setResults([]);
+      setError(null);
       return;
     }
 
     setLoading(true);
+    setError(null);
     try {
-      const data = await sofascoreService.search(q);
-      setResults(data);
-    } catch (error) {
-      console.error('Erro na busca do Sofascore:', error);
+      // PASSO 1 — Buscar ID do time
+      const searchRes = await fetch(
+        `https://api.sofascore.com/api/v1/search/all?q=${encodeURIComponent(q)}`,
+        { headers: { 'Accept': 'application/json' } }
+      );
+      
+      if (!searchRes.ok) throw new Error('Search failed');
+      const searchData = await searchRes.json();
+      const team = searchData.results?.find((r: any) => r.type === 'team')?.entity;
+
+      if (!team) {
+        setResults([]);
+        return;
+      }
+
+      // PASSO 2 — Buscar próximos jogos
+      const evRes = await fetch(
+        `https://api.sofascore.com/api/v1/team/${team.id}/events/next/0`,
+        { headers: { 'Accept': 'application/json' } }
+      );
+      
+      if (!evRes.ok) throw new Error('Events fetch failed');
+      const evData = await evRes.json();
+      const allEvents = evData.events ?? [];
+
+      // PASSO 3 — Filtrar 7 dias
+      const now = Math.floor(Date.now() / 1000);
+      const sevenDaysLater = now + 7 * 24 * 60 * 60;
+      const events = allEvents.filter(
+        (e: any) => e.startTimestamp >= now && e.startTimestamp <= sevenDaysLater
+      );
+
+      // PASSO 4 — Formatar para exibição
+      const formatted = events.map((e: any) => ({
+        eventId: e.id,
+        homeTeam: e.homeTeam.name,
+        homeTeamId: e.homeTeam.id,
+        homeLogo: `https://api.sofascore.com/api/v1/team/${e.homeTeam.id}/image`,
+        awayTeam: e.awayTeam.name,
+        awayTeamId: e.awayTeam.id,
+        awayLogo: `https://api.sofascore.com/api/v1/team/${e.awayTeam.id}/image`,
+        league: e.tournament?.name || 'Futebol',
+        startTime: new Date(e.startTimestamp * 1000).toLocaleString('pt-BR', {
+          timeZone: 'America/Sao_Paulo',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        startTimestamp: e.startTimestamp,
+        status: e.status?.type ?? 'notstarted',
+        homeScore: e.homeScore?.current ?? null,
+        awayScore: e.awayScore?.current ?? null,
+      }));
+
+      setResults(formatted);
+    } catch (err) {
+      console.error('Erro na busca do Sofascore:', err);
+      setError('Erro ao buscar jogos. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -55,7 +113,11 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
       </div>
 
       <div className="max-h-[300px] overflow-y-auto custom-scrollbar flex flex-col gap-1">
-        {results.length > 0 ? (
+        {error ? (
+          <div className="py-8 text-center text-red-400/80 text-sm">
+            {error}
+          </div>
+        ) : results.length > 0 ? (
           results.map((game) => (
             <button
               key={game.eventId}
@@ -69,9 +131,7 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-white/40 font-medium">
                   <Calendar className="w-3 h-3" />
-                  {new Date(game.startTime).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} 
-                  {' '}
-                  {new Date(game.startTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                  {game.startTime}
                 </div>
               </div>
               
