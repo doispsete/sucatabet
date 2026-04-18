@@ -25,7 +25,10 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
       // PASSO 1 — Buscar ID do time
       const searchRes = await fetch(
         `https://api.sofascore.com/api/v1/search/all?q=${encodeURIComponent(q)}`,
-        { headers: { 'Accept': 'application/json' } }
+        { 
+          headers: { 'Accept': 'application/json' },
+          referrerPolicy: "no-referrer"
+        }
       );
       
       if (!searchRes.ok) throw new Error('Search failed');
@@ -40,7 +43,10 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
       // PASSO 2 — Buscar próximos jogos
       const evRes = await fetch(
         `https://api.sofascore.com/api/v1/team/${team.id}/events/next/0`,
-        { headers: { 'Accept': 'application/json' } }
+        { 
+          headers: { 'Accept': 'application/json' },
+          referrerPolicy: "no-referrer"
+        }
       );
       
       if (!evRes.ok) throw new Error('Events fetch failed');
