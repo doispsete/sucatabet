@@ -390,39 +390,51 @@ export function useSofascorePolling(operations: any[]) {
         const event = data.event;
         console.log(`[SofascorePolling] Dados recebidos para ${eventId}: ${event.homeTeam?.name} ${event.homeScore?.current}x${event.awayScore?.current} ${event.awayTeam?.name}`);
 
-        // Mapeamento conforme especificação V15/V21/V22/V23/V24 (Sugerido pelo Usuário)
-        const getSimplifiedPeriod = (status: any, time: any, league: string) => {
+        // Mapeamento conforme especificação V15/V21-V25 (Cálculo Manual)
+        const getSimplifiedPeriod = (status: any, time: any, periodStart: number | null, league: string) => {
           if (!status) return { periodLabel: null, minute: null };
 
           const leagueLower = league?.toLowerCase() || '';
-          const isBasketball = leagueLower.includes('nba') || leagueLower.includes('nbb') || leagueLower.includes('basket');
+          const isBasketball = leagueLower.includes('nba') || leagueLower.includes('nbb') || leagueLower.includes('basket') || leagueLower.includes('basketball') || leagueLower.includes('euroleague') || leagueLower.includes('nbl');
           const p = status.period;
           const description = status.description || '';
 
-          // Minuto: futebol usa time.played, basquete usa time.played ou status.description
+          // Lógica de minuto manual (V25)
           let minute: string | null = null;
-          if (time?.played !== undefined && time?.played !== null) {
-            minute = String(time.played);
-          } else if (time?.initial !== undefined && time?.initial !== null) {
-            minute = String(Math.floor(time.initial / 60));
-          } else if (/\d+/.test(description)) {
-            minute = description.match(/\d+/)?.[0] || null;
+          if (periodStart && time?.initial !== undefined && time?.initial !== null) {
+            const now = Math.floor(Date.now() / 1000);
+            const elapsed = now - periodStart;
+            const totalMinutes = Math.floor((time.initial + elapsed) / 60);
+            
+            if (p === 1 && totalMinutes >= 45) minute = "45+";
+            else if (p === 2 && totalMinutes >= 90) minute = "90+";
+            else minute = String(totalMinutes);
           }
 
           let periodLabel: string | null = null;
-          if (p === 5 || description.toLowerCase().includes('pen')) periodLabel = "PEN";
-          else if (isBasketball && p >= 1 && p <= 4) periodLabel = `Q${p}`;
-          else if (isBasketball && p > 4) periodLabel = `OT`;
-          else if (p === 1) periodLabel = "1T";
-          else if (p === 2) periodLabel = "2T";
-          else if (p === 3) periodLabel = "ET";
-          else if (p === 4) periodLabel = "AP";
-          else if (description) periodLabel = description;
+          // Traduções PT-BR (V25)
+          if (p === 5 || description.toLowerCase().includes('pen')) periodLabel = "Pen.";
+          else if (isBasketball) {
+            if (p >= 1 && p <= 4) periodLabel = `Q${p}`;
+            else if (p > 4) periodLabel = "OT";
+          } else {
+            // Football / Default
+            if (p === 1) periodLabel = "1º";
+            else if (p === 2) periodLabel = "2º";
+            else if (p === 3) periodLabel = "Prorr.";
+            else if (p === 4) periodLabel = "Pen.";
+            else if (description) periodLabel = description;
+          }
 
           return { periodLabel, minute };
         };
 
-        const { periodLabel, minute } = getSimplifiedPeriod(event.status, event.time, event.tournament?.name || '');
+        const { periodLabel, minute } = getSimplifiedPeriod(
+          event.status, 
+          event.time, 
+          event.currentPeriodStartTimestamp || null, 
+          event.tournament?.name || ''
+        );
 
         const mappedData = {
           eventId: String(event.id),

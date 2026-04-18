@@ -131,8 +131,25 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
     );
   }
 
-  // IN PROGRESS (SOFASCORE STYLE - V24)
+  // IN PROGRESS (SOFASCORE STYLE - V25 REFINED)
   if (status === 'inprogress') {
+    // Tradução e limpeza robusta de período interna (fallback do componente)
+    const getCleanPeriod = (p: string | null | undefined) => {
+      if (!p) return null;
+      const clean = p.trim().toLowerCase();
+      if (clean.includes('1st') || clean.includes('1º')) return '1º';
+      if (clean.includes('2nd') || clean.includes('2º')) return '2º';
+      if (clean.includes('half')) {
+         if (clean.includes('1')) return '1º';
+         if (clean.includes('2')) return '2º';
+      }
+      if (clean.includes('overtime') || clean.includes('extra') || clean.includes('prorr')) return 'Prorr.';
+      if (clean.includes('penal')) return 'Pen.';
+      return p;
+    };
+
+    const displayPeriod = getCleanPeriod(period);
+
     return (
       <div className={`flex flex-col items-center gap-1.5 w-full ${className}`}>
         <div className="flex items-center justify-center gap-3 w-full">
@@ -162,9 +179,11 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
             {/* Time / Period Badge */}
             <div className="flex items-center gap-1.5">
               <div className="animate-pulse flex items-center gap-1 text-[#00ff88] text-[10px] font-black tracking-tighter uppercase whitespace-nowrap">
-                {minute ? <span>{minute}&apos;</span> : null}
-                {period && !String(minute || '').includes(period) ? <span className="bg-[#00ff88]/10 px-1 py-0.5 rounded border border-[#00ff88]/20">{period}</span> : null}
-                {!minute && !period && <span>LIVE</span>}
+                {minute ? <span>{minute}{String(minute).includes('+') ? '' : '\''}</span> : null}
+                {displayPeriod && !String(minute || '').includes(displayPeriod) ? (
+                  <span className="bg-[#00ff88]/10 px-1 py-0.5 rounded border border-[#00ff88]/20">{displayPeriod}</span>
+                ) : null}
+                {!minute && !displayPeriod && <span>LIVE</span>}
               </div>
             </div>
           </div>
