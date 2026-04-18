@@ -291,69 +291,86 @@ export default function BancoPage() {
         </div>
       </header>
 
-      {/* Stats Quick View */}
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>
-        {/* Saldos Totais (2 Colunas) */}
-        <div className="lg:col-span-2 glass-card p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-white/5 relative overflow-hidden group">
-          <div className="flex justify-between items-start mb-8 relative z-10">
+      {/* Stats Quick View - Sincronizado com Operações (8:4) */}
+      <div className={`grid grid-cols-1 lg:grid-cols-12 gap-6 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>
+        {/* Card Grande (2/3 - 8 Colunas) */}
+        <div className="lg:col-span-8 glass-card p-6 md:p-10 rounded-[32px] md:rounded-[45px] border border-white/5 relative overflow-hidden group shadow-3xl bg-white/[0.02]">
+          <div className="flex justify-between items-start mb-12 relative z-10">
             <div>
-              <p className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-[0.2em] mb-2 italic opacity-40">SALDOS TOTAIS</p>
-              <h3 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter">
+              <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-4 italic flex items-center gap-2 pl-[0.5em]">
+                <span className="w-8 h-[2px] bg-primary rounded-full" /> PATRIMÔNIO TOTAL
+              </p>
+              <h3 className="text-4xl md:text-7xl font-black text-white italic tracking-tighter leading-none mb-4">
                 R$ {formatCurrency(bankSummary.totalPatrimony)}
               </h3>
-              <p className="text-[9px] font-bold text-primary uppercase tracking-widest mt-1 opacity-60 italic">Patrimônio Consolidado</p>
+              <div className="flex items-center gap-3">
+                <span className="flex items-center text-[10px] font-black bg-primary/10 text-primary px-4 py-1.5 rounded-full border border-primary/20 italic">
+                  <TrendingUp className="w-3.5 h-3.5 mr-2" /> Gestão Consolidada
+                </span>
+                <span className="text-[#b9cbbc]/20 text-[9px] font-black tracking-[0.4em] uppercase">Saldos & Bancas</span>
+              </div>
             </div>
-            <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20">
-              <PiggyBank className="text-primary w-6 h-6" />
+            <div className="p-4 bg-primary/10 rounded-2xl border border-primary/20 shadow-[0_0_20px_rgba(3,215,145,0.2)]">
+              <PiggyBank className="text-primary w-8 h-8" />
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-8 pt-6 border-t border-white/5 relative z-10">
-            <div className="space-y-1">
-              <p className="text-[9px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-30 italic">Saldo Bancário</p>
-              <p className="text-xl font-black text-white italic">R$ {formatCurrency(bankSummary.balance)}</p>
+          <div className="grid grid-cols-2 gap-12 pt-8 border-t border-white/5 relative z-10">
+            <div className="space-y-2">
+              <p className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.3em] italic">Saldo Bancário</p>
+              <p className="text-2xl font-black text-white italic tracking-tight">R$ {formatCurrency(bankSummary.balance)}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-[9px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-30 italic">Valor em Banca</p>
-              <p className="text-xl font-black text-white/60 italic">R$ {formatCurrency(bankSummary.totalInAccounts)}</p>
+            <div className="space-y-2">
+              <p className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.3em] italic">Em Bancas</p>
+              <p className="text-2xl font-black text-white/50 italic tracking-tight">R$ {formatCurrency(bankSummary.totalInAccounts)}</p>
             </div>
           </div>
-
-          <Wallet className="absolute -bottom-6 -right-6 w-32 h-32 text-white/5 pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+          <Wallet className="absolute -bottom-10 -right-10 w-48 h-48 text-primary/5 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-all duration-1000" />
         </div>
 
-        {/* Despesas (1 Coluna) */}
-        <div className="glass-card p-6 md:p-7 rounded-[32px] border border-white/5 flex flex-col justify-between group relative overflow-visible">
-          <div className="relative z-10">
-            <div className="flex justify-between items-start mb-4">
-              <p className="text-[9px] font-black text-[#b9cbbc] uppercase tracking-widest opacity-40 italic">DESPESAS (MÊS)</p>
-              <div className="p-2 bg-white/5 rounded-xl"><Receipt className="text-red-500" /></div>
-            </div>
-            <h3 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter">R$ {formatCurrency(expenseStats.total)}</h3>
-            
-            <div className="flex gap-4 mt-6 pt-4 border-t border-white/5">
-              <div className="space-y-0.5">
-                <p className="text-[8px] font-black text-primary uppercase tracking-widest">PAGO</p>
-                <p className="text-sm font-black text-primary italic">R$ {formatCurrency(expenseStats.paid)}</p>
+        {/* Card Médio (1/3 - 4 Colunas) */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Despesas */}
+          <div className="glass-card p-8 rounded-[35px] border border-white/5 flex flex-col justify-between group relative overflow-hidden bg-red-500/5 hover:bg-red-500/10 transition-all border-l-4 border-l-red-500/30">
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-6">
+                <p className="text-[9px] font-black text-red-500/60 uppercase tracking-[0.4em] italic pl-[0.4em]">DESPESAS DO MÊS</p>
+                <div className="p-2 bg-red-500/10 rounded-xl border border-red-500/20"><Receipt className="text-red-500 w-5 h-5" /></div>
               </div>
-              <div className="space-y-0.5" title="Falta pagar">
-                <p className="text-[8px] font-black text-red-500 uppercase tracking-widest">FALTA PAGAR</p>
-                <p className="text-sm font-black text-red-500 italic">R$ {formatCurrency(expenseStats.pending)}</p>
+              <h3 className="text-4xl font-black text-white italic tracking-tighter">R$ {formatCurrency(expenseStats.total)}</h3>
+              <div className="flex gap-6 mt-6 pt-4 border-t border-white/5">
+                <div className="space-y-1">
+                  <p className="text-[8px] font-black text-primary uppercase tracking-widest opacity-40 italic">PAGO</p>
+                  <p className="text-sm font-black text-primary italic whitespace-nowrap">R$ {formatCurrency(expenseStats.paid)}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[8px] font-black text-red-500 uppercase tracking-widest opacity-40 italic">PENDENTE</p>
+                  <p className="text-sm font-black text-red-500 italic whitespace-nowrap">R$ {formatCurrency(expenseStats.pending)}</p>
+                </div>
               </div>
             </div>
+            <Receipt className="absolute -bottom-4 -right-4 w-24 h-24 text-red-500/5 group-hover:scale-110 transition-transform duration-700" />
           </div>
-          <div className={`absolute -bottom-2 -right-2 w-16 h-16 pointer-events-none opacity-5 group-hover:opacity-10 transition-all text-red-500`}>
-            <Receipt className="w-full h-full" />
+
+          {/* Lucro Líquido */}
+          <div className={`glass-card p-8 rounded-[35px] border border-white/5 flex flex-col justify-between group relative overflow-hidden ${bankSummary.monthlyNetProfit >= 0 ? 'bg-[#03D791]/5 border-l-4 border-l-[#03D791]/30' : 'bg-red-500/5 border-l-4 border-l-red-500/30'}`}>
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-6">
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic opacity-40 pl-[0.4em]">LUCRO LÍQUIDO</p>
+                <div className={`p-2 rounded-xl border ${bankSummary.monthlyNetProfit >= 0 ? 'bg-[#03D791]/10 border-[#03D791]/20' : 'bg-red-500/10 border-red-500/20'}`}>
+                  <TrendingUp className={bankSummary.monthlyNetProfit >= 0 ? "text-primary w-5 h-5" : "text-red-500 w-5 h-5"} />
+                </div>
+              </div>
+              <h3 className={`text-4xl font-black italic tracking-tighter ${bankSummary.monthlyNetProfit >= 0 ? 'text-white' : 'text-red-500'}`}>
+                R$ {formatCurrency(bankSummary.monthlyNetProfit)}
+              </h3>
+              <p className={`text-[8px] font-black uppercase tracking-widest mt-4 italic ${bankSummary.monthlyNetProfit >= 0 ? 'text-primary' : 'text-red-500'}`}>
+                Resumo de performance mensal
+              </p>
+            </div>
+            <TrendingUp className={`absolute -bottom-4 -right-4 w-24 h-24 pointer-events-none opacity-5 group-hover:scale-110 transition-transform duration-700 ${bankSummary.monthlyNetProfit >= 0 ? 'text-primary' : 'text-red-500'}`} />
           </div>
         </div>
-
-        {/* Lucro Líquido (1 Coluna) */}
-        <StatCard 
-          title="LUCRO LÍQUIDO (MÊS)" 
-          value={`R$ ${formatCurrency(bankSummary.monthlyNetProfit)}`} 
-          icon={<TrendingUp className={bankSummary.monthlyNetProfit >= 0 ? "text-primary" : "text-red-500"} />} 
-          color={bankSummary.monthlyNetProfit >= 0 ? "primary" : "danger"}
-        />
       </div>
 
       <div className={`flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>

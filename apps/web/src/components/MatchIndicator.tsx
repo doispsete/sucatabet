@@ -60,26 +60,37 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
       : '--/-- --:--';
     
     return (
-      <div className={`flex items-center gap-3 text-xs font-black text-[#b9cbbc] ${className}`}>
-        <div className="flex -space-x-1.5">
+      <div className={`flex items-center gap-4 text-xs font-black text-[#b9cbbc] flex-1 ${className}`}>
+        <div className="flex -space-x-1.5 shrink-0">
           <img 
             src={homeLogo || ''} 
             referrerPolicy="no-referrer"
             onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%228%22>⚽</text></svg>')}
-            className="w-5 h-5 rounded-full border-2 border-black bg-black" 
+            className="w-6 h-6 rounded-full border-2 border-black bg-black shadow-lg" 
             alt="Casa"
           />
           <img 
             src={awayLogo || ''} 
             referrerPolicy="no-referrer"
             onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/xml%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%228%22>⚽</text></svg>')}
-            className="w-5 h-5 rounded-full border-2 border-black bg-black" 
+            className="w-6 h-6 rounded-full border-2 border-black bg-black shadow-lg" 
             alt="Visitante"
           />
         </div>
-        <div className="flex flex-col">
-            <span className="text-white font-bold leading-none">{homeName && awayName ? `${homeName} x ${awayName}` : ''}</span>
-            <span className="opacity-40 text-[9px] uppercase tracking-widest">{dateStr}</span>
+        <div className="flex flex-col min-w-0 flex-1">
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-white font-black italic text-sm tracking-tight truncate">
+                {homeName} x {awayName}
+              </span>
+              <span className="text-[8px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 uppercase tracking-widest shrink-0">
+                PROX
+              </span>
+            </div>
+            <div className="flex items-center gap-2 opacity-50 text-[9px] font-black uppercase tracking-[0.2em]">
+              <span>{dateStr}</span>
+              <span className="w-1 h-1 rounded-full bg-white/20" />
+              <span className="truncate">{operation.sofascoreLeague || 'Campeonato'}</span>
+            </div>
         </div>
       </div>
     );

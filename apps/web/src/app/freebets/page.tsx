@@ -211,7 +211,7 @@ export default function FreebetsPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-[2px] bg-[#03D791] rounded-full shadow-[0_0_15px_rgba(3,215,145,0.5)]" />
-            <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-[#03D791] italic">Hub de Freebets</h2>
+            <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-[#03D791] italic pl-[0.5em]">Hub de Freebets</h2>
           </div>
           <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.8] italic uppercase">
             Central de<br /><span className="text-[#03D791]">Freebets</span>
@@ -263,7 +263,7 @@ export default function FreebetsPage() {
               <Clock className="w-4 h-4 text-[#b9cbbc]/40" />
               <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#b9cbbc]/40 italic">Freebets Utilizadas</h2>
             </div>
-            <h3 className="text-3xl font-black text-white italic tracking-tighter uppercase">Histórico de <span className="text-[#03D791]">Operações</span></h3>
+            <h3 className="text-3xl font-black text-white italic tracking-tighter uppercase pl-[0.1em]">Histórico de <span className="text-[#03D791]">Operações</span></h3>
           </div>
 
           <div className="flex gap-2 p-1 bg-black/40 rounded-2xl border border-white/5">
@@ -431,7 +431,7 @@ export default function FreebetsPage() {
               type="submit"
               isLoading={isCreating}
               disabled={!accId || !fbValue || !fbOrigin || !fbExpiresAt}
-              className="w-full bg-[#03d791] text-black font-black uppercase tracking-[0.4em] italic py-6 rounded-[25px] text-[10px] hover:shadow-[0_20px_40px_rgba(3,215,145,0.2)] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-20"
+              className="w-full bg-[#03d791] text-black font-black uppercase tracking-[0.4em] italic py-6 rounded-[25px] text-[10px] hover:shadow-[0_20px_40px_rgba(3,215,145,0.2)] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-20 pl-[0.4em]"
             >
               Cadastrar freebet
             </LoadingButton>

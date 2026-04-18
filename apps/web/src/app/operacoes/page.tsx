@@ -149,7 +149,7 @@ function OperationsContent() {
 
           <button
             onClick={() => openNewOperation()}
-            className="group flex items-center justify-center gap-3 bg-[#03D791] text-black px-10 py-5 rounded-[22px] text-[11px] font-black uppercase tracking-[0.3em] italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,215,145,0.2)] active:scale-95 transition-all"
+            className="group flex items-center justify-center gap-3 bg-[#03D791] text-black px-10 py-5 pl-[calc(2.5rem+0.3em)] rounded-[22px] text-[11px] font-black uppercase tracking-[0.3em] italic hover:scale-[1.05] hover:shadow-[0_20px_40px_rgba(0,215,145,0.2)] active:scale-95 transition-all"
           >
             <Plus size={18} />
             Nova Operação

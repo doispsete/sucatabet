@@ -271,17 +271,17 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
             <label className="text-[10px] font-black uppercase tracking-widest text-[#03D791]">Vincular Jogo (Sofascore)</label>
             <div className="flex flex-col gap-2">
               {sofascoreEventId ? (
-                <div className="glass-card p-4 rounded-xl border border-[#03D791]/30 flex items-center gap-4">
-                   <div className="flex-1">
+                <div className="glass-card p-4 rounded-xl border border-[#03D791]/30 flex items-center gap-6 w-full shadow-lg bg-white/[0.03]">
+                   <div className="flex-1 min-w-0">
                       <MatchIndicator operation={sofascoreData || operationToEdit || { sofascoreEventId } as any} className="w-full" />
                    </div>
                    <button 
                     type="button" 
                     onClick={() => { setSofascoreEventId(null); setSofascoreData(null); setShowGameSearch(true); }}
-                    className="w-10 h-10 shrink-0 flex items-center justify-center bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:text-red-500 rounded-xl transition-all"
+                    className="w-12 h-12 shrink-0 flex items-center justify-center bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 rounded-xl transition-all shadow-md group"
                     title="Trocar Jogo"
                    >
-                     <Trash2 size={16} />
+                     <Trash2 size={20} className="group-hover:scale-110 transition-transform" />
                    </button>
                 </div>
               ) : (
@@ -509,7 +509,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
         <LoadingButton
           type="submit"
           isLoading={isMutatingOps}
-          className={`w-full ${operationToEdit ? 'bg-[#ffcc00]' : 'bg-[#03D791]'} text-[#002110] font-black uppercase tracking-[0.4em] py-5 rounded-2xl text-[11px] hover:scale-[1.02] active:scale-95 transition-all shadow-lg italic`}
+          className={`w-full ${operationToEdit ? 'bg-[#ffcc00]' : 'bg-[#03D791]'} text-[#002110] font-black uppercase tracking-[0.4em] py-5 rounded-2xl text-[11px] hover:scale-[1.02] active:scale-95 transition-all shadow-lg italic pl-[0.4em]`}
         >
           {operationToEdit ? 'SALVAR ALTERAÇÕES' : 'CONFIRMAR OPERAÇÃO'}
         </LoadingButton>
