@@ -40,8 +40,9 @@ RUN adduser --system --uid 1001 nestjs
 # Ordem exata de COPY conforme instrução do usuário:
 # 1. node_modules (raiz)
 COPY --from=builder /app/node_modules ./node_modules
-# 2. @prisma/client (da raiz)
+# 2. @prisma/client e pasta gerada (.prisma)
 COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 # 3. apps/api/dist
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 # 4. apps/api/prisma (pasta completa com migrations e schema)

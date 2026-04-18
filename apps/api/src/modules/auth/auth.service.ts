@@ -89,13 +89,14 @@ export class AuthService {
       const token = this.jwtService.sign(payload);
       console.log(`[AUTH] Token gerado com sucesso.`);
 
-      // Atualiza último login de forma assíncrona (Desativado temporariamente para fix build local)
-      /*
+      // Atualiza último login de forma assíncrona (Safe-update V13)
       this.prisma.user.update({
         where: { id: user.id },
         data: { lastLoginAt: new Date() }
-      }).catch(e => console.error('[AUTH_ERROR] Erro ao atualizar lastLoginAt:', e));
-      */
+      }).catch(e => {
+        // Silenciamos o erro mas logamos para auditoria — evita que falha de DB trave o login
+        console.warn('[AUTH_WARN] Falha ao atualizar lastLoginAt (pode ser coluna faltante):', e.message);
+      });
 
       return {
         access_token: token,
