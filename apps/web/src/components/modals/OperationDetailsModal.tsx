@@ -14,6 +14,7 @@ import {
   Activity
 } from "lucide-react";
 import { Modal } from "@/components/ui/components";
+import { MatchIndicator } from "@/components/MatchIndicator";
 import { Operation, OperationStatus, OperationResult } from "@/lib/api/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -135,9 +136,12 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
         </div>
 
         {operation.description && (
-          <div className="px-6 py-4 glass-card rounded-[25px] border-white/5 bg-white/[0.02]">
-            <p className="text-[9px] font-black text-[#b9cbbc]/30 uppercase tracking-[0.4em] mb-2 italic text-center">NOTAS / DESCRIÇÃO</p>
-            <p className="text-xs font-medium text-white/70 italic text-center">{operation.description}</p>
+          <div className="px-6 py-4 glass-card rounded-[25px] border-white/5 bg-white/[0.02] flex flex-col items-center gap-3">
+             <div className="space-y-1 text-center">
+                <p className="text-[9px] font-black text-[#b9cbbc]/30 uppercase tracking-[0.4em] mb-1 italic">NOTAS / DESCRIÇÃO</p>
+                <p className="text-xs font-medium text-white/70 italic">{operation.description}</p>
+             </div>
+             <MatchIndicator operation={operation} className="mt-1" />
           </div>
         )}
 

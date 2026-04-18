@@ -53,6 +53,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
     { id: '1', accountId: '', stake: '', odds: '', side: 'BACK', isBenefit: false, commission: '0' }
   ]);
   const [sofascoreEventId, setSofascoreEventId] = useState<string | null>(null);
+  const [sofascoreData, setSofascoreData] = useState<any>(null);
   const [showGameSearch, setShowGameSearch] = useState(false);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
@@ -66,6 +67,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
         setGeneratedFbValue(operationToEdit.generatedFbValue?.toString() || "");
         setFreebetId(operationToEdit.freebet?.id || operationToEdit.freebetId || null);
         setSofascoreEventId((operationToEdit as any).sofascoreEventId || null);
+        setSofascoreData(operationToEdit); // Tenta usar a própria operação como base de dados
         setBets((operationToEdit.bets || []).map((b, i) => ({
           id: b.id || (Date.now() + i).toString(),
           accountId: b.accountId,
@@ -158,12 +160,30 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
       if (operationToEdit) {
         await updateOperation(operationToEdit.id, {
             ...payload,
-            sofascoreEventId: sofascoreEventId || undefined
+            sofascoreEventId: sofascoreEventId || undefined,
+            sofascoreStatus: sofascoreData?.status || undefined,
+            sofascoreHomeScore: sofascoreData?.homeScore || undefined,
+            sofascoreAwayScore: sofascoreData?.awayScore || undefined,
+            sofascoreHomeName: sofascoreData?.homeTeam || undefined,
+            sofascoreAwayName: sofascoreData?.awayTeam || undefined,
+            sofascoreLeague: sofascoreData?.league || undefined,
+            sofascoreStartTime: sofascoreData?.sofascoreStartTime || undefined,
+            sofascoreHomeLogo: sofascoreData?.homeLogo || undefined,
+            sofascoreAwayLogo: sofascoreData?.awayLogo || undefined
         });
       } else {
         await createOperation({
             ...payload,
-            sofascoreEventId: sofascoreEventId || undefined
+            sofascoreEventId: sofascoreEventId || undefined,
+            sofascoreStatus: sofascoreData?.status || undefined,
+            sofascoreHomeScore: sofascoreData?.homeScore || undefined,
+            sofascoreAwayScore: sofascoreData?.awayScore || undefined,
+            sofascoreHomeName: sofascoreData?.homeTeam || undefined,
+            sofascoreAwayName: sofascoreData?.awayTeam || undefined,
+            sofascoreLeague: sofascoreData?.league || undefined,
+            sofascoreStartTime: sofascoreData?.sofascoreStartTime || undefined,
+            sofascoreHomeLogo: sofascoreData?.homeLogo || undefined,
+            sofascoreAwayLogo: sofascoreData?.awayLogo || undefined
         });
       }
 
@@ -276,6 +296,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
                    <GameSearch 
                      onSelect={(game) => {
                        setSofascoreEventId(game.eventId);
+                       setSofascoreData(game);
                        setShowGameSearch(false);
                        // Se a descrição estiver vazia, usa o nome do jogo
                        if (!notes) setNotes(`${game.homeTeam} x ${game.awayTeam}`);

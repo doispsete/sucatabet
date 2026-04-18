@@ -54,6 +54,46 @@ export class CreateOperationDto {
   @IsNumber()
   @IsOptional()
   generatedFbValue?: number;
+
+  @IsString()
+  @IsOptional()
+  sofascoreEventId?: string;
+
+  @IsString()
+  @IsOptional()
+  sofascoreStatus?: string;
+
+  @IsNumber()
+  @IsOptional()
+  sofascoreHomeScore?: number;
+
+  @IsNumber()
+  @IsOptional()
+  sofascoreAwayScore?: number;
+
+  @IsString()
+  @IsOptional()
+  sofascoreHomeName?: string;
+
+  @IsString()
+  @IsOptional()
+  sofascoreAwayName?: string;
+
+  @IsString()
+  @IsOptional()
+  sofascoreLeague?: string;
+
+  @IsString()
+  @IsOptional()
+  sofascoreStartTime?: string;
+
+  @IsString()
+  @IsOptional()
+  sofascoreHomeLogo?: string;
+
+  @IsString()
+  @IsOptional()
+  sofascoreAwayLogo?: string;
 }
 
 export class UpdateOperationDto extends CreateOperationDto {}

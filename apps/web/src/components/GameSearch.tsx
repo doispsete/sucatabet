@@ -61,28 +61,36 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
       );
 
       // PASSO 4 — Formatar para exibição
-      const formatted = events.map((e: any) => ({
-        eventId: e.id,
-        homeTeam: e.homeTeam.name,
-        homeTeamId: e.homeTeam.id,
-        homeLogo: `https://api.sofascore.com/api/v1/team/${e.homeTeam.id}/image`,
-        awayTeam: e.awayTeam.name,
-        awayTeamId: e.awayTeam.id,
-        awayLogo: `https://api.sofascore.com/api/v1/team/${e.awayTeam.id}/image`,
-        league: e.tournament?.name || 'Futebol',
-        startTime: new Date(e.startTimestamp * 1000).toLocaleString('pt-BR', {
+      const formatted = events.map((e: any) => {
+        const date = new Date(e.startTimestamp * 1000);
+        
+        // Exibição amigável no frontend (America/Sao_Paulo)
+        const displayTime = new Intl.DateTimeFormat('pt-BR', {
           timeZone: 'America/Sao_Paulo',
           day: '2-digit',
           month: '2-digit',
-          year: 'numeric',
           hour: '2-digit',
           minute: '2-digit',
-        }),
-        startTimestamp: e.startTimestamp,
-        status: e.status?.type ?? 'notstarted',
-        homeScore: e.homeScore?.current ?? null,
-        awayScore: e.awayScore?.current ?? null,
-      }));
+          hour12: false
+        }).format(date);
+
+        return {
+          eventId: e.id.toString(),
+          homeTeam: e.homeTeam.name,
+          homeTeamId: e.homeTeam.id,
+          homeLogo: `https://api.sofascore.com/api/v1/team/${e.homeTeam.id}/image`,
+          awayTeam: e.awayTeam.name,
+          awayTeamId: e.awayTeam.id,
+          awayLogo: `https://api.sofascore.com/api/v1/team/${e.awayTeam.id}/image`,
+          league: e.tournament?.name || 'Futebol',
+          startTime: displayTime,
+          sofascoreStartTime: date.toISOString(), // Para o backend
+          startTimestamp: e.startTimestamp,
+          status: e.status?.type ?? 'notstarted',
+          homeScore: e.homeScore?.current ?? null,
+          awayScore: e.awayScore?.current ?? null,
+        };
+      });
 
       setResults(formatted);
     } catch (err) {
@@ -144,12 +152,22 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
               <div className="flex items-center justify-between mt-1">
                 <div className="flex items-center gap-3 flex-1 overflow-hidden">
                   <div className="flex items-center gap-2 max-w-[45%]">
-                    <img src={game.homeLogo} className="w-5 h-5 object-contain" alt="" />
+                    <img 
+                      src={game.homeLogo} 
+                      referrerPolicy="no-referrer"
+                      className="w-5 h-5 object-contain" 
+                      alt="" 
+                    />
                     <span className="truncate text-sm font-semibold">{game.homeTeam}</span>
                   </div>
                   <span className="text-white/20 text-xs font-black italic">VS</span>
                   <div className="flex items-center gap-2 max-w-[45%]">
-                    <img src={game.awayLogo} className="w-5 h-5 object-contain" alt="" />
+                    <img 
+                      src={game.awayLogo} 
+                      referrerPolicy="no-referrer"
+                      className="w-5 h-5 object-contain" 
+                      alt="" 
+                    />
                     <span className="truncate text-sm font-semibold">{game.awayTeam}</span>
                   </div>
                 </div>

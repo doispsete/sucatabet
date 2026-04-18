@@ -39,18 +39,24 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
 
   // NOT STARTED
   if (status === 'notstarted' || (status !== 'inprogress' && status !== 'finished')) {
-    const dateStr = startTime ? `${formatDateShort(startTime)} ${formatTime(startTime)}` : '--/-- --:--';
+    const d = startTime ? new Date(startTime) : null;
+    const dateStr = d && !isNaN(d.getTime()) 
+      ? new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(d)
+      : '--/-- --:--';
+    
     return (
       <div className={`flex items-center gap-2 text-[10px] font-bold text-[#b9cbbc] ${className}`}>
         <div className="flex -space-x-1">
           <img 
             src={homeLogo || ''} 
+            referrerPolicy="no-referrer"
             onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%228%22>⚽</text></svg>')}
             className="w-4 h-4 rounded-full border border-white/10" 
             alt="Casa"
           />
           <img 
             src={awayLogo || ''} 
+            referrerPolicy="no-referrer"
             onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/xml%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%228%22>⚽</text></svg>')}
             className="w-4 h-4 rounded-full border border-white/10" 
             alt="Visitante"

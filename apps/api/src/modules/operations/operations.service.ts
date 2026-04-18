@@ -259,6 +259,16 @@ export class OperationsService {
           generatedFbValue: (createOperationDto.generatedFbValue && !isNaN(createOperationDto.generatedFbValue)) ? new Prisma.Decimal(createOperationDto.generatedFbValue) : null,
           userId,
           status: OperationStatus.PENDING,
+          sofascoreEventId: createOperationDto.sofascoreEventId,
+          sofascoreStatus: createOperationDto.sofascoreStatus,
+          sofascoreHomeScore: createOperationDto.sofascoreHomeScore,
+          sofascoreAwayScore: createOperationDto.sofascoreAwayScore,
+          sofascoreHomeName: createOperationDto.sofascoreHomeName,
+          sofascoreAwayName: createOperationDto.sofascoreAwayName,
+          sofascoreLeague: createOperationDto.sofascoreLeague,
+          sofascoreStartTime: createOperationDto.sofascoreStartTime ? new Date(createOperationDto.sofascoreStartTime) : null,
+          sofascoreHomeLogo: createOperationDto.sofascoreHomeLogo,
+          sofascoreAwayLogo: createOperationDto.sofascoreAwayLogo,
         } as any,
       });
 
@@ -701,6 +711,16 @@ export class OperationsService {
             expectedProfit: operationExpectedProfit,
             description: updateDto.description,
             generatedFbValue: safeFbVal,
+            sofascoreEventId: updateDto.sofascoreEventId,
+            sofascoreStatus: updateDto.sofascoreStatus,
+            sofascoreHomeScore: updateDto.sofascoreHomeScore,
+            sofascoreAwayScore: updateDto.sofascoreAwayScore,
+            sofascoreHomeName: updateDto.sofascoreHomeName,
+            sofascoreAwayName: updateDto.sofascoreAwayName,
+            sofascoreLeague: updateDto.sofascoreLeague,
+            sofascoreStartTime: updateDto.sofascoreStartTime ? new Date(updateDto.sofascoreStartTime) : undefined,
+            sofascoreHomeLogo: updateDto.sofascoreHomeLogo,
+            sofascoreAwayLogo: updateDto.sofascoreAwayLogo,
           } as any,
         });
 
