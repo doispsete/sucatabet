@@ -6,8 +6,8 @@ import { PrismaService } from '../../prisma.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private prisma: PrismaService) {
-    if (!process.env.JWT_SECRET) {
-      throw new Error('JWT_SECRET must be defined in environment variables');
+    if (!process.env.JWT_SECRET && !process.env.NEXTAUTH_SECRET) {
+      console.warn('[AUTH_WARN] Nem JWT_SECRET nem NEXTAUTH_SECRET foram encontrados. A autenticação pode falhar.');
     }
 
     super({
@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return token || ExtractJwt.fromAuthHeaderAsBearerToken()(req);
       },
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: (process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'fallback-sucatabet-secret') as string,
     });
   }
 

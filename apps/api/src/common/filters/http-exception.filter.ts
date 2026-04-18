@@ -21,9 +21,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const isInternalError = status === HttpStatus.INTERNAL_SERVER_ERROR;
 
-    // Captura no Sentry/GlitchTip apenas erros 500 e acima
+    // Captura no Sentry/GlitchTip apenas erros 500 e acima (Safe wrap V14)
     if (isInternalError) {
-      Sentry.captureException(exception);
+      try {
+        Sentry.captureException(exception);
+      } catch (sentryError) {
+        console.error('[SENTRY_ERROR] Falha ao enviar erro para o monitor:', sentryError);
+      }
     }
 
     const errorResponse = {
