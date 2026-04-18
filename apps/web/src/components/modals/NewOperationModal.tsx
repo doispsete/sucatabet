@@ -271,16 +271,17 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
             <label className="text-[10px] font-black uppercase tracking-widest text-[#03D791]">Vincular Jogo (Sofascore)</label>
             <div className="flex flex-col gap-2">
               {sofascoreEventId ? (
-                <div className="glass-card p-4 rounded-xl border border-[#03D791]/30 flex flex-col gap-3">
-                   <div className="w-full">
+                <div className="glass-card p-4 rounded-xl border border-[#03D791]/30 flex items-center gap-4">
+                   <div className="flex-1">
                       <MatchIndicator operation={sofascoreData || operationToEdit || { sofascoreEventId } as any} className="w-full" />
                    </div>
                    <button 
                     type="button" 
                     onClick={() => { setSofascoreEventId(null); setSofascoreData(null); setShowGameSearch(true); }}
-                    className="text-[10px] font-black text-red-400 hover:text-red-500 uppercase tracking-[0.2em] italic self-end"
+                    className="w-10 h-10 shrink-0 flex items-center justify-center bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:text-red-500 rounded-xl transition-all"
+                    title="Trocar Jogo"
                    >
-                     Trocar Jogo
+                     <Trash2 size={16} />
                    </button>
                 </div>
               ) : (
@@ -363,24 +364,12 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
                 <div className="flex items-end gap-2">
                   <div className="flex-1 space-y-1.5">
                     <label className="text-[9px] font-black uppercase tracking-widest text-[#b9cbbc]/40 italic">Conta</label>
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <CustomSelect
-                          value={bet.accountId}
-                          onChange={val => handleUpdateBet(bet.id, 'accountId', val)}
-                          options={accountOptions}
-                          placeholder="ESCOLHER CONTA"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setIsAccountModalOpen(true)}
-                        className="h-10 w-10 shrink-0 flex items-center justify-center border border-white/10 hover:border-[#03D791]/30 hover:text-[#03D791] rounded-xl transition-all text-white/30"
-                        title="Adicionar Conta"
-                      >
-                        <Plus size={14} />
-                      </button>
-                    </div>
+                    <CustomSelect
+                      value={bet.accountId}
+                      onChange={val => handleUpdateBet(bet.id, 'accountId', val)}
+                      options={accountOptions}
+                      placeholder="ESCOLHER CONTA"
+                    />
                   </div>
                   <button
                     type="button"

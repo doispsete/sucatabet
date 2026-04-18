@@ -207,8 +207,8 @@ function OperationsContent() {
           <div className="col-span-4 lg:col-span-2">Operação</div>
           <div className="hidden lg:flex col-span-2 justify-center items-center">Descrição</div>
           <div className="hidden lg:block col-span-2 text-center">Status</div>
-          <div className="col-span-4 lg:col-span-2 text-right">Resultado</div>
-          <div className="hidden lg:block col-span-2 text-right">ID</div>
+          <div className="col-span-4 lg:col-span-2 text-center">Resultado</div>
+          <div className="hidden lg:block col-span-2 text-center">ID</div>
         </div>
 
         {/* Rows Container */}
@@ -323,9 +323,9 @@ function OperationsContent() {
                         {statusLabel}
                       </span>
                     </div>
-                    <div className="col-span-4 lg:col-span-2 text-right">
+                    <div className="col-span-4 lg:col-span-2 text-center">
                       <div className="flex flex-col items-end">
-                        <span className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.2em] italic mb-1">
+                        <span className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.2em] italic mb-1 block">
                           Stake: <span className="text-white/60">R$ {formatCurrency(totalStake)}</span>
                         </span>
                         {op.status === OperationStatus.FINISHED || op.status === OperationStatus.CASHOUT ? (
@@ -339,9 +339,9 @@ function OperationsContent() {
                         )}
                       </div>
                     </div>
-                    <div className="hidden lg:block col-span-2 text-right">
+                    <div className="hidden lg:block col-span-2 text-center">
                       <span className="text-[10px] font-black text-white/20 uppercase tracking-tighter tabular-nums truncate max-w-[80px] inline-block">
-                        #{op.id.split('-')[0]}
+                        #{op.id.substring(0, 8)}
                       </span>
                     </div>
                   </div>

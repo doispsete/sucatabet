@@ -266,15 +266,30 @@ export default function BancoPage() {
         </div>
       )}
       
-      <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>
-          <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase flex items-center gap-4">
-            Gestão Financeira
-            {isBankLoading && bankSummary && (
-              <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-            )}
-          </h1>
-          <p className="text-[10px] text-[#b9cbbc]/40 font-black uppercase tracking-[0.2em] italic">Controle de banca, despesas e patrimônio</p>
-      </div>
+      <header className="relative py-10 mb-8 border-b border-white/5 overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -mr-64 -mt-64" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20">
+              <PiggyBank className="w-8 h-8 text-primary shadow-[0_0_15px_rgba(3,215,145,0.4)]" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
+                Gestão Financeira
+              </h1>
+              <p className="text-[11px] text-[#b9cbbc]/60 font-black uppercase tracking-[0.4em] mt-2 italic flex items-center gap-2">
+                <span className="w-8 h-px bg-primary/30" /> CENTRO DE LUCROS
+              </p>
+            </div>
+          </div>
+          {isBankLoading && bankSummary && (
+            <div className="flex items-center gap-2 text-[9px] font-black text-primary uppercase tracking-widest mt-4">
+              <div className="w-3 h-3 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+              Atualizando dados bancários...
+            </div>
+          )}
+        </div>
+      </header>
 
       {/* Stats Quick View */}
       <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>

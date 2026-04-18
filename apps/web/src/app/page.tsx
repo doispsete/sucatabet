@@ -644,64 +644,88 @@ export default function DashboardPage() {
           })}
         </div>
 
-        {/* Desktop: tabela original */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left min-w-[800px]">
-            <thead>
-              <tr className="text-[9px] uppercase tracking-[0.2em] text-[#b9cbbc]/40 border-b border-white/5">
-                <th className="px-8 py-6 font-black">Data/Operação</th>
-                <th className="px-8 py-6 font-black">Tipo</th>
-                <th className="px-8 py-6 font-black">Status</th>
-                <th className="px-8 py-6 font-black text-right">Resultado</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {(Array.isArray(summary.atividadeRecente) ? summary.atividadeRecente : []).map((op: any) => {
-                return (
-                  <tr
-                    key={op.id}
-                    className="hover:bg-white/[0.03] transition-all cursor-pointer group/row border-b border-white/[0.02] last:border-0 relative"
-                  >
-                    <td className="px-8 py-6">
-                      <Link href={`/operacoes?id=${op.id}`} className="absolute inset-0 z-10" />
-                      <div className="relative z-0">
-                        <p className="text-sm font-black text-[#e5e2e1] italic">{formatDate(op.createdAt)}</p>
-                        <p className="text-[10px] text-[#b9cbbc]/40 font-black uppercase tracking-widest">#{op.id.substring(0, 8)}</p>
-                      </div>
-                    </td>
-                    <td className="px-8 py-6 relative">
-                      <p className="text-xs font-black text-[#e5e2e1] uppercase tracking-[0.1em] italic pr-1">{op.type.replace('_', ' ')}</p>
-                    </td>
-                    <td className="px-8 py-6 relative">
-                      <span className={`px-4 py-1.5 text-[9px] font-black tracking-widest rounded-lg uppercase border shadow-sm ${
-                        op.status === 'FINISHED'
-                          ? (op.realProfit > 0
-                              ? 'bg-[#00ff88]/5 text-[#00ff88] border-[#00ff88]/20 shadow-[#00ff88]/5'
-                              : op.realProfit < 0
-                                ? 'bg-red-500/5 text-red-500 border-red-500/20 shadow-red-500/5'
-                                : 'bg-white/5 text-[#b9cbbc] border-white/10')
-                          : op.status === 'CASHOUT' ? 'bg-amber-500/5 text-amber-500 border-amber-500/20 shadow-amber-500/5' :
-                            op.status === 'VOID' ? 'bg-red-500/5 text-red-500 border-red-500/20 shadow-red-500/5' :
-                            'bg-amber-500/5 text-amber-500 border-amber-500/20 shadow-amber-500/5'
-                        }`}>
-                        {op.status === 'FINISHED' ? 'Finalizada' : op.status === 'CASHOUT' ? 'Cashout' : op.status === 'VOID' ? 'Anulada' : 'Pendente'}
-                      </span>
-                    </td>
-                    <td className="px-8 py-6 text-right relative">
-                      <span className={`text-base font-black italic tracking-tighter ${
-                        op.status === 'PENDING' ? 'text-amber-500' : 
-                        (op.realProfit > 0 ? 'text-[#00ff88]' : op.realProfit < 0 ? 'text-red-500' : 'text-[#e5e2e1]/40')
-                      }`}>
-                        {op.status === 'PENDING'
-                          ? (op.expectedProfit != null ? `+ R$ ${formatCurrency(op.expectedProfit)}` : '—')
-                          : (op.realProfit != null ? `${op.realProfit >= 0 ? '+ ' : '- '} R$ ${formatCurrency(Math.abs(op.realProfit))}` : '—')}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        {/* Desktop: tabela sincronidada com Operações */}
+        <div className="hidden md:block">
+          {/* Header */}
+          <div className="grid grid-cols-12 px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
+            <div className="col-span-2">Data / Hora</div>
+            <div className="col-span-2 text-center">Operação</div>
+            <div className="col-span-2 text-center">Descrição</div>
+            <div className="col-span-2 text-center">Status</div>
+            <div className="col-span-2 text-center">Resultado</div>
+            <div className="col-span-2 text-center">ID</div>
+          </div>
+
+          <div className="divide-y divide-white/5">
+            {(Array.isArray(summary.atividadeRecente) ? summary.atividadeRecente : []).map((op: any) => {
+              const statusStyle = op.status === 'FINISHED' 
+                ? "bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20"
+                : op.status === 'CASHOUT' ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                : op.status === 'VOID' ? "bg-red-500/10 text-red-500 border-red-500/20"
+                : "bg-[#FFDD65]/10 text-[#FFDD65] border-[#FFDD65]/30";
+              
+              const statusLabel = op.status === 'FINISHED' ? 'Finalizada' : op.status === 'CASHOUT' ? 'Cashout' : op.status === 'VOID' ? 'Anulada' : 'Pendente';
+
+              return (
+                <Link
+                  key={op.id}
+                  href={`/operacoes?id=${op.id}`}
+                  className="grid grid-cols-12 px-8 py-6 items-center hover:bg-white/[0.03] transition-all group border-b border-white/[0.02] last:border-0"
+                >
+                  <div className="col-span-2 flex flex-col">
+                    <span className="text-sm font-black text-white italic tracking-tighter uppercase">{formatDate(op.createdAt)}</span>
+                    <span className="text-[9px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-30">#{op.id.substring(0, 8)}</span>
+                  </div>
+                  
+                  <div className="col-span-2 flex flex-col items-center gap-1">
+                    <div className="flex -space-x-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                      {(op.bets || []).slice(0, 3).map((bet: any, i: number) => (
+                        <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-black/40 flex items-center justify-center overflow-hidden">
+                          <img 
+                            src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`} 
+                            alt="" 
+                            className="w-3.5 h-3.5 object-contain" 
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-[#03D791] font-black uppercase tracking-[0.2em] leading-none italic">
+                      {op.type.replace('_', ' ')}
+                    </span>
+                  </div>
+
+                  <div className="col-span-2 flex flex-col justify-center items-center">
+                    <span className="text-[11px] text-white/40 font-black italic tracking-tighter uppercase truncate max-w-full">
+                      {op.description || "-"}
+                    </span>
+                  </div>
+
+                  <div className="col-span-2 text-center">
+                    <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>
+                      {statusLabel}
+                    </span>
+                  </div>
+
+                  <div className="col-span-2 text-center">
+                    <span className={`text-base font-black italic tracking-tighter ${
+                      op.status === 'PENDING' ? 'text-amber-500' : 
+                      (op.realProfit > 0 ? 'text-[#00ff88]' : op.realProfit < 0 ? 'text-red-500' : 'text-[#e5e2e1]/40')
+                    }`}>
+                      {op.status === 'PENDING'
+                        ? (op.expectedProfit != null ? `+ R$ ${formatCurrency(op.expectedProfit)}` : '—')
+                        : (op.realProfit != null ? `${op.realProfit >= 0 ? '+ ' : '- '} R$ ${formatCurrency(Math.abs(op.realProfit))}` : '—')}
+                    </span>
+                  </div>
+
+                  <div className="col-span-2 text-center">
+                    <span className="text-[10px] font-black text-white/10 uppercase tracking-tighter tabular-nums truncate block">
+                      #{op.id.substring(0, 8)}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </section>
 
