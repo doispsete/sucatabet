@@ -42,12 +42,9 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
     const now = new Date();
     const start = startTime ? new Date(startTime) : null;
     const hoursUntilStart = start ? (start.getTime() - now.getTime()) / (1000 * 60 * 60) : null;
-    const isSoon = hoursUntilStart !== null && hoursUntilStart <= 3 && hoursUntilStart > 0;
+    const isSoon = hoursUntilStart !== null && hoursUntilStart <= 2 && hoursUntilStart > 0;
     
-    const badgeLabel = isSoon ? 'EM BREVE' : 'PROX';
-    const badgeColor = isSoon 
-      ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' 
-      : 'text-primary bg-primary/10 border-primary/20';
+    const badgeColor = 'text-amber-400 bg-amber-400/10 border-amber-400/20';
 
     const dateStr = start && !isNaN(start.getTime()) 
       ? new Intl.DateTimeFormat('pt-BR', { 
@@ -59,6 +56,43 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
           hour12: false 
         }).format(start)
       : '--/-- --:--';
+
+    if (!isSoon) {
+      return (
+        <div className={`flex items-center gap-4 text-xs font-black text-[#b9cbbc] flex-1 ${className}`}>
+          <div className="flex -space-x-1.5 shrink-0">
+            <img 
+              src={homeLogo || ''} 
+              referrerPolicy="no-referrer"
+              onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
+              className="w-6 h-6 rounded-full border-2 border-black bg-black shadow-lg" 
+              alt="Casa"
+            />
+            <img 
+              src={awayLogo || ''} 
+              referrerPolicy="no-referrer"
+              onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
+              className="w-6 h-6 rounded-full border-2 border-black bg-black shadow-lg" 
+              alt="Visitante"
+            />
+          </div>
+          <div className="flex flex-col min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-white font-black italic text-sm tracking-tight truncate">
+                  {homeName} x {awayName}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 opacity-50 text-[9px] font-black uppercase tracking-[0.2em]">
+                <span>{dateStr}</span>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <span className="truncate">{operation.sofascoreLeague || 'Campeonato'}</span>
+              </div>
+          </div>
+        </div>
+      );
+    }
+
+    const badgeLabel = 'EM BREVE';
     
     return (
       <div className={`flex items-center gap-4 text-xs font-black text-[#b9cbbc] flex-1 ${className}`}>
