@@ -154,37 +154,23 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
             isBenefit: b.isBenefit
           };
         }),
-        generatedFbValue: type === OperationType.FREEBET_GEN ? parseFloat(generatedFbValue) : undefined
+        generatedFbValue: type === OperationType.FREEBET_GEN ? parseFloat(generatedFbValue) : undefined,
+        sofascoreEventId: sofascoreEventId || undefined,
+        sofascoreStatus: sofascoreData?.sofascoreStatus || undefined,
+        sofascoreHomeScore: sofascoreData?.sofascoreHomeScore || undefined,
+        sofascoreAwayScore: sofascoreData?.sofascoreAwayScore || undefined,
+        sofascoreHomeName: sofascoreData?.sofascoreHomeName || undefined,
+        sofascoreAwayName: sofascoreData?.sofascoreAwayName || undefined,
+        sofascoreLeague: sofascoreData?.sofascoreLeague || undefined,
+        sofascoreStartTime: sofascoreData?.sofascoreStartTime || undefined,
+        sofascoreHomeLogo: sofascoreData?.sofascoreHomeLogo || undefined,
+        sofascoreAwayLogo: sofascoreData?.sofascoreAwayLogo || undefined
       };
 
       if (operationToEdit) {
-        await updateOperation(operationToEdit.id, {
-            ...payload,
-            sofascoreEventId: sofascoreEventId || undefined,
-            sofascoreStatus: sofascoreData?.status || undefined,
-            sofascoreHomeScore: sofascoreData?.homeScore || undefined,
-            sofascoreAwayScore: sofascoreData?.awayScore || undefined,
-            sofascoreHomeName: sofascoreData?.homeTeam || undefined,
-            sofascoreAwayName: sofascoreData?.awayTeam || undefined,
-            sofascoreLeague: sofascoreData?.league || undefined,
-            sofascoreStartTime: sofascoreData?.sofascoreStartTime || undefined,
-            sofascoreHomeLogo: sofascoreData?.homeLogo || undefined,
-            sofascoreAwayLogo: sofascoreData?.awayLogo || undefined
-        });
+        await updateOperation(operationToEdit.id, payload);
       } else {
-        await createOperation({
-            ...payload,
-            sofascoreEventId: sofascoreEventId || undefined,
-            sofascoreStatus: sofascoreData?.status || undefined,
-            sofascoreHomeScore: sofascoreData?.homeScore || undefined,
-            sofascoreAwayScore: sofascoreData?.awayScore || undefined,
-            sofascoreHomeName: sofascoreData?.homeTeam || undefined,
-            sofascoreAwayName: sofascoreData?.awayTeam || undefined,
-            sofascoreLeague: sofascoreData?.league || undefined,
-            sofascoreStartTime: sofascoreData?.sofascoreStartTime || undefined,
-            sofascoreHomeLogo: sofascoreData?.homeLogo || undefined,
-            sofascoreAwayLogo: sofascoreData?.awayLogo || undefined
-        });
+        await createOperation(payload);
       }
 
       if (freebetId) refetchFreebets();
@@ -298,11 +284,11 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
                 <div className="glass-card p-4 rounded-2xl border border-[#03D791]/20 animate-in fade-in zoom-in-95">
                    <GameSearch 
                      onSelect={(game) => {
-                       setSofascoreEventId(game.eventId);
+                       setSofascoreEventId(game.sofascoreEventId);
                        setSofascoreData(game);
                        setShowGameSearch(false);
                        // Se a descrição estiver vazia, usa o nome do jogo
-                       if (!notes) setNotes(`${game.homeTeam} x ${game.awayTeam}`);
+                       if (!notes) setNotes(`${game.sofascoreHomeName} x ${game.sofascoreAwayName}`);
                      }} 
                    />
                    <button 

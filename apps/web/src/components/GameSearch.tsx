@@ -75,20 +75,20 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
         }).format(date);
 
         return {
-          eventId: e.id.toString(),
-          homeTeam: e.homeTeam.name,
+          sofascoreEventId: e.id.toString(),
+          sofascoreHomeName: e.homeTeam.name,
           homeTeamId: e.homeTeam.id,
-          homeLogo: `https://api.sofascore.com/api/v1/team/${e.homeTeam.id}/image`,
-          awayTeam: e.awayTeam.name,
+          sofascoreHomeLogo: `https://api.sofascore.com/api/v1/team/${e.homeTeam.id}/image`,
+          sofascoreAwayName: e.awayTeam.name,
           awayTeamId: e.awayTeam.id,
-          awayLogo: `https://api.sofascore.com/api/v1/team/${e.awayTeam.id}/image`,
-          league: e.tournament?.name || 'Futebol',
-          startTime: displayTime,
-          sofascoreStartTime: date.toISOString(), // Para o backend
+          sofascoreAwayLogo: `https://api.sofascore.com/api/v1/team/${e.awayTeam.id}/image`,
+          sofascoreLeague: e.tournament?.name || 'Futebol',
+          displayTime: displayTime,
+          sofascoreStartTime: date.toISOString(), // Para o backend e MatchIndicator
           startTimestamp: e.startTimestamp,
-          status: e.status?.type ?? 'notstarted',
-          homeScore: e.homeScore?.current ?? null,
-          awayScore: e.awayScore?.current ?? null,
+          sofascoreStatus: e.status?.type ?? 'notstarted',
+          sofascoreHomeScore: e.homeScore?.current ?? null,
+          sofascoreAwayScore: e.awayScore?.current ?? null,
         };
       });
 
@@ -141,11 +141,11 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-[10px] text-white/40 uppercase font-bold">
                   <Trophy className="w-3 h-3" />
-                  {game.league}
+                  {game.sofascoreLeague}
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-white/40 font-medium">
                   <Calendar className="w-3 h-3" />
-                  {game.startTime}
+                  {game.displayTime}
                 </div>
               </div>
               
@@ -153,22 +153,22 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
                 <div className="flex items-center gap-3 flex-1 overflow-hidden">
                   <div className="flex items-center gap-2 max-w-[45%]">
                     <img 
-                      src={game.homeLogo} 
+                      src={game.sofascoreHomeLogo} 
                       referrerPolicy="no-referrer"
                       className="w-5 h-5 object-contain" 
                       alt="" 
                     />
-                    <span className="truncate text-sm font-semibold">{game.homeTeam}</span>
+                    <span className="truncate text-sm font-semibold">{game.sofascoreHomeName}</span>
                   </div>
                   <span className="text-white/20 text-xs font-black italic">VS</span>
                   <div className="flex items-center gap-2 max-w-[45%]">
                     <img 
-                      src={game.awayLogo} 
+                      src={game.sofascoreAwayLogo} 
                       referrerPolicy="no-referrer"
                       className="w-5 h-5 object-contain" 
                       alt="" 
                     />
-                    <span className="truncate text-sm font-semibold">{game.awayTeam}</span>
+                    <span className="truncate text-sm font-semibold">{game.sofascoreAwayName}</span>
                   </div>
                 </div>
                 <div className="bg-[#00ff88]/10 text-[#00ff88] text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity font-bold">
