@@ -18,11 +18,101 @@ import { MatchIndicator } from "@/components/MatchIndicator";
 import { Operation, OperationStatus, OperationResult } from "@/lib/api/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
+function MatchDetailCard({ operation, primaryColor }: { operation: Operation; primaryColor: string }) {
+  const {
+    sofascoreStatus: status,
+    sofascoreHomeScore: homeScore,
+    sofascoreAwayScore: awayScore,
+    sofascoreHomeName: homeName,
+    sofascoreAwayName: awayName,
+    sofascoreHomeLogo: homeLogo,
+    sofascoreAwayLogo: awayLogo,
+    sofascoreLeague: league,
+    sofascoreStartTime: startTime,
+  } = operation;
+
+  const isFinished = status === 'finished';
+  const homeWin = isFinished && (homeScore || 0) > (awayScore || 0);
+  const awayWin = isFinished && (awayScore || 0) > (homeScore || 0);
+  const isDraw = isFinished && (homeScore || 0) === (awayScore || 0);
+
+  if (!isFinished) {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between opacity-40 px-2">
+          <div className="flex items-center gap-2">
+             <img src={homeLogo || ''} referrerPolicy="no-referrer" className="w-5 h-5 rounded-full bg-black shadow-sm" alt="" />
+             <span className="text-[10px] font-black uppercase tracking-widest">{homeName}</span>
+          </div>
+          <span className="text-[8px] font-black italic">VS</span>
+          <div className="flex items-center gap-2 text-right">
+             <span className="text-[10px] font-black uppercase tracking-widest">{awayName}</span>
+             <img src={awayLogo || ''} referrerPolicy="no-referrer" className="w-5 h-5 rounded-full bg-black shadow-sm" alt="" />
+          </div>
+        </div>
+        <MatchIndicator operation={operation} className="mt-1" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative p-6 glass-card rounded-[30px] border-white/5 bg-white/[0.03] overflow-hidden group">
+      {/* Badge FIM */}
+      <div className="absolute top-4 right-6">
+        <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] bg-white/5 px-2 py-1 rounded border border-white/5">FIM</span>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <p className="text-[9px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.4em] text-center italic">{league || 'PARTIDA ENCERRADA'}</p>
+        
+        <div className="flex items-center justify-between gap-4">
+          {/* Time Casa */}
+          <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
+            <img 
+              src={homeLogo || ''} 
+              referrerPolicy="no-referrer" 
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 bg-black shadow-2xl transition-all ${homeWin ? 'border-[#03D791]' : 'border-white/5 opacity-40'}`} 
+              alt={homeName || ''} 
+            />
+            <span className={`text-[10px] md:text-xs font-black uppercase tracking-widest text-center truncate w-full ${homeWin ? 'text-[#03D791]' : isDraw ? 'text-white' : 'text-white/40'}`}>
+              {homeName}
+            </span>
+          </div>
+
+          {/* Placar Central */}
+          <div className="flex items-center gap-4 shrink-0">
+             <span className={`text-4xl md:text-5xl font-black italic tracking-tighter tabular-nums ${homeWin ? 'text-[#03D791]' : 'text-white'}`}>
+                {homeScore ?? 0}
+             </span>
+             <span className="text-xl font-black text-white/10 italic">×</span>
+             <span className={`text-4xl md:text-5xl font-black italic tracking-tighter tabular-nums ${awayWin ? 'text-[#03D791]' : 'text-white'}`}>
+                {awayScore ?? 0}
+             </span>
+          </div>
+
+          {/* Time Visitante */}
+          <div className="flex flex-col items-center gap-2 flex-1 min-w-0 text-right">
+            <img 
+              src={awayLogo || ''} 
+              referrerPolicy="no-referrer" 
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 bg-black shadow-2xl transition-all ${awayWin ? 'border-[#03D791]' : 'border-white/5 opacity-40'}`} 
+              alt={awayName || ''} 
+            />
+            <span className={`text-[10px] md:text-xs font-black uppercase tracking-widest text-center truncate w-full ${awayWin ? 'text-[#03D791]' : isDraw ? 'text-white' : 'text-white/40'}`}>
+              {awayName}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface OperationDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   operation: Operation | null;
-  primaryColor?: string; // e.g. '#00d1ff' for blue theme
+  primaryColor?: string;
 }
 
 export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor = '#03D791' }: OperationDetailsModalProps) {
@@ -63,7 +153,8 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
   };
 
   const statusInfo = getStatusInfo(operation.status);
-  const totalStaked = (operation.bets || []).reduce((acc, b) => acc + Number(b.stake), 0);
+  const totalStaked = (operation.bets || []).reduce((acc: number, b: any) => acc + Number(b.stake), 0);
+
 
   const getBetCost = (bet: any) => {
     const s = Number(bet.stake);
@@ -134,16 +225,20 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
             </h4>
           </div>
         </div>
-
-        {operation.description && (
-          <div className="px-6 py-4 glass-card rounded-[25px] border-white/5 bg-white/[0.02] flex flex-col items-center gap-3">
-             <div className="space-y-1 text-center">
-                <p className="text-[9px] font-black text-[#b9cbbc]/30 uppercase tracking-[0.4em] mb-1 italic">NOTAS / DESCRIÇÃO</p>
-                <p className="text-xs font-medium text-white/70 italic">{operation.description}</p>
-             </div>
-             <MatchIndicator operation={operation} className="mt-1" />
-          </div>
-        )}
+ 
+         {(operation.sofascoreEventId || operation.description) && (
+           <div className="px-6 py-4 glass-card rounded-[25px] border-white/5 bg-white/[0.02] flex flex-col gap-6">
+              {operation.description && (
+                <div className="space-y-1 text-center">
+                  <p className="text-[10px] font-black text-[#b9cbbc]/30 uppercase tracking-[0.4em] mb-1 italic">NOTAS DA OPERAÇÃO</p>
+                  <p className="text-sm font-medium text-white/70 italic leading-relaxed px-4">{operation.description}</p>
+                </div>
+              )}
+              {operation.sofascoreEventId && (
+                <MatchDetailCard operation={operation} primaryColor={primaryColor} />
+              )}
+           </div>
+         )}
 
         {/* Bets Detailed List */}
         <div className="space-y-4">

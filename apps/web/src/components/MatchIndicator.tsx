@@ -38,17 +38,18 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
   const abbreviate = (name: string | null | undefined) => name ? name.substring(0, 3).toUpperCase() : '???';
 
   // NOT STARTED
-  if (status === 'notstarted' || (status !== 'inprogress' && status !== 'finished')) {
-    let d: Date | null = null;
-    if (startTime instanceof Date) d = startTime;
-    else if (typeof startTime === 'string') {
-        // Se for ISO string, o new Date funciona. 
-        // Se for string formatada "DD/MM, HH:mm", o new Date pode falhar.
-        // Tentamos garantir que usamos sofascoreStartTime (que é ISO)
-        d = new Date(startTime);
-    }
+  if (status === 'notstarted' || (!status && !['inprogress', 'finished'].includes(status || ''))) {
+    const now = new Date();
+    const start = startTime ? new Date(startTime) : null;
+    const hoursUntilStart = start ? (start.getTime() - now.getTime()) / (1000 * 60 * 60) : null;
+    const isSoon = hoursUntilStart !== null && hoursUntilStart <= 3 && hoursUntilStart > 0;
+    
+    const badgeLabel = isSoon ? 'EM BREVE' : 'PROX';
+    const badgeColor = isSoon 
+      ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' 
+      : 'text-primary bg-primary/10 border-primary/20';
 
-    const dateStr = d && !isNaN(d.getTime()) 
+    const dateStr = start && !isNaN(start.getTime()) 
       ? new Intl.DateTimeFormat('pt-BR', { 
           timeZone: 'America/Sao_Paulo', 
           day: '2-digit', 
@@ -56,7 +57,7 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
           hour: '2-digit', 
           minute: '2-digit', 
           hour12: false 
-        }).format(d)
+        }).format(start)
       : '--/-- --:--';
     
     return (
@@ -65,14 +66,14 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
           <img 
             src={homeLogo || ''} 
             referrerPolicy="no-referrer"
-            onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%228%22>⚽</text></svg>')}
+            onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
             className="w-6 h-6 rounded-full border-2 border-black bg-black shadow-lg" 
             alt="Casa"
           />
           <img 
             src={awayLogo || ''} 
             referrerPolicy="no-referrer"
-            onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/xml%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%228%22>⚽</text></svg>')}
+            onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
             className="w-6 h-6 rounded-full border-2 border-black bg-black shadow-lg" 
             alt="Visitante"
           />
@@ -82,8 +83,8 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
               <span className="text-white font-black italic text-sm tracking-tight truncate">
                 {homeName} x {awayName}
               </span>
-              <span className="text-[8px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 uppercase tracking-widest shrink-0">
-                PROX
+              <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border uppercase tracking-widest shrink-0 ${badgeColor}`}>
+                {badgeLabel}
               </span>
             </div>
             <div className="flex items-center gap-2 opacity-50 text-[9px] font-black uppercase tracking-[0.2em]">
