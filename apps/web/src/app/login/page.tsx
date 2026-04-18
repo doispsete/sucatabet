@@ -114,19 +114,16 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="h-16 mt-6 bg-gradient-to-r from-[#03d791] to-[#00D1FF] text-black border-none rounded-3xl text-[11px] font-black uppercase tracking-[0.3em] italic relative overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-[0_15px_40px_rgba(3,215,145,0.3)] hover:scale-[1.02] active:scale-[0.98]"
+              className="relative flex items-center justify-center h-16 mt-6 bg-gradient-to-r from-[#03d791] to-[#00D1FF] text-black border-none rounded-3xl text-[11px] font-black uppercase tracking-[0.3em] italic overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-[0_15px_40px_rgba(3,215,145,0.3)] hover:scale-[1.02] active:scale-[0.98]"
             >
-              {loading ? (
-                <div className="flex items-center justify-center gap-4">
-                  <div className="w-5 h-5 border-2 border-black border-r-transparent rounded-full animate-spin"></div>
-                  <span>AUTORIZANDO...</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-4">
-                  <span>INICIAR SESSÃO</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-500" />
-                </div>
-              )}
+               <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-30 group-hover/btn:opacity-100 group-hover/btn:translate-x-2 transition-all duration-500">
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-black border-r-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <ArrowRight className="w-5 h-5" />
+                  )}
+               </div>
+               <span className="pr-[0.3em] whitespace-nowrap">{loading ? 'AUTORIZANDO...' : 'INICIAR SESSÃO'}</span>
             </button>
 
             <div className="text-center mt-6">

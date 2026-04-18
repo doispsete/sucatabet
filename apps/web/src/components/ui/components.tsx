@@ -72,11 +72,15 @@ export function LoadingButton({ children, isLoading, className, ...props }: Load
   return (
     <button
       disabled={isLoading || props.disabled}
-      className={`relative flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100 ${className}`}
+      className={`relative flex items-center justify-center transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100 overflow-hidden ${className}`}
       {...props}
     >
-      {isLoading && <Loader2 className="w-4 h-4 animate-spin text-[#03D791]" />}
-      <span>{isLoading ? 'AGUARDE...' : children}</span>
+      {isLoading && (
+        <div className="absolute left-6 top-1/2 -translate-y-1/2">
+          <Loader2 className="w-4 h-4 animate-spin text-current" />
+        </div>
+      )}
+      <span className="w-full text-center">{isLoading ? 'AGUARDE...' : children}</span>
     </button>
   );
 }

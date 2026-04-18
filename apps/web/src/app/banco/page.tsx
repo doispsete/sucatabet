@@ -297,7 +297,7 @@ export default function BancoPage() {
         <div className="lg:col-span-8 glass-card p-6 md:p-10 rounded-[32px] md:rounded-[45px] border border-white/5 relative overflow-hidden group shadow-3xl bg-white/[0.02]">
           <div className="flex justify-between items-start mb-12 relative z-10">
             <div>
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-4 italic flex items-center gap-2 pr-[0.5em]">
+              <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-4 italic flex items-center justify-center lg:justify-start gap-2 pr-[0.5em] w-full">
                 <span className="w-8 h-[2px] bg-primary rounded-full" /> PATRIMÔNIO TOTAL
               </p>
               <h3 className="text-4xl md:text-7xl font-black text-white italic tracking-tighter leading-none mb-4">
@@ -334,7 +334,7 @@ export default function BancoPage() {
           <div className="glass-card p-8 rounded-[35px] border border-white/5 flex flex-col justify-between group relative overflow-hidden bg-red-500/5 hover:bg-red-500/10 transition-all border-l-4 border-l-red-500/30">
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-6">
-                <p className="text-[9px] font-black text-red-500/60 uppercase tracking-[0.4em] italic pr-[0.4em]">DESPESAS DO MÊS</p>
+                <p className="text-[9px] font-black text-red-500/60 uppercase tracking-[0.4em] italic pr-[0.4em] w-full text-center lg:text-left">DESPESAS DO MÊS</p>
                 <div className="p-2 bg-red-500/10 rounded-xl border border-red-500/20"><Receipt className="text-red-500 w-5 h-5" /></div>
               </div>
               <h3 className="text-4xl font-black text-white italic tracking-tighter">R$ {formatCurrency(expenseStats.total)}</h3>
@@ -356,7 +356,7 @@ export default function BancoPage() {
           <div className={`glass-card p-8 rounded-[35px] border border-white/5 flex flex-col justify-between group relative overflow-hidden ${bankSummary.monthlyNetProfit >= 0 ? 'bg-[#03D791]/5 border-l-4 border-l-[#03D791]/30' : 'bg-red-500/5 border-l-4 border-l-red-500/30'}`}>
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-6">
-                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic opacity-40 pr-[0.4em]">LUCRO LÍQUIDO</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] italic opacity-40 pr-[0.4em] w-full text-center lg:text-left">LUCRO LÍQUIDO</p>
                 <div className={`p-2 rounded-xl border ${bankSummary.monthlyNetProfit >= 0 ? 'bg-[#03D791]/10 border-[#03D791]/20' : 'bg-red-500/10 border-red-500/20'}`}>
                   <TrendingUp className={bankSummary.monthlyNetProfit >= 0 ? "text-primary w-5 h-5" : "text-red-500 w-5 h-5"} />
                 </div>
