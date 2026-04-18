@@ -509,7 +509,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
         <LoadingButton
           type="submit"
           isLoading={isMutatingOps}
-          className={`w-full ${operationToEdit ? 'bg-[#ffcc00]' : 'bg-[#03D791]'} text-[#002110] font-black uppercase tracking-[0.4em] py-5 rounded-2xl text-[11px] hover:scale-[1.02] active:scale-95 transition-all shadow-lg italic pl-[0.4em]`}
+          className={`w-full ${operationToEdit ? 'bg-[#ffcc00]' : 'bg-[#03D791]'} text-[#002110] font-black uppercase tracking-[0.4em] py-5 rounded-2xl text-[11px] hover:scale-[1.02] active:scale-95 transition-all shadow-lg italic pr-[calc(1.5rem+0.4em)]`}
         >
           {operationToEdit ? 'SALVAR ALTERAÇÕES' : 'CONFIRMAR OPERAÇÃO'}
         </LoadingButton>

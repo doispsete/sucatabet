@@ -9,6 +9,7 @@ import { GlobalErrorManager } from "@/components/GlobalErrorManager";
 
 import { StripeRefetchHandler } from "@/components/StripeRefetchHandler";
 import { PresenceHeartbeat } from "@/components/PresenceHeartbeat";
+import { AnimatedFavicon } from "@/components/AnimatedFavicon";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -51,6 +52,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <GlobalErrorManager />
           <AuthProvider>
+            <AnimatedFavicon />
             <StripeRefetchHandler />
             <PresenceHeartbeat />
             <ModalProvider>
