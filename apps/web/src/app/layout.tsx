@@ -44,6 +44,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br" className="dark">
       <head>
+        <meta name="referrer" content="no-referrer" />
         {STITCH_RESOURCES}
       </head>
       <body className={`${inter.className} bg-black text-[#e5e2e1] min-h-screen selection:bg-[#00ff88]/30 selection:text-[#00ff88] overflow-x-hidden transition-colors`}>
