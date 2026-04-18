@@ -390,28 +390,38 @@ export function useSofascorePolling(operations: any[]) {
         const event = data.event;
         console.log(`[SofascorePolling] Dados recebidos para ${eventId}: ${event.homeTeam?.name} ${event.homeScore?.current}x${event.awayScore?.current} ${event.awayTeam?.name}`);
 
-        // Mapeamento conforme especificação V15/V21/V22
+        // Mapeamento conforme especificação V15/V21/V22/V23
         const getSimplifiedPeriod = (status: any, league: string) => {
-          if (!status) return null;
+          if (!status) return { period: null, minute: null };
           const leagueLower = league?.toLowerCase() || '';
           const isBasketball = leagueLower.includes('nba') || leagueLower.includes('basquete') || leagueLower.includes('nbb');
           
           const p = status.period;
           const description = status.description || '';
+          const display = status.display || '';
           
-          if (p === 5 || description.toLowerCase().includes('pen')) return "PEN";
-          
-          // Caso específico para basquete (Q1, Q2...)
-          if (isBasketball && p >= 1 && p <= 4) return `Q${p}`;
-          
-          // Caso padrão para futebol (1T, 2T)
-          if (p === 1) return "1T";
-          if (p === 2) return "2T";
-          if (p === 3) return "ET";
-          if (p === 4) return "AP";
-          
-          return description || null;
+          // Extração de minuto: procura padrão "digit'" no display (ex: "22'")
+          let minute = status.minute || null;
+          if (!minute && /\d+'/.test(display)) {
+             minute = display.match(/\d+'/)?.[0] || null;
+          } else if (!minute && display && !description.includes(display)) {
+             // Se display for algo curto e não for redundante com a descrição
+             minute = display;
+          }
+
+          let periodLabel = null;
+          if (p === 5 || description.toLowerCase().includes('pen')) periodLabel = "PEN";
+          else if (isBasketball && p >= 1 && p <= 4) periodLabel = `Q${p}`;
+          else if (p === 1) periodLabel = "1T";
+          else if (p === 2) periodLabel = "2T";
+          else if (p === 3) periodLabel = "ET";
+          else if (p === 4) periodLabel = "AP";
+          else periodLabel = description;
+
+          return { periodLabel, minute };
         };
+
+        const { periodLabel, minute } = getSimplifiedPeriod(event.status, event.tournament?.name || '');
 
         const mappedData = {
           eventId: String(event.id),
@@ -420,8 +430,8 @@ export function useSofascorePolling(operations: any[]) {
           awayTeam: event.awayTeam?.name,
           homeScore: event.homeScore?.current ?? null,
           awayScore: event.awayScore?.current ?? null,
-          period: getSimplifiedPeriod(event.status, event.tournament?.name || ''),
-          minute: event.status?.display || event.status?.minute || null,
+          period: periodLabel,
+          minute: minute,
           homeLogo: `https://api.sofascore.com/api/v1/team/${event.homeTeam?.id}/image`,
           awayLogo: `https://api.sofascore.com/api/v1/team/${event.awayTeam?.id}/image`,
           startTime: new Date(event.startTimestamp * 1000).toISOString()
