@@ -63,7 +63,7 @@ export function useFetch<T>(
   // Global refetch event listener
   useEffect(() => {
     const handleGlobalRefetch = () => {
-      fetch(true);
+      fetch(false); // Silent fetch
     };
     window.addEventListener('refetch-data', handleGlobalRefetch);
     return () => window.removeEventListener('refetch-data', handleGlobalRefetch);

@@ -390,14 +390,27 @@ export function useSofascorePolling(operations: any[]) {
         const event = data.event;
         console.log(`[SofascorePolling] Dados recebidos para ${eventId}: ${event.homeTeam?.name} ${event.homeScore?.current}x${event.awayScore?.current} ${event.awayTeam?.name}`);
 
-        // Mapeamento conforme especificação V15/V21
-        const mapearPeriod = (p: number, league: string) => {
-          const isBasketball = league?.toLowerCase().includes('nba') || league?.toLowerCase().includes('basquete') || league?.toLowerCase().includes('nbb');
-          const prefix = isBasketball ? 'Q' : 'T';
-
-          if (p >= 1 && p <= 4) return `${p}${prefix}`;
-          if (p === 5) return "PEN";
-          return null;
+        // Mapeamento conforme especificação V15/V21/V22
+        const getSimplifiedPeriod = (status: any, league: string) => {
+          if (!status) return null;
+          const leagueLower = league?.toLowerCase() || '';
+          const isBasketball = leagueLower.includes('nba') || leagueLower.includes('basquete') || leagueLower.includes('nbb');
+          
+          const p = status.period;
+          const description = status.description || '';
+          
+          if (p === 5 || description.toLowerCase().includes('pen')) return "PEN";
+          
+          // Caso específico para basquete (Q1, Q2...)
+          if (isBasketball && p >= 1 && p <= 4) return `Q${p}`;
+          
+          // Caso padrão para futebol (1T, 2T)
+          if (p === 1) return "1T";
+          if (p === 2) return "2T";
+          if (p === 3) return "ET";
+          if (p === 4) return "AP";
+          
+          return description || null;
         };
 
         const mappedData = {
@@ -407,8 +420,8 @@ export function useSofascorePolling(operations: any[]) {
           awayTeam: event.awayTeam?.name,
           homeScore: event.homeScore?.current ?? null,
           awayScore: event.awayScore?.current ?? null,
-          period: mapearPeriod(event.status?.period, event.tournament?.name || ''),
-          minute: event.status?.minute ?? null,
+          period: getSimplifiedPeriod(event.status, event.tournament?.name || ''),
+          minute: event.status?.display || event.status?.minute || null,
           homeLogo: `https://api.sofascore.com/api/v1/team/${event.homeTeam?.id}/image`,
           awayLogo: `https://api.sofascore.com/api/v1/team/${event.awayTeam?.id}/image`,
           startTime: new Date(event.startTimestamp * 1000).toISOString()
