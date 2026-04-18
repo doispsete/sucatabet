@@ -271,14 +271,16 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
             <label className="text-[10px] font-black uppercase tracking-widest text-[#03D791]">Vincular Jogo (Sofascore)</label>
             <div className="flex flex-col gap-2">
               {sofascoreEventId ? (
-                <div className="glass-card p-3 rounded-xl border border-[#03D791]/30 flex items-center justify-between">
-                   <MatchIndicator operation={operationToEdit || { sofascoreEventId } as any} />
+                <div className="glass-card p-4 rounded-xl border border-[#03D791]/30 flex flex-col gap-3">
+                   <div className="w-full">
+                      <MatchIndicator operation={sofascoreData || operationToEdit || { sofascoreEventId } as any} className="w-full" />
+                   </div>
                    <button 
                     type="button" 
-                    onClick={() => { setSofascoreEventId(null); setShowGameSearch(true); }}
-                    className="text-[9px] font-bold text-red-400 hover:text-red-500 uppercase tracking-widest"
+                    onClick={() => { setSofascoreEventId(null); setSofascoreData(null); setShowGameSearch(true); }}
+                    className="text-[10px] font-black text-red-400 hover:text-red-500 uppercase tracking-[0.2em] italic self-end"
                    >
-                     Trocar
+                     Trocar Jogo
                    </button>
                 </div>
               ) : (
