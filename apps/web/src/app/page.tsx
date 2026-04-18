@@ -649,11 +649,11 @@ export default function DashboardPage() {
         <div className="hidden md:block">
           {/* Header */}
           <div className="grid grid-cols-12 px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
-            <div className="col-span-2 flex items-center justify-center">Data / Hora</div>
-            <div className="col-span-2 flex items-center justify-center">Operação</div>
-            <div className="col-span-4 flex items-center justify-center">Descrição</div>
-            <div className="col-span-2 flex items-center justify-center">Status</div>
-            <div className="col-span-2 flex items-center justify-center">Resultado</div>
+            <div className="col-span-2 flex items-center justify-start">Data / Hora</div>
+            <div className="col-span-1 flex items-center justify-center">Operação</div>
+            <div className="col-span-6 flex items-center justify-center">Descrição</div>
+            <div className="col-span-1 flex items-center justify-end">Status</div>
+            <div className="col-span-2 flex items-center justify-end">Resultado</div>
           </div>
 
           <div className="divide-y divide-white/5">
@@ -672,12 +672,12 @@ export default function DashboardPage() {
                   href={`/operacoes?id=${op.id}`}
                   className="grid grid-cols-12 px-8 py-6 items-center hover:bg-white/[0.03] transition-all group border-b border-white/[0.02] last:border-0"
                 >
-                  <div className="col-span-2 flex flex-col justify-center items-center">
+                  <div className="col-span-2 flex flex-col justify-center items-start">
                     <span className="text-sm font-black text-white italic tracking-tighter uppercase">{formatDate(op.createdAt)}</span>
                     <span className="text-[9px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-30">#{op.id.substring(0, 8)}</span>
                   </div>
                   
-                  <div className="col-span-2 flex flex-col items-center gap-1">
+                  <div className="col-span-1 flex flex-col items-center gap-1">
                     <div className="flex -space-x-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
                       {(op.bets || []).slice(0, 3).map((bet: any, i: number) => (
                         <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-black/40 flex items-center justify-center overflow-hidden">
@@ -689,25 +689,25 @@ export default function DashboardPage() {
                         </div>
                       ))}
                     </div>
-                    <span className="text-[10px] text-[#03D791] font-black uppercase tracking-[0.2em] leading-none italic text-center">
+                    <span className="text-[9px] text-[#03D791] font-black uppercase tracking-[0.2em] leading-none italic text-center">
                       {op.type.replace('_', ' ')}
                     </span>
                   </div>
 
-                  <div className="col-span-4 flex flex-col justify-center items-center gap-1">
-                    <span className="text-[11px] text-white/40 font-black italic tracking-tighter uppercase truncate max-w-full text-center">
+                  <div className="col-span-6 flex flex-col justify-center items-center gap-1">
+                    <span className="text-[12px] text-white/40 font-black italic tracking-tighter uppercase truncate max-w-full text-center mb-1">
                       {op.description || "-"}
                     </span>
-                    <MatchIndicator operation={op} className="opacity-80 scale-90" />
+                    <MatchIndicator operation={op} className="opacity-100" />
                   </div>
 
-                  <div className="col-span-2 flex justify-center items-center">
-                    <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>
+                  <div className="col-span-1 flex justify-end items-center">
+                    <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>
                       {statusLabel}
                     </span>
                   </div>
 
-                  <div className="col-span-2 flex justify-center items-center">
+                  <div className="col-span-2 flex justify-end items-center">
                     <span className={`text-base font-black italic tracking-tighter ${
                       op.status === 'PENDING' ? 'text-amber-500' : 
                       (op.realProfit > 0 ? 'text-[#00ff88]' : op.realProfit < 0 ? 'text-red-500' : 'text-[#e5e2e1]/40')

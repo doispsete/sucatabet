@@ -211,12 +211,11 @@ function OperationsContent() {
       <div className="glass-card rounded-[40px] overflow-hidden border-white/5">
         {/* Table Header - somente desktop */}
         <div className="hidden md:grid grid-cols-12 px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
-          <div className="col-span-4 lg:col-span-2">Data / Hora</div>
-          <div className="col-span-4 lg:col-span-2">Operação</div>
-          <div className="hidden lg:flex col-span-2 justify-center items-center">Descrição</div>
-          <div className="hidden lg:block col-span-2 text-center">Status</div>
-          <div className="col-span-4 lg:col-span-2 text-center">Resultado</div>
-          <div className="hidden lg:block col-span-2 text-center">ID</div>
+          <div className="col-span-2 flex items-center justify-start">Data / Hora</div>
+          <div className="col-span-1 flex items-center justify-center">Operação</div>
+          <div className="col-span-6 flex items-center justify-center">Descrição</div>
+          <div className="col-span-1 flex items-center justify-end">Status</div>
+          <div className="col-span-2 flex items-center justify-end">Resultado</div>
         </div>
 
         {/* Rows Container */}
@@ -298,11 +297,11 @@ function OperationsContent() {
 
                   {/* Desktop Row: grid original */}
                   <div className="hidden md:grid grid-cols-12 px-8 py-6 items-center group">
-                    <div className="col-span-4 lg:col-span-2 flex flex-col">
+                    <div className="col-span-2 flex flex-col justify-center items-start">
                       <span className="text-sm font-black text-white italic tracking-tighter uppercase">{formatDate(op.createdAt)}</span>
                       <span className="text-[9px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-30">{formatTime(op.createdAt)}</span>
                     </div>
-                    <div className="col-span-4 lg:col-span-2 flex flex-col gap-1">
+                    <div className="col-span-1 flex flex-col items-center gap-1">
                       <div className="flex -space-x-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
                         {op.bets?.map((bet: any, i: number) => (
                           <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-black/40 flex items-center justify-center overflow-hidden" title={bet.account?.bettingHouse?.name}>
@@ -315,42 +314,37 @@ function OperationsContent() {
                         ))}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-[#03D791] font-black uppercase tracking-[0.2em] leading-none italic">
+                        <span className="text-[9px] text-[#03D791] font-black uppercase tracking-[0.2em] leading-none italic">
                           {getOperationTypeLabel(op.type)}
                         </span>
                       </div>
                     </div>
-                    <div className="hidden lg:flex flex-col col-span-2 justify-center items-center">
-                      <span className="text-[11px] text-white/40 font-black italic tracking-tighter uppercase inline-block whitespace-nowrap" title={op.description}>
+                    <div className="col-span-6 flex flex-col justify-center items-center gap-1">
+                      <span className="text-[12px] text-white/40 font-black italic tracking-tighter uppercase truncate max-w-full text-center mb-1" title={op.description}>
                         {op.description || "-"}
                       </span>
-                      <MatchIndicator operation={op} className="mt-1" />
+                      <MatchIndicator operation={op} className="opacity-100" />
                     </div>
-                    <div className="hidden lg:block col-span-2 text-center">
-                      <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>
+                    <div className="col-span-1 flex justify-end items-center">
+                      <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>
                         {statusLabel}
                       </span>
                     </div>
-                    <div className="col-span-4 lg:col-span-2 text-center">
+                    <div className="col-span-2 flex justify-end items-center">
                       <div className="flex flex-col items-end">
                         <span className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.2em] italic mb-1 block">
                           Stake: <span className="text-white/60">R$ {formatCurrency(totalStake)}</span>
                         </span>
                         {op.status === OperationStatus.FINISHED || op.status === OperationStatus.CASHOUT ? (
-                          <span className={`text-sm font-black italic tracking-tighter ${op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]' : 'text-red-500/60'}`}>
+                          <span className={`text-base font-black italic tracking-tighter ${op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]' : 'text-red-500/60'}`}>
                             {op.realProfit != null ? `${op.realProfit >= 0 ? '+' : ''} R$ ${formatCurrency(op.realProfit)}` : 'Encerrada'}
                           </span>
                         ) : (
-                          <span className="text-sm font-black text-[#FFDD65] italic tracking-tighter">
+                          <span className="text-base font-black text-[#FFDD65] italic tracking-tighter">
                             {op.expectedProfit != null ? `${op.expectedProfit >= 0 ? '+' : ''} R$ ${formatCurrency(op.expectedProfit)}` : 'R$ 0,00'}
                           </span>
                         )}
                       </div>
-                    </div>
-                    <div className="hidden lg:block col-span-2 text-center">
-                      <span className="text-[10px] font-black text-white/20 uppercase tracking-tighter tabular-nums truncate max-w-[80px] inline-block">
-                        #{op.id.substring(0, 8)}
-                      </span>
                     </div>
                   </div>
                 </div>

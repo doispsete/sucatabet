@@ -209,17 +209,32 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
   // FINISHED
   if (status === 'finished') {
     return (
-        <div className={`flex items-center gap-1.5 text-[10px] font-bold text-white/50 ${className}`}>
-          <span className="flex items-center gap-1">
-            <span>{abbreviate(homeName)}</span>
-            <span className="bg-white/5 px-1 rounded min-w-[2.5em] text-center font-mono">
-              {homeScore ?? 0} x {awayScore ?? 0}
-            </span>
-            <span>{abbreviate(awayName)}</span>
-          </span>
-          <span className="text-[8px] opacity-40 uppercase tracking-widest">• FIM</span>
+      <div className={`flex flex-col items-center gap-1.5 ${className}`}>
+        <div className="flex items-center gap-4 bg-white/[0.03] px-4 py-2 rounded-2xl border border-white/5 opacity-80">
+          <div className="flex items-center gap-2">
+            <img src={homeLogo || ''} alt="" className="w-5 h-5 object-contain" />
+            <span className="text-[10px] font-black italic text-white uppercase tracking-tighter">{abbreviate(homeName)}</span>
+          </div>
+          
+          <div className="flex items-center gap-2 font-mono">
+            <span className="text-xl font-black italic text-white">{homeScore ?? 0}</span>
+            <span className="text-[10px] text-white/20 font-black italic">x</span>
+            <span className="text-xl font-black italic text-[#00ff88]">{awayScore ?? 0}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black italic text-white uppercase tracking-tighter">{abbreviate(awayName)}</span>
+            <img src={awayLogo || ''} alt="" className="w-5 h-5 object-contain" />
+          </div>
         </div>
-      );
+
+        <div className="flex items-center gap-2">
+          <span className="text-[8px] font-black italic text-white/30 uppercase tracking-[0.2em] bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+            FIM
+          </span>
+        </div>
+      </div>
+    );
   }
 
   return null;
