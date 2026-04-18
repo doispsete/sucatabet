@@ -13,11 +13,11 @@ export class SofascorePollingService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    // Polling migrado para o frontend com cache compartilhado
-    // Ver: sofascore.controller.ts POST /sofascore/cache/:eventId
-    this.logger.log('[Sofascore] Polling backend desativado — usando client-side polling com cache compartilhado');
+    this.logger.log('[Sofascore] Polling backend DESATIVADO — usando client-side polling');
   }
 
+  // Polling desativado conforme requisito
+  /*
   private startPolling() {
     setInterval(async () => {
       try {
@@ -27,6 +27,7 @@ export class SofascorePollingService implements OnModuleInit {
       }
     }, this.POLLING_INTERVAL);
   }
+  */
 
   private async pollActiveGames() {
     this.logger.log('[Sofascore] Iniciando polling de placares ativos...');

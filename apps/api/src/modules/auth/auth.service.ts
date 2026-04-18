@@ -87,24 +87,26 @@ export class AuthService {
       };
 
       const token = this.jwtService.sign(payload);
-      console.log(`[AUTH] Token gerado com sucesso.`);
+      console.log(`[AUTH] Token gerado com sucesso. Atualizando acesso...`);
 
-      // Atualiza último acesso ANTES do return (Requisito ═════)
-      const updatedUser = await this.prisma.user.update({
+      // 3. Atualizar ultimo acesso (Garantir persistência antes do return)
+      const now = new Date();
+      await this.prisma.user.update({
         where: { id: user.id },
-        data: { lastLoginAt: new Date() },
+        data: { lastLoginAt: now },
       });
 
+      // 4. Return final
       return {
         access_token: token,
         user: {
-          id: updatedUser.id,
-          email: updatedUser.email,
-          name: updatedUser.name,
-          role: updatedUser.role,
-          plan: updatedUser.plan,
-          avatarUrl: updatedUser.avatarUrl,
-          lastLoginAt: updatedUser.lastLoginAt,
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          plan: user.plan,
+          avatarUrl: user.avatarUrl,
+          lastLoginAt: now,
         },
       };
     } catch (error) {
