@@ -94,6 +94,14 @@ export class CreateOperationDto {
   @IsString()
   @IsOptional()
   sofascoreAwayLogo?: string;
+
+  @IsString()
+  @IsOptional()
+  sofascorePeriod?: string;
+
+  @IsString()
+  @IsOptional()
+  sofascoreMinute?: string;
 }
 
 export class UpdateOperationDto extends CreateOperationDto {}

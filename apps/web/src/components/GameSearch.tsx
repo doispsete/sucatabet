@@ -40,28 +40,49 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
         return;
       }
 
-      // PASSO 2 — Buscar próximos jogos
-      const evRes = await fetch(
-        `https://api.sofascore.com/api/v1/team/${team.id}/events/next/0`,
-        { 
-          headers: { 'Accept': 'application/json' },
-          referrerPolicy: "no-referrer"
-        }
-      );
-      
-      if (!evRes.ok) throw new Error('Events fetch failed');
-      const evData = await evRes.json();
-      const allEvents = evData.events ?? [];
+      // PASSO 2 — Buscar jogos (próximos e recentes para pegar os que estão AO VIVO)
+      const fetchOptions = { 
+        headers: { 'Accept': 'application/json' },
+        referrerPolicy: "no-referrer" as const
+      };
 
-      // PASSO 3 — Filtrar 7 dias
+      const [nextRes, lastRes] = await Promise.all([
+        fetch(`https://api.sofascore.com/api/v1/team/${team.id}/events/next/0`, fetchOptions),
+        fetch(`https://api.sofascore.com/api/v1/team/${team.id}/events/last/0`, fetchOptions)
+      ]);
+      
+      const nextData = nextRes.ok ? await nextRes.json() : { events: [] };
+      const lastData = lastRes.ok ? await lastRes.json() : { events: [] };
+      
+      const allEvents = [...(nextData.events ?? []), ...(lastData.events ?? [])];
+
+      // PASSO 3 — Filtrar (7 dias futuros OU EM ANDAMENTO)
       const now = Math.floor(Date.now() / 1000);
       const sevenDaysLater = now + 7 * 24 * 60 * 60;
-      const events = allEvents.filter(
-        (e: any) => e.startTimestamp >= now && e.startTimestamp <= sevenDaysLater
-      );
+      
+      // De-duplicar por ID
+      const uniqueEventsMap = new Map();
+      allEvents.forEach((e: any) => {
+        if (!uniqueEventsMap.has(e.id)) {
+          uniqueEventsMap.set(e.id, e);
+        }
+      });
+
+      const filteredEvents = Array.from(uniqueEventsMap.values()).filter((e: any) => {
+        const isLive = e.status?.type === 'inprogress';
+        const isUpcoming = e.startTimestamp >= now && e.startTimestamp <= sevenDaysLater;
+        return isLive || isUpcoming;
+      });
+
+      // Ordenar: primeiro os ao vivo, depois por data
+      filteredEvents.sort((a: any, b: any) => {
+        if (a.status?.type === 'inprogress' && b.status?.type !== 'inprogress') return -1;
+        if (a.status?.type !== 'inprogress' && b.status?.type === 'inprogress') return 1;
+        return a.startTimestamp - b.startTimestamp;
+      });
 
       // PASSO 4 — Formatar para exibição
-      const formatted = events.map((e: any) => {
+      const formatted = filteredEvents.map((e: any) => {
         const date = new Date(e.startTimestamp * 1000);
         
         // Exibição amigável no frontend (America/Sao_Paulo)
@@ -89,6 +110,8 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
           sofascoreStatus: e.status?.type ?? 'notstarted',
           sofascoreHomeScore: e.homeScore?.current ?? null,
           sofascoreAwayScore: e.awayScore?.current ?? null,
+          sofascorePeriod: e.status?.period || null,
+          sofascoreMinute: e.status?.minute || null,
         };
       });
 
@@ -134,7 +157,7 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
         ) : results.length > 0 ? (
           results.map((game) => (
             <button
-              key={game.eventId}
+              key={game.sofascoreEventId}
               onClick={() => onSelect(game)}
               className="group flex flex-col gap-1 p-3 rounded-lg hover:bg-white/5 text-left border border-transparent hover:border-white/10 transition-all"
             >
@@ -144,8 +167,17 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
                   {game.sofascoreLeague}
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-white/40 font-medium">
-                  <Calendar className="w-3 h-3" />
-                  {game.displayTime}
+                  {game.sofascoreStatus === 'inprogress' ? (
+                    <span className="flex items-center gap-1.5 text-[#00ff88] animate-pulse font-black uppercase">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00ff88]" />
+                      AO VIVO {game.sofascoreMinute ? `- ${game.sofascoreMinute}'` : ''}
+                    </span>
+                  ) : (
+                    <>
+                      <Calendar className="w-3 h-3" />
+                      {game.displayTime}
+                    </>
+                  )}
                 </div>
               </div>
               
@@ -160,7 +192,17 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
                     />
                     <span className="truncate text-sm font-semibold">{game.sofascoreHomeName}</span>
                   </div>
-                  <span className="text-white/20 text-xs font-black italic">VS</span>
+                  
+                  {game.sofascoreStatus === 'inprogress' ? (
+                    <div className="flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded border border-white/5 font-mono text-xs">
+                      <span className="font-bold text-white">{game.sofascoreHomeScore ?? 0}</span>
+                      <span className="text-white/20">-</span>
+                      <span className="font-bold text-[#00ff88]">{game.sofascoreAwayScore ?? 0}</span>
+                    </div>
+                  ) : (
+                    <span className="text-white/20 text-xs font-black italic">VS</span>
+                  )}
+
                   <div className="flex items-center gap-2 max-w-[45%]">
                     <img 
                       src={game.sofascoreAwayLogo} 
@@ -171,7 +213,7 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
                     <span className="truncate text-sm font-semibold">{game.sofascoreAwayName}</span>
                   </div>
                 </div>
-                <div className="bg-[#00ff88]/10 text-[#00ff88] text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+                <div className="bg-[#00ff88]/10 text-[#00ff88] text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity font-bold uppercase">
                   VINCULAR
                 </div>
               </div>

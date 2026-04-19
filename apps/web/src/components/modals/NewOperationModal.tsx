@@ -164,7 +164,9 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
         sofascoreLeague: sofascoreData?.sofascoreLeague || undefined,
         sofascoreStartTime: sofascoreData?.sofascoreStartTime || undefined,
         sofascoreHomeLogo: sofascoreData?.sofascoreHomeLogo || undefined,
-        sofascoreAwayLogo: sofascoreData?.sofascoreAwayLogo || undefined
+        sofascoreAwayLogo: sofascoreData?.sofascoreAwayLogo || undefined,
+        sofascorePeriod: sofascoreData?.sofascorePeriod || undefined,
+        sofascoreMinute: sofascoreData?.sofascoreMinute || undefined
       };
 
       if (operationToEdit) {

@@ -269,6 +269,8 @@ export class OperationsService {
           sofascoreStartTime: createOperationDto.sofascoreStartTime ? new Date(createOperationDto.sofascoreStartTime) : null,
           sofascoreHomeLogo: createOperationDto.sofascoreHomeLogo,
           sofascoreAwayLogo: createOperationDto.sofascoreAwayLogo,
+          sofascorePeriod: createOperationDto.sofascorePeriod,
+          sofascoreMinute: createOperationDto.sofascoreMinute,
         } as any,
       });
 
@@ -721,6 +723,8 @@ export class OperationsService {
             sofascoreStartTime: updateDto.sofascoreStartTime ? new Date(updateDto.sofascoreStartTime) : undefined,
             sofascoreHomeLogo: updateDto.sofascoreHomeLogo,
             sofascoreAwayLogo: updateDto.sofascoreAwayLogo,
+            sofascorePeriod: updateDto.sofascorePeriod,
+            sofascoreMinute: updateDto.sofascoreMinute,
           } as any,
         });
 
