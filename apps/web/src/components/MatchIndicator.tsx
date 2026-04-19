@@ -8,7 +8,7 @@ interface MatchIndicatorProps {
 }
 
 export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, className = "", onMatchClick }) => {
-  if (!operation.sofascoreEventId) return null;
+  if (!operation || !operation.sofascoreEventId) return null;
 
   const {
     sofascoreStatus: status,
