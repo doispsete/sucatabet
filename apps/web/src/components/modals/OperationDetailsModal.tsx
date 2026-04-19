@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Modal } from "@/components/ui/components";
 import { MatchIndicator } from "@/components/MatchIndicator";
+import { MatchDetailsModal } from "./MatchDetailsModal";
 import { Operation, OperationStatus, OperationResult } from "@/lib/api/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -116,6 +117,7 @@ interface OperationDetailsModalProps {
 }
 
 export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor = '#03D791' }: OperationDetailsModalProps) {
+  const [matchDetailsOpen, setMatchDetailsOpen] = React.useState(false);
   if (!operation) return null;
 
   const getResultLabel = (result?: OperationResult) => {
@@ -235,10 +237,23 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
                 </div>
               )}
               {operation.sofascoreEventId && (
-                <MatchDetailCard operation={operation} primaryColor={primaryColor} />
+                <div 
+                  onClick={() => setMatchDetailsOpen(true)}
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                >
+                  <MatchDetailCard operation={operation} primaryColor={primaryColor} />
+                </div>
               )}
            </div>
          )}
+
+        {operation.sofascoreEventId && (
+          <MatchDetailsModal 
+            isOpen={matchDetailsOpen}
+            onClose={() => setMatchDetailsOpen(false)}
+            operation={operation}
+          />
+        )}
 
         {/* Bets Detailed List */}
         <div className="space-y-4">

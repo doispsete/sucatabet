@@ -374,55 +374,65 @@ export function useSofascorePolling(operations: any[]) {
         const event = data?.event;
         if (!event) continue;
 
-        const getSimplifiedPeriod = (
-          event: any
-        ): { periodLabel: string | null; minute: string | null } => {
+        const getSimplifiedPeriod = (event: any): { periodLabel: string | null; minute: string | null } => {
           const status = event?.status;
           const time = event?.time;
           const currentPeriodStartTimestamp = event?.currentPeriodStartTimestamp;
+          const sport = event?.tournament?.category?.sport?.slug || '';
           const league = event?.tournament?.name?.toLowerCase() || '';
 
           if (!status) return { periodLabel: null, minute: null };
 
-          const isBasketball = ['nba', 'nbb', 'basket', 'euroleague', 'nbl']
-            .some(k => league.includes(k));
+          const isBasketball = sport === 'basketball' ||
+            ['nba','nbb','basket','euroleague','nbl','b.league','japan'].some(k => league.includes(k));
 
           const p = status.period;
           const desc = (status.description || '').toLowerCase();
+          const statusType = status.type;
 
-          // Período
+          // Jogo encerrado
+          if (statusType === 'finished' || desc.includes('ended') || desc.includes('after')) {
+            return { periodLabel: null, minute: null };
+          }
+
+          // Intervalo
+          if (desc.includes('halftime') || desc.includes('half time') || desc.includes('break')) {
+            return { periodLabel: 'Intervalo', minute: null };
+          }
+
           let periodLabel: string | null = null;
-          if (desc.includes('halftime') || desc.includes('half time')) {
-            periodLabel = 'Intervalo';
-          } else if (desc.includes('ended') || desc.includes('finished') || desc.includes('after')) {
-            periodLabel = null; // jogo encerrado, não mostra período
-          } else if (isBasketball) {
+          let minute: string | null = null;
+
+          if (isBasketball) {
+            // Período
             if (p === 1) periodLabel = 'Q1';
             else if (p === 2) periodLabel = 'Q2';
             else if (p === 3) periodLabel = 'Q3';
             else if (p === 4) periodLabel = 'Q4';
-            else if (p > 4) periodLabel = 'OT';
+            else if (p >= 5) periodLabel = `OT${p - 4 > 1 ? p - 4 : ''}`;
+
+            // Tempo no período: usar time.played (segundos jogados no período atual)
+            if (time?.played !== undefined && time?.played !== null) {
+              const totalSeconds = time.played;
+              const mins = Math.floor(totalSeconds / 60);
+              const secs = totalSeconds % 60;
+              minute = `${mins}:${String(secs).padStart(2, '0')}`;
+            }
           } else {
+            // Futebol
             if (p === 1 || desc.includes('1st half')) periodLabel = '1º';
             else if (p === 2 || desc.includes('2nd half')) periodLabel = '2º';
             else if (p === 3) periodLabel = 'Prorr.';
             else if (p === 4 || desc.includes('pen')) periodLabel = 'Pen.';
-          }
 
-          // Minuto
-          let minute: string | null = null;
-          if (
-            currentPeriodStartTimestamp &&
-            time?.initial !== undefined &&
-            time?.initial !== null &&
-            status.type === 'inprogress' &&
-            !desc.includes('halftime')
-          ) {
-            const elapsed = Math.floor(Date.now() / 1000) - currentPeriodStartTimestamp;
-            const totalMinutes = Math.floor((time.initial + elapsed) / 60);
-            if (p === 1 && totalMinutes > 45) minute = '45+';
-            else if (p === 2 && totalMinutes > 90) minute = '90+';
-            else minute = String(totalMinutes);
+            // Minuto: calcular com currentPeriodStartTimestamp
+            if (currentPeriodStartTimestamp && time?.initial !== undefined) {
+              const elapsed = Math.floor(Date.now() / 1000) - currentPeriodStartTimestamp;
+              const totalMinutes = Math.floor((time.initial + elapsed) / 60);
+              if (p === 1 && totalMinutes > 45) minute = '45+';
+              else if (p === 2 && totalMinutes > 90) minute = '90+';
+              else minute = String(totalMinutes);
+            }
           }
 
           return { periodLabel, minute };
@@ -445,6 +455,23 @@ export function useSofascorePolling(operations: any[]) {
         const opsToUpdate = activeOps.filter(op => op.sofascoreEventId === eventId);
         for (const op of opsToUpdate) {
           await services.operationsService.updateScore(op.id, mappedData);
+
+          // Se o jogo acabou E a operação ainda é pendente, notifica o popup
+          if (mappedData.status === 'finished' && op.status === 'PENDING') {
+            window.dispatchEvent(new CustomEvent('game-finished', {
+              detail: {
+                operationId: op.id,
+                operationType: op.type,
+                homeName: event.homeTeam?.name,
+                awayName: event.awayTeam?.name,
+                homeScore: mappedData.homeScore,
+                awayScore: mappedData.awayScore,
+                homeLogo: mappedData.homeLogo,
+                awayLogo: mappedData.awayLogo,
+                league: event.tournament?.name
+              }
+            }));
+          }
         }
 
         if (mappedData.status === 'finished') {

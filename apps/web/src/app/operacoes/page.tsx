@@ -14,9 +14,10 @@ import {
   Shovel
 } from "lucide-react";
 import { MatchIndicator } from "@/components/MatchIndicator";
+import { GameFinishedPopup, PendingNotification } from "@/components/GameFinishedPopup";
 import { useOperations, useDashboardSummary, useSofascorePolling } from "@/lib/hooks";
 import { SkeletonOperationRow, EmptyState, CustomSelect } from "@/components/ui/components";
-import { OperationStatus } from "@/lib/api/types";
+import { OperationStatus, OperationType } from "@/lib/api/types";
 import { NewOperationModal } from "@/components/modals/NewOperationModal";
 import { FinishOperationModal } from "@/components/modals/FinishOperationModal";
 import { OperationDetailsModal } from "@/components/modals/OperationDetailsModal";
@@ -33,6 +34,7 @@ function OperationsContent() {
   const [selectedOperation, setSelectedOperation] = useState<any>(null);
   const [isFinishModalOpen, setIsFinishModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [notifications, setNotifications] = useState<PendingNotification[]>([]);
   const { openNewOperation } = useModal();
 
   // Reset page when search changes
@@ -117,6 +119,29 @@ function OperationsContent() {
     window.addEventListener('operation-created', handler);
     return () => window.removeEventListener('operation-created', handler);
   }, [refetch, refetchSummary]);
+
+  // Handle game finished events
+  useEffect(() => {
+    const handleGameFinished = (e: any) => {
+      const notif = e.detail as PendingNotification;
+      setNotifications(prev => {
+        if (prev.some(n => n.operationId === notif.operationId)) return prev;
+        return [...prev, notif];
+      });
+    };
+
+    window.addEventListener('game-finished', handleGameFinished);
+    return () => window.removeEventListener('game-finished', handleGameFinished);
+  }, []);
+
+  const handlePopupAction = (notif: PendingNotification) => {
+    const op = opsResponse?.data?.find((o: any) => o.id === notif.operationId);
+    if (op) {
+      setSelectedOperation(op);
+      setIsFinishModalOpen(true);
+      setNotifications(prev => prev.filter(n => n.operationId !== notif.operationId));
+    }
+  };
 
   return (
     <div className="space-y-8 px-3 md:px-6">
@@ -395,6 +420,12 @@ function OperationsContent() {
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
         operation={selectedOperation}
+      />
+
+      <GameFinishedPopup 
+        notifications={notifications}
+        onClose={(id) => setNotifications(prev => prev.filter(n => n.operationId !== id))}
+        onAction={handlePopupAction}
       />
 
     </div>
