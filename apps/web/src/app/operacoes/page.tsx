@@ -14,6 +14,7 @@ import {
   Shovel
 } from "lucide-react";
 import { MatchIndicator } from "@/components/MatchIndicator";
+import { MatchDetailsModal } from "@/components/modals/MatchDetailsModal";
 import { GameFinishedPopup, PendingNotification } from "@/components/GameFinishedPopup";
 import { useOperations, useDashboardSummary, useSofascorePolling } from "@/lib/hooks";
 import { SkeletonOperationRow, EmptyState, CustomSelect } from "@/components/ui/components";
@@ -34,6 +35,7 @@ function OperationsContent() {
   const [selectedOperation, setSelectedOperation] = useState<any>(null);
   const [isFinishModalOpen, setIsFinishModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isMatchDetailsModalOpen, setIsMatchDetailsModalOpen] = useState(false);
   const [notifications, setNotifications] = useState<PendingNotification[]>([]);
   const { openNewOperation } = useModal();
 
@@ -68,6 +70,10 @@ function OperationsContent() {
         } else {
           setIsDetailsModalOpen(true);
         }
+        // Limpar o ID da URL para não reabrir no polling
+        const newParams = new URLSearchParams(window.location.search);
+        newParams.delete('id');
+        window.history.replaceState({}, '', `${window.location.pathname}?${newParams.toString()}`);
       }
     }
   }, [targetId, opsResponse]);
@@ -297,7 +303,14 @@ function OperationsContent() {
                       {op.description && (
                         <span className="text-[11px] font-semibold text-white/60 truncate w-full text-center">{op.description}</span>
                       )}
-                      <MatchIndicator operation={op} className="mt-1 justify-center" />
+                      <MatchIndicator 
+                        operation={op} 
+                        className="mt-1 justify-center" 
+                        onMatchClick={() => {
+                          setSelectedOperation(op);
+                          setIsMatchDetailsModalOpen(true);
+                        }}
+                      />
                     </div>
 
                     {/* Col direita: status → stake → resultado */}
@@ -348,7 +361,14 @@ function OperationsContent() {
                       <span className="text-[12px] text-white/40 font-black italic tracking-tighter uppercase truncate max-w-full text-center mb-1" title={op.description}>
                         {op.description || "-"}
                       </span>
-                      <MatchIndicator operation={op} className="opacity-100" />
+                      <MatchIndicator 
+                        operation={op} 
+                        className="opacity-100" 
+                        onMatchClick={() => {
+                          setSelectedOperation(op);
+                          setIsMatchDetailsModalOpen(true);
+                        }}
+                      />
                     </div>
                     <div className="col-span-1 flex justify-end items-center">
                       <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>
@@ -421,6 +441,14 @@ function OperationsContent() {
         onClose={() => setIsDetailsModalOpen(false)}
         operation={selectedOperation}
       />
+
+      {selectedOperation && (
+        <MatchDetailsModal
+          isOpen={isMatchDetailsModalOpen}
+          onClose={() => setIsMatchDetailsModalOpen(false)}
+          operation={selectedOperation}
+        />
+      )}
 
       <GameFinishedPopup 
         notifications={notifications}

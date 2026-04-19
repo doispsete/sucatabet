@@ -29,9 +29,12 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
   const homeScore = operation.sofascoreHomeScore;
   const awayScore = operation.sofascoreAwayScore;
 
-  const isBasketball = operation.sofascoreLeague?.toLowerCase().includes('nba') || 
-                       operation.sofascoreLeague?.toLowerCase().includes('nbb') ||
-                       operation.sofascoreLeague?.toLowerCase().includes('basket');
+  const [isBasketball, setIsBasketball] = useState(
+    operation.sofascoreLeague?.toLowerCase().includes('nba') || 
+    operation.sofascoreLeague?.toLowerCase().includes('nbb') ||
+    operation.sofascoreLeague?.toLowerCase().includes('basket') ||
+    operation.sofascoreLeague?.toLowerCase().includes('b1 league')
+  );
 
   const fetchData = async () => {
     if (!eventId || !isOpen) return;
@@ -50,6 +53,11 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
 
       setIncidents(incData.incidents || []);
       setEventDetails(eventData.event || null);
+      
+      // Definitively check sport
+      if (eventData.event?.tournament?.category?.sport?.slug === 'basketball') {
+        setIsBasketball(true);
+      }
     } catch (err: any) {
       console.error("[MatchDetailsModal] Error:", err);
       setError("Não foi possível carregar os detalhes da partida.");
@@ -67,7 +75,8 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
   const filteredIncidents = incidents.filter(inc => {
     const type = inc.incidentType;
     if (isBasketball) {
-      return type === 'foul' || type === 'technical';
+      // Basketball incidents vary, let's include major ones
+      return ['foul', 'technical', 'scoreChange', 'periodStart', 'periodEnd'].includes(type) || inc.description?.toLowerCase().includes('ponto');
     }
     return ['goal', 'card', 'var', 'penalty'].includes(type);
   }).reverse(); // Mais recente primeiro
@@ -83,8 +92,29 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
       case 'penalty': return <span className="text-lg">🥅</span>;
       case 'foul': return <AlertCircle className="w-4 h-4 text-amber-500" />;
       case 'technical': return <AlertCircle className="w-4 h-4 text-red-500" />;
+      case 'scoreChange': return <Trophy className="w-4 h-4 text-[#03D791]" />;
       default: return null;
     }
+  };
+
+  const calculateMaxAdvantage = () => {
+    if (!eventDetails?.homeScore || !eventDetails?.awayScore) return 0;
+    const scores = [1, 2, 3, 4, 5].map(p => ({
+      h: eventDetails.homeScore[`period${p}`] || 0,
+      a: eventDetails.awayScore[`period${p}`] || 0
+    }));
+    
+    let maxDiff = 0;
+    let currentH = 0;
+    let currentA = 0;
+    
+    scores.forEach(s => {
+      currentH += s.h;
+      currentA += s.a;
+      maxDiff = Math.max(maxDiff, Math.abs(currentH - currentA));
+    });
+    
+    return maxDiff || Math.abs((eventDetails.homeScore.current || 0) - (eventDetails.awayScore.current || 0));
   };
 
   return (
@@ -97,7 +127,7 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
       <div className="space-y-8 py-2">
         {/* Header Header */}
         <div className="flex flex-col items-center gap-6 p-8 glass-card rounded-[35px] border-white/5 bg-white/[0.02]">
-           <p className="text-[10px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.5em] italic">{operation.sofascoreLeague || 'PARTIDA'}</p>
+           <p className="text-[10px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.5em] italic">{eventDetails?.tournament?.name || operation.sofascoreLeague || 'PARTIDA'}</p>
            
            <div className="flex items-center justify-between w-full max-w-2xl">
               <div className="flex flex-col items-center gap-3 flex-1">
@@ -107,9 +137,13 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
 
               <div className="flex flex-col items-center gap-2">
                 <div className="flex items-center gap-6">
-                   <span className="text-6xl font-black italic tracking-tighter tabular-nums text-white">{operation.sofascoreHomeScore ?? 0}</span>
+                   <span className="text-6xl font-black italic tracking-tighter tabular-nums text-white">
+                     {eventDetails?.homeScore?.current ?? operation.sofascoreHomeScore ?? 0}
+                   </span>
                    <span className="text-2xl font-black text-white/5 italic">×</span>
-                   <span className="text-6xl font-black italic tracking-tighter tabular-nums text-white">{operation.sofascoreAwayScore ?? 0}</span>
+                   <span className="text-6xl font-black italic tracking-tighter tabular-nums text-white">
+                     {eventDetails?.awayScore?.current ?? operation.sofascoreAwayScore ?? 0}
+                   </span>
                 </div>
                 {operation.sofascorePeriod && (
                   <div className="flex items-center gap-2 px-3 py-1 bg-[#03D791]/10 rounded-full border border-[#03D791]/20">
@@ -152,7 +186,7 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                   <table className="w-full text-center border-collapse">
                     <thead>
                       <tr className="border-b border-white/5">
-                        <th className="py-3 text-[9px] font-black text-[#b9cbbc]/30 uppercase tracking-widest text-left">TIME</th>
+                        <th className="py-3 text-[9px] font-black text-[#b9cbbc]/30 uppercase tracking-widest text-left">QUARTOS</th>
                         <th className="py-3 text-[9px] font-black text-white/40">Q1</th>
                         <th className="py-3 text-[9px] font-black text-white/40">Q2</th>
                         <th className="py-3 text-[9px] font-black text-white/40">Q3</th>
@@ -163,7 +197,7 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                     </thead>
                     <tbody className="text-xs font-black italic tracking-tighter tabular-nums">
                       <tr className="border-b border-white/5">
-                        <td className="py-4 text-left text-white/60 truncate max-w-[80px]">{eventDetails?.homeTeam?.name}</td>
+                        <td className="py-4 text-left text-white/60 truncate max-w-[80px]">{eventDetails?.homeTeam?.name || 'Casa'}</td>
                         <td className="py-4 text-white/30">{eventDetails?.homeScore?.period1 ?? '-'}</td>
                         <td className="py-4 text-white/30">{eventDetails?.homeScore?.period2 ?? '-'}</td>
                         <td className="py-4 text-white/30">{eventDetails?.homeScore?.period3 ?? '-'}</td>
@@ -172,7 +206,7 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                         <td className="py-4 text-[#03D791] text-lg">{eventDetails?.homeScore?.current ?? 0}</td>
                       </tr>
                       <tr>
-                        <td className="py-4 text-left text-white/60 truncate max-w-[80px]">{eventDetails?.awayTeam?.name}</td>
+                        <td className="py-4 text-left text-white/60 truncate max-w-[80px]">{eventDetails?.awayTeam?.name || 'Fora'}</td>
                         <td className="py-4 text-white/30">{eventDetails?.awayScore?.period1 ?? '-'}</td>
                         <td className="py-4 text-white/30">{eventDetails?.awayScore?.period2 ?? '-'}</td>
                         <td className="py-4 text-white/30">{eventDetails?.awayScore?.period3 ?? '-'}</td>
@@ -183,19 +217,13 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                     </tbody>
                   </table>
                   
-                  {/* Maior Vantagem (Lógica simples baseada nos currentScores se disponível ou calculada) */}
+                  {/* Maior Vantagem */}
                   <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between px-2">
-                    <span className="text-[9px] font-black text-[#b9cbbc]/20 uppercase tracking-widest italic">Análise de Vantagem</span>
+                    <span className="text-[9px] font-black text-[#b9cbbc]/20 uppercase tracking-widest italic">Estatísticas</span>
                     <div className="flex items-center gap-2">
                       <Trophy className="w-3 h-3 text-[#FFDD65]" />
                       <span className="text-[10px] font-bold text-white italic">
-                         Maior Vantagem: {
-                           eventDetails?.homeScore?.current && eventDetails?.awayScore?.current
-                           ? (eventDetails.homeScore.current > eventDetails.awayScore.current ? 
-                              `+${eventDetails.homeScore.current - eventDetails.awayScore.current} para Casa` : 
-                              `+${eventDetails.awayScore.current - eventDetails.homeScore.current} para Fora`)
-                           : 'Calculando...'
-                         }
+                         Maior Vantagem: +{calculateMaxAdvantage()} pts
                       </span>
                     </div>
                   </div>
@@ -249,7 +277,9 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                              inc.incidentType === 'var' ? 'VAR' :
                              inc.incidentType === 'penalty' ? 'PÊNALTI' :
                              inc.incidentType === 'foul' ? 'FALTA' :
-                             inc.incidentType.toUpperCase()}
+                             inc.incidentType === 'technical' ? 'TÉCNICA' :
+                             inc.incidentType === 'scoreChange' ? 'PONTUOU' :
+                             inc.description || inc.incidentType.toUpperCase()}
                           </span>
                        </div>
                        <p className="text-[10px] font-bold text-[#b9cbbc]/60 truncate group-hover:text-white/80 transition-colors">
