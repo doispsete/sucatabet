@@ -111,7 +111,7 @@ export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => 
           sofascoreHomeScore: e.homeScore?.current ?? null,
           sofascoreAwayScore: e.awayScore?.current ?? null,
           sofascorePeriod: e.status?.period || null,
-          sofascoreMinute: e.status?.minute || null,
+          sofascoreMinute: (e.status?.minute !== undefined && e.status?.minute !== null) ? String(e.status.minute) : null,
         };
       });
 

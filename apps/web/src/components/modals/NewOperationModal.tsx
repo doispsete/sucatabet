@@ -246,12 +246,13 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
               placeholder="SELECIONE O TIPO"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#b9cbbc]/60">Notas / Descrição</label>
+          <div className="space-y-1.5">
+            <label className="text-[9px] font-black uppercase tracking-widest text-[#b9cbbc]/40 italic">Notas / Descrição</label>
             <Input
               type="text" value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="EX: JOGO DO FLAMENGO"
+              className="py-1.5 text-xs border-white/5 bg-white/[0.02]"
             />
           </div>
 
@@ -259,17 +260,17 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
             <label className="text-[10px] font-black uppercase tracking-widest text-[#03D791]">Vincular Jogo (Sofascore)</label>
             <div className="flex flex-col gap-2">
               {sofascoreEventId ? (
-                <div className="glass-card p-4 rounded-xl border border-[#03D791]/30 flex items-center gap-6 w-full shadow-lg bg-white/[0.03]">
-                   <div className="flex-1 min-w-0">
-                      <MatchIndicator operation={sofascoreData || operationToEdit || { sofascoreEventId } as any} className="w-full" />
+                <div className="glass-card p-6 rounded-2xl border border-[#03D791]/40 flex items-center gap-8 w-full shadow-[0_0_30px_rgba(3,215,145,0.05)] bg-white/[0.04]">
+                   <div className="flex-1 min-w-0 flex justify-center">
+                      <MatchIndicator operation={sofascoreData || operationToEdit || { sofascoreEventId } as any} className="w-full max-w-2xl" />
                    </div>
                    <button 
                     type="button" 
                     onClick={() => { setSofascoreEventId(null); setSofascoreData(null); setShowGameSearch(true); }}
-                    className="w-12 h-12 shrink-0 flex items-center justify-center bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 rounded-xl transition-all shadow-md group"
+                    className="w-14 h-14 shrink-0 flex items-center justify-center bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 rounded-2xl transition-all shadow-md group"
                     title="Trocar Jogo"
                    >
-                     <Trash2 size={20} className="group-hover:scale-110 transition-transform" />
+                     <Trash2 size={24} className="group-hover:scale-110 transition-transform" />
                    </button>
                 </div>
               ) : (
