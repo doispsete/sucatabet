@@ -66,8 +66,8 @@ export const operationsService = {
 };
 
 export const sofascoreService = {
-  getCache: (eventId: string) => api.get<any>(`/sofascore/cache/${eventId}?t=${Date.now()}`, { cache: 'no-store' }),
-  setCache: (eventId: string, data: any) => api.post<any>(`/sofascore/cache/${eventId}`, data, { cache: 'no-store' }),
+  getCache: (eventId: string) => api.get<any>(`/operations/sofascore-cache/${eventId}?t=${Date.now()}`, { cache: 'no-store' }),
+  setCache: (eventId: string, data: any) => api.post<any>(`/operations/sofascore-cache/${eventId}`, data, { cache: 'no-store' }),
 };
 
 export const freebetsService = {

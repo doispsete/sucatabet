@@ -2,11 +2,43 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, 
 import { OperationsService } from './operations.service';
 import { CreateOperationDto, CloseOperationDto } from './dto/operation.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { SofascoreService } from '../sofascore/sofascore.service';
+import { PrismaService } from '../../prisma.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('operations')
 export class OperationsController {
-  constructor(private readonly operationsService: OperationsService) {}
+  constructor(
+    private readonly operationsService: OperationsService,
+    private readonly sofascoreService: SofascoreService,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  @Get('sofascore-cache/:eventId')
+  getSofaCache(@Param('eventId') eventId: string) {
+    const cached = this.sofascoreService.getEventFromCache(eventId);
+    if (cached) return { cached: true, ...cached };
+    return { cached: false };
+  }
+
+  @Post('sofascore-cache/:eventId')
+  async setSofaCache(@Param('eventId') eventId: string, @Body() body: any) {
+    this.sofascoreService.setEventCache(eventId, body);
+    const updated = await (this.prisma.operation as any).updateMany({
+      where: { sofascoreEventId: eventId, status: 'PENDING' },
+      data: {
+        sofascoreStatus: body.status || null,
+        sofascoreHomeScore: body.homeScore ?? null,
+        sofascoreAwayScore: body.awayScore ?? null,
+        sofascorePeriod: body.period || null,
+        sofascoreMinute: (body.minute !== undefined && body.minute !== null) ? String(body.minute) : null,
+        sofascoreHomeLogo: body.homeLogo || null,
+        sofascoreAwayLogo: body.awayLogo || null,
+        sofascoreStartTime: body.startTime ? new Date(body.startTime) : null,
+      },
+    });
+    return { ok: true, updatedOperations: updated.count };
+  }
 
   @Get()
   findAll(
