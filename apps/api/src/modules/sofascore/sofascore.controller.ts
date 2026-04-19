@@ -3,8 +3,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SofascoreService } from './sofascore.service';
 import { PrismaService } from '../../prisma.service';
 
-@Controller('sofascore')
 @UseGuards(JwtAuthGuard)
+@Controller('sofascore')
 export class SofascoreController {
   constructor(
     private readonly sofascoreService: SofascoreService,
