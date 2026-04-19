@@ -350,8 +350,7 @@ export function useSofascorePolling(operations: any[]) {
   const previousStatuses = useRef<Record<string, string>>({});
 
   // Filtra operações ativas (pendentes e com ID)
-  const activeOps = (operations || []).filter(op => 
-    op && 
+  const activeOps = operations.filter(op => 
     op.status === 'PENDING' && 
     op.sofascoreEventId
   );
