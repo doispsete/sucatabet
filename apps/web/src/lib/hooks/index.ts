@@ -347,13 +347,12 @@ export function useSofascorePolling(operations: any[]) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isTabVisible = useRef(true);
   const finishedEvents = useRef(new Set<string>());
+  const previousStatuses = useRef<Record<string, string>>({});
 
   // Filtra operações ativas (pendentes e com ID)
   const activeOps = operations.filter(op => 
     op.status === 'PENDING' && 
-    op.sofascoreEventId && 
-    op.sofascoreStatus !== 'finished' &&
-    !finishedEvents.current.has(op.sofascoreEventId)
+    op.sofascoreEventId
   );
 
   const poll = async () => {
@@ -402,20 +401,32 @@ export function useSofascorePolling(operations: any[]) {
 
           let periodLabel: string | null = null;
           let minute: string | null = null;
-
           if (isBasketball) {
-            // Período
+            // Período de Basquete: Q1, Q2, Q3, Q4, OT etc.
             if (p === 1) periodLabel = 'Q1';
             else if (p === 2) periodLabel = 'Q2';
             else if (p === 3) periodLabel = 'Q3';
             else if (p === 4) periodLabel = 'Q4';
-            else if (p >= 5) periodLabel = `OT${p - 4 > 1 ? p - 4 : ''}`;
+            else if (p === 5) periodLabel = 'OT';
+            else if (p > 5) periodLabel = `OT${p - 4}`;
+            else if (desc.includes('1st quarter')) periodLabel = 'Q1';
+            else if (desc.includes('2nd quarter')) periodLabel = 'Q2';
+            else if (desc.includes('3rd quarter')) periodLabel = 'Q3';
+            else if (desc.includes('4th quarter')) periodLabel = 'Q4';
+            else if (desc.includes('overtime')) periodLabel = 'OT';
+            else periodLabel = 'LIVE';
 
-            // Tempo no período: usar time.played (segundos jogados no período atual)
+            // Tempo no período
             if (time?.played !== undefined && time?.played !== null) {
               const totalSeconds = time.played;
               const mins = Math.floor(totalSeconds / 60);
               const secs = totalSeconds % 60;
+              minute = `${mins}:${String(secs).padStart(2, '0')}`;
+            } else if (currentPeriodStartTimestamp) {
+              const elapsed = Math.floor(Date.now() / 1000) - currentPeriodStartTimestamp;
+              const totalSeconds = (time?.initial || 0) + elapsed;
+              const mins = Math.floor(totalSeconds / 60);
+              const secs = Math.max(0, Math.min(59, totalSeconds % 60));
               minute = `${mins}:${String(secs).padStart(2, '0')}`;
             }
           } else {
@@ -433,6 +444,11 @@ export function useSofascorePolling(operations: any[]) {
               else if (p === 2 && totalMinutes > 90) minute = '90+';
               else minute = String(totalMinutes);
             }
+          }
+
+          // Se ainda estiver sem minuto mas em progresso, tenta pegar da API se disponível
+          if (!minute && !periodLabel && statusType === 'inprogress') {
+            periodLabel = 'LIVE';
           }
 
           return { periodLabel, minute };
@@ -453,8 +469,26 @@ export function useSofascorePolling(operations: any[]) {
 
         // Atualiza todas as operações que usam esse eventId
         const opsToUpdate = activeOps.filter(op => op.sofascoreEventId === eventId);
+        
+        const prevStatus = previousStatuses.current[eventId];
+        previousStatuses.current[eventId] = mappedData.status;
+
         for (const op of opsToUpdate) {
           await services.operationsService.updateScore(op.id, mappedData);
+
+          // Se o jogo começou agora (notstarted -> inprogress)
+          if (mappedData.status === 'inprogress' && (prevStatus === 'notstarted' || !prevStatus)) {
+            window.dispatchEvent(new CustomEvent('game-started', {
+              detail: {
+                operationId: op.id,
+                homeName: event.homeTeam?.name,
+                awayName: event.awayTeam?.name,
+                homeLogo: mappedData.homeLogo,
+                awayLogo: mappedData.awayLogo,
+                league: event.tournament?.name
+              }
+            }));
+          }
 
           // Se o jogo acabou E a operação ainda é pendente, notifica o popup
           if (mappedData.status === 'finished' && op.status === 'PENDING') {

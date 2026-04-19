@@ -4,7 +4,6 @@ import {
   X, 
   Trophy, 
   ArrowRight, 
-  Bell, 
   ChevronLeft, 
   ChevronRight,
   Gift,
@@ -29,20 +28,31 @@ interface GameFinishedPopupProps {
   notifications: PendingNotification[];
   onClose: (id: string) => void;
   onAction: (notif: PendingNotification) => void;
+  disabled?: boolean;
 }
 
-export function GameFinishedPopup({ notifications, onClose, onAction }: GameFinishedPopupProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+export function GameFinishedPopup({ notifications, onClose, onAction, disabled }: GameFinishedPopupProps) {
+  const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    if (currentIndex >= notifications.length && notifications.length > 0) {
-      setCurrentIndex(notifications.length - 1);
+    if (typeof window !== 'undefined') {
+      setIsOnline(navigator.onLine);
+      const handleOnline = () => setIsOnline(true);
+      const handleOffline = () => setIsOnline(false);
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+      return () => {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      };
     }
-  }, [notifications.length, currentIndex]);
+  }, []);
 
-  if (notifications.length === 0) return null;
+  // Regras de exibição: Online + Não desativado por outros modais
+  if (notifications.length === 0 || !isOnline || disabled) return null;
 
-  const current = notifications[currentIndex];
+  // Sempre mostramos a primeira notificação (Fila Sequencial)
+  const current = notifications[0];
 
   const getActionLabels = (type: OperationType) => {
     switch (type) {
@@ -73,14 +83,18 @@ export function GameFinishedPopup({ notifications, onClose, onAction }: GameFini
   const labels = getActionLabels(current.operationType);
 
   return (
-    <div className="fixed bottom-8 right-8 z-[9999] w-full max-w-[380px] animate-in slide-in-from-right-8 duration-500">
-      <div className="relative glass-card rounded-[35px] border-2 border-[#00ff88]/30 bg-[#111]/90 backdrop-blur-xl shadow-[0_30px_60px_rgba(0,0,0,0.8),0_0_20px_rgba(0,255,136,0.1)] p-6 overflow-hidden">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
+      
+      {/* Modal Content */}
+      <div className="relative w-full max-w-[450px] glass-card rounded-[45px] border-2 border-[#00ff88]/40 bg-[#0a0a0b]/95 shadow-[0_50px_100px_rgba(0,0,0,0.9),0_0_40px_rgba(0,255,136,0.15)] p-10 overflow-hidden transform scale-100 animate-in zoom-in-95 duration-500">
         
-        {/* Progress Dots/Counter */}
+        {/* Progress Counter */}
         {notifications.length > 1 && (
-          <div className="absolute top-4 right-14 flex items-center gap-2">
-            <span className="text-[8px] font-black text-[#00ff88] bg-[#00ff88]/10 px-2 py-0.5 rounded-full border border-[#00ff88]/20 tracking-widest">
-              {currentIndex + 1} / {notifications.length}
+          <div className="absolute top-6 right-20 flex items-center gap-2">
+            <span className="text-[10px] font-black text-[#00ff88] bg-[#00ff88]/10 px-3 py-1 rounded-full border border-[#00ff88]/20 tracking-[0.2em] italic">
+              1 / {notifications.length}
             </span>
           </div>
         )}
@@ -88,89 +102,69 @@ export function GameFinishedPopup({ notifications, onClose, onAction }: GameFini
         {/* Close Button */}
         <button 
           onClick={() => onClose(current.operationId)}
-          className="absolute top-4 right-6 p-2 text-white/20 hover:text-white hover:bg-white/5 rounded-full transition-all"
+          className="absolute top-6 right-8 p-3 text-white/20 hover:text-white hover:bg-white/5 rounded-full transition-all"
         >
-          <X size={16} />
+          <X size={20} />
         </button>
 
-        <div className="flex flex-col gap-5">
-           <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#00ff88]/10 flex items-center justify-center border border-[#00ff88]/20 shadow-[0_0_15px_rgba(0,255,136,0.2)]">
-                {current.operationType === OperationType.FREEBET_GEN ? <Gift size={16} className="text-[#00ff88]" /> : 
-                 current.operationType === OperationType.EXTRACAO ? <DollarSign size={16} className="text-[#00ff88]" /> : 
-                 <Trophy size={16} className="text-[#00ff88]" />}
+        <div className="flex flex-col gap-8">
+           <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#00ff88]/10 flex items-center justify-center border border-[#00ff88]/20 shadow-[0_0_20px_rgba(0,255,136,0.3)] animate-pulse">
+                {current.operationType === OperationType.FREEBET_GEN ? <Gift size={24} className="text-[#00ff88]" /> : 
+                 current.operationType === OperationType.EXTRACAO ? <DollarSign size={24} className="text-[#00ff88]" /> : 
+                 <Trophy size={24} className="text-[#00ff88]" />}
               </div>
-              <h3 className="text-xs font-black uppercase tracking-widest text-white italic">{labels.title}</h3>
+              <div className="flex flex-col">
+                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white italic leading-tight">{labels.title}</h3>
+                <span className="text-[10px] font-bold text-[#00ff88]/60 uppercase tracking-widest">Ação Necessária</span>
+              </div>
            </div>
 
-           {/* Match Info */}
-           <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/5 flex flex-col items-center gap-3">
-              <p className="text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.4em] italic">{current.league}</p>
+           {/* Match Info Box */}
+           <div className="p-8 bg-black/40 rounded-[35px] border border-white/5 flex flex-col items-center gap-6 shadow-inner">
+              <p className="text-[10px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.5em] italic">{current.league}</p>
               
               <div className="flex items-center justify-between w-full">
-                 <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
-                    <img src={current.homeLogo} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-white/10 bg-black" alt="" />
-                    <span className="text-[9px] font-black uppercase text-white/40 truncate w-full text-center">{current.homeName}</span>
+                 <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
+                    <img src={current.homeLogo} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
+                    <span className="text-[11px] font-black uppercase text-white/60 truncate w-full text-center tracking-tighter">{current.homeName}</span>
                  </div>
                  
-                 <div className="flex items-center gap-3 px-4">
-                    <span className="text-2xl font-black italic tracking-tighter tabular-nums text-white">{current.homeScore}</span>
-                    <span className="text-xs font-black text-white/5">×</span>
-                    <span className="text-2xl font-black italic tracking-tighter tabular-nums text-white">{current.awayScore}</span>
+                 <div className="flex items-center gap-6 px-4">
+                    <span className="text-5xl font-black italic tracking-tighter tabular-nums text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">{current.homeScore}</span>
+                    <span className="text-2xl font-black text-white/5 italic">×</span>
+                    <span className="text-5xl font-black italic tracking-tighter tabular-nums text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">{current.awayScore}</span>
                  </div>
 
-                 <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
-                    <img src={current.awayLogo} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-white/10 bg-black" alt="" />
-                    <span className="text-[9px] font-black uppercase text-white/40 truncate w-full text-center">{current.awayName}</span>
+                 <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
+                    <img src={current.awayLogo} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
+                    <span className="text-[11px] font-black uppercase text-white/60 truncate w-full text-center tracking-tighter">{current.awayName}</span>
                  </div>
               </div>
            </div>
 
-           <p className="text-[10px] font-bold text-[#b9cbbc]/60 px-2 italic text-center">
-             {labels.question}
-           </p>
+           <div className="px-4 text-center">
+             <p className="text-sm font-black text-[#b9cbbc] italic tracking-tight leading-relaxed">
+               {labels.question}
+             </p>
+           </div>
 
-           <div className="flex flex-col gap-2">
+           <div className="flex flex-col gap-3">
               <button 
                 onClick={() => onAction(current)}
-                className="w-full bg-[#00ff88] text-[#002110] font-black uppercase tracking-widest py-3.5 rounded-xl text-[10px] hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_20px_rgba(0,255,136,0.2)] italic flex items-center justify-center gap-2 group"
+                className="w-full bg-[#00ff88] text-[#002110] font-black uppercase tracking-[0.2em] py-5 rounded-[20px] text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_40px_rgba(0,255,136,0.3)] italic flex items-center justify-center gap-3 group"
               >
                 {labels.primary}
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
               
               <button 
                 onClick={() => onClose(current.operationId)}
-                className="w-full bg-white/5 text-[#b9cbbc] font-black uppercase tracking-widest py-3 rounded-xl text-[10px] hover:bg-white/10 transition-all italic"
+                className="w-full bg-white/5 text-[#b9cbbc] font-black uppercase tracking-[0.2em] py-4 rounded-[18px] text-[10px] hover:bg-white/10 transition-all italic"
               >
                 {labels.secondary}
               </button>
            </div>
-
-           {/* Navigation */}
-           {notifications.length > 1 && (
-             <div className="flex items-center justify-center gap-4 pt-2 border-t border-white/5">
-                <button 
-                  disabled={currentIndex === 0}
-                  onClick={() => setCurrentIndex(prev => prev - 1)}
-                  className="p-1.5 text-white/20 hover:text-[#00ff88] disabled:opacity-0 transition-all"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <div className="flex gap-1.5">
-                   {notifications.map((_, i) => (
-                      <div key={i} className={`w-1 h-1 rounded-full transition-all ${i === currentIndex ? 'w-4 bg-[#00ff88]' : 'bg-white/10'}`} />
-                   ))}
-                </div>
-                <button 
-                  disabled={currentIndex === notifications.length - 1}
-                  onClick={() => setCurrentIndex(prev => prev + 1)}
-                  className="p-1.5 text-white/20 hover:text-[#00ff88] disabled:opacity-0 transition-all"
-                >
-                  <ChevronRight size={18} />
-                </button>
-             </div>
-           )}
         </div>
       </div>
     </div>

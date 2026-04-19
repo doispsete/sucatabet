@@ -22,6 +22,7 @@ import { OperationStatus, OperationType } from "@/lib/api/types";
 import { NewOperationModal } from "@/components/modals/NewOperationModal";
 import { FinishOperationModal } from "@/components/modals/FinishOperationModal";
 import { OperationDetailsModal } from "@/components/modals/OperationDetailsModal";
+import { GameStartOverlay } from "@/components/GameStartOverlay";
 import { useModal } from "@/lib/context/modal-context";
 import { formatCurrency, formatDate, formatTime } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
@@ -241,12 +242,12 @@ function OperationsContent() {
       {/* Operations List Container */}
       <div className="glass-card rounded-[40px] overflow-hidden border-white/5">
         {/* Table Header - somente desktop */}
-        <div className="hidden md:grid grid-cols-12 px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
+        <div className="hidden md:grid grid-cols-12 px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
           <div className="col-span-2 flex items-center justify-start">Data / Hora</div>
-          <div className="col-span-1 flex items-center justify-center">Operação</div>
-          <div className="col-span-6 flex items-center justify-center">Descrição</div>
-          <div className="col-span-1 flex items-center justify-end">Status</div>
-          <div className="col-span-2 flex items-center justify-end">Resultado</div>
+          <div className="col-span-2 flex items-center justify-center">Operação</div>
+          <div className="col-span-5 flex items-center justify-center">Descrição do Jogo</div>
+          <div className="col-span-1 flex items-center justify-center">Status</div>
+          <div className="col-span-2 flex items-center justify-end">Resultado Financeiro</div>
         </div>
 
         {/* Rows Container */}
@@ -266,7 +267,6 @@ function OperationsContent() {
           ) : (
             (Array.isArray(opsResponse?.data) ? opsResponse.data : []).map((op) => {
               const totalStake = op.bets?.reduce((sum: number, bet: any) => sum + Number(bet.cost || 0), 0) || 0;
-              const profitColor = op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]' : op.realProfit != null && op.realProfit < 0 ? 'text-red-400' : 'text-[#FFDD65]';
               const statusStyle = getStatusStyle(op.status as OperationStatus);
               const statusLabel = getStatusLabel(op.status as OperationStatus);
 
@@ -283,111 +283,140 @@ function OperationsContent() {
                   }}
                   className="cursor-pointer hover:bg-white/[0.02] transition-all group"
                 >
-                  {/* Mobile Card */}
-                  <div className="md:hidden grid grid-cols-[auto_1fr_auto] gap-x-3 px-4 py-4 border-b border-white/5 items-center">
-                    {/* Col esquerda: data */}
-                    <div className="flex flex-col items-center min-w-[44px]">
-                      <span className="text-[9px] text-white/35 font-black tabular-nums text-center leading-snug">{formatDate(op.createdAt)}</span>
+                  {/* Mobile Structured Card */}
+                  <div className="md:hidden p-5 border-b border-white/5 space-y-4">
+                    {/* Header: Date + Status */}
+                    <div className="flex items-center justify-between">
+                       <div className="flex items-center gap-2">
+                          <Clock size={12} className="text-white/20" />
+                          <span className="text-[10px] font-black text-white/40 tabular-nums uppercase">{formatDate(op.createdAt)} • {formatTime(op.createdAt)}</span>
+                       </div>
+                       <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-lg border-2 tracking-widest ${statusStyle}`}>{statusLabel}</span>
                     </div>
 
-                    {/* Col centro: favicons + tipo + descrição */}
-                    <div className="flex flex-col items-center gap-1 min-w-0 px-1">
-                      <div className="flex -space-x-1.5">
-                        {op.bets?.slice(0, 4).map((bet: any, i: number) => (
-                          <div key={i} className="w-5 h-5 rounded-full border border-black/60 bg-black/60 flex items-center justify-center overflow-hidden" title={bet.account?.bettingHouse?.name}>
-                            <img src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`} alt="" className="w-3 h-3 object-contain" />
+                    {/* Body: Match Indicator (Full Width) */}
+                    <div className="bg-black/20 rounded-[25px] p-4 border border-white/5 relative overflow-hidden">
+                       <div className="absolute top-0 right-0 p-3 opacity-10">
+                          <div className="flex -space-x-1.5">
+                            {op.bets?.slice(0, 3).map((bet: any, i: number) => (
+                              <img key={i} src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`} className="w-4 h-4 rounded-full border border-black" alt="" />
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                      <span className="text-[11px] font-black text-[#03D791] italic truncate w-full text-center">{getOperationTypeLabel(op.type)}</span>
-                      {op.description && (
-                        <span className="text-[11px] font-semibold text-white/60 truncate w-full text-center">{op.description}</span>
-                      )}
-                      <MatchIndicator 
-                        operation={op} 
-                        className="mt-1 justify-center" 
-                        onMatchClick={() => {
-                          setSelectedOperation(op);
-                          setIsMatchDetailsModalOpen(true);
-                        }}
-                      />
+                       </div>
+                       
+                       <div className="flex flex-col items-center gap-2">
+                          <span className="text-xs font-black text-[#03D791] uppercase italic tracking-[0.2em] bg-[#03D791]/5 px-3 py-0.5 rounded-full border border-[#03D791]/10">
+                            {getOperationTypeLabel(op.type)}
+                          </span>
+                          <MatchIndicator 
+                            operation={op} 
+                            className="w-full justify-center scale-110 py-2" 
+                            onMatchClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedOperation(op);
+                              setIsMatchDetailsModalOpen(true);
+                            }}
+                          />
+                       </div>
                     </div>
 
-                    {/* Col direita: status → stake → resultado */}
-                    <div className="flex flex-col items-end gap-1 shrink-0">
-                      <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md border ${statusStyle}`}>{statusLabel}</span>
-                      <span className="text-[9px] text-white/30 font-black tabular-nums">R${formatCurrency(totalStake)}</span>
-                      {op.status === OperationStatus.FINISHED || op.status === OperationStatus.CASHOUT ? (
-                        <span className={`text-sm font-black italic leading-tight ${
-                          op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]'
-                          : op.realProfit != null && op.realProfit < 0 ? 'text-red-400'
-                          : 'text-white/40'
-                        }`}>
-                          {op.realProfit != null ? `${op.realProfit >= 0 ? '+' : ''}R$${formatCurrency(op.realProfit)}` : '—'}
-                        </span>
-                      ) : (
-                        <span className="text-sm font-black italic leading-tight text-[#FFDD65]">
-                          {op.expectedProfit != null ? `+R$${formatCurrency(op.expectedProfit)}` : '—'}
-                        </span>
-                      )}
+                    {/* Footer: Financial Details */}
+                    <div className="flex items-center justify-between px-2 pt-1">
+                       <div className="flex flex-col">
+                          <span className="text-[9px] font-black text-white/20 uppercase tracking-widest leading-none mb-1">STAKE TOTAL</span>
+                          <span className="text-sm font-black text-white/60 tabular-nums italic">R$ {formatCurrency(totalStake)}</span>
+                       </div>
+                       <div className="flex flex-col items-end">
+                          <span className="text-[9px] font-black text-[#03D791]/40 uppercase tracking-widest leading-none mb-1">RESULTADO</span>
+                          {op.status === OperationStatus.FINISHED || op.status === OperationStatus.CASHOUT ? (
+                            <span className={`text-xl font-black italic tracking-tighter tabular-nums ${
+                              op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]'
+                              : op.realProfit != null && op.realProfit < 0 ? 'text-red-400'
+                              : 'text-white/40'
+                            }`}>
+                              {op.realProfit != null ? `${op.realProfit >= 0 ? '+' : ''}R$${formatCurrency(op.realProfit)}` : '—'}
+                            </span>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                               <div className="w-1.5 h-1.5 rounded-full bg-[#FFDD65]/40 animate-pulse" />
+                               <span className="text-xl font-black italic tracking-tighter tabular-nums text-[#FFDD65]">
+                                 {op.expectedProfit != null ? `+R$${formatCurrency(op.expectedProfit)}` : '—'}
+                               </span>
+                            </div>
+                          )}
+                       </div>
                     </div>
                   </div>
 
-                  {/* Desktop Row: grid original */}
-                  <div className="hidden md:grid grid-cols-12 px-8 py-6 items-center group">
-                    <div className="col-span-2 flex flex-col justify-center items-start">
-                      <span className="text-sm font-black text-white italic tracking-tighter uppercase">{formatDate(op.createdAt)}</span>
-                      <span className="text-[9px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-30">{formatTime(op.createdAt)}</span>
-                    </div>
-                    <div className="col-span-1 flex flex-col items-center gap-1">
-                      <div className="flex -space-x-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                        {op.bets?.map((bet: any, i: number) => (
-                          <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-black/40 flex items-center justify-center overflow-hidden" title={bet.account?.bettingHouse?.name}>
-                            <img
-                              src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`}
-                              alt=""
-                              className="w-3.5 h-3.5 object-contain"
-                            />
-                          </div>
-                        ))}
+                  {/* Desktop Row: Re-Balanced Grid */}
+                  <div className="hidden md:grid grid-cols-12 px-8 py-3 items-center group min-h-[90px]">
+                    {/* Column 1: Date/Time */}
+                    <div className="col-span-2 flex flex-col justify-center items-start border-l-2 border-transparent group-hover:border-[#03D791] pl-4 transition-all">
+                      <span className="text-sm font-black text-white italic tracking-tighter uppercase leading-none mb-1">{formatDate(op.createdAt)}</span>
+                      <div className="flex items-center gap-1.5">
+                        <Clock size={10} className="text-[#b9cbbc]/20" />
+                        <span className="text-[10px] text-[#b9cbbc]/40 font-black uppercase tracking-widest">{formatTime(op.createdAt)}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-[#03D791] font-black uppercase tracking-[0.2em] leading-none italic">
+                    </div>
+
+                    {/* Column 2: Operação (TIPO + HOUSES) - Increased Size */}
+                    <div className="col-span-2 flex flex-col items-center justify-center gap-3">
+                        <span className="text-xs text-[#03D791] font-black uppercase tracking-[0.3em] italic bg-[#03D791]/5 px-3 py-1 rounded-lg border border-[#03D791]/10">
                           {getOperationTypeLabel(op.type)}
                         </span>
-                      </div>
+                        <div className="flex -space-x-2">
+                          {op.bets?.map((bet: any, i: number) => (
+                            <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-black flex items-center justify-center shadow-lg" title={bet.account?.bettingHouse?.name}>
+                              <img src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`} className="w-3.5 h-3.5 object-contain" alt="" />
+                            </div>
+                          ))}
+                        </div>
                     </div>
-                    <div className="col-span-6 flex flex-col justify-center items-center gap-1">
-                      <span className="text-[12px] text-white/40 font-black italic tracking-tighter uppercase truncate max-w-full text-center mb-1" title={op.description}>
-                        {op.description || "-"}
-                      </span>
-                      <MatchIndicator 
+
+                    {/* Column 3: Game Section (MatchIndicator) */}
+                    <div className="col-span-5 flex flex-col justify-center items-center">
+                       <MatchIndicator 
                         operation={op} 
-                        className="opacity-100" 
-                        onMatchClick={() => {
+                        className="scale-105 opacity-100 py-1" 
+                        onMatchClick={(e) => {
+                          e.stopPropagation();
                           setSelectedOperation(op);
                           setIsMatchDetailsModalOpen(true);
                         }}
                       />
+                      {op.description && (
+                        <span className="text-[9px] text-white/20 font-black uppercase tracking-widest truncate max-w-[90%] mt-1" title={op.description}>
+                          {op.description}
+                        </span>
+                      )}
                     </div>
-                    <div className="col-span-1 flex justify-end items-center">
-                      <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>
+
+                    {/* Column 4: Status - Increased Size */}
+                    <div className="col-span-1 flex justify-center items-center">
+                      <span className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase border-2 tracking-[0.2em] italic transition-all duration-300 ${statusStyle}`}>
                         {statusLabel}
                       </span>
                     </div>
-                    <div className="col-span-2 flex justify-end items-center">
-                      <div className="flex flex-col items-end">
-                        <span className="text-[9px] font-black text-[#b9cbbc]/40 uppercase tracking-[0.2em] italic mb-1 block">
-                          Stake: <span className="text-white/60">R$ {formatCurrency(totalStake)}</span>
-                        </span>
+
+                    {/* Column 5: Financial Results (Increased Stake) */}
+                    <div className="col-span-2 flex justify-end items-center pr-4">
+                      <div className="flex flex-col items-end gap-1.5">
+                        <div className="flex items-center gap-2 text-xs font-black text-[#b9cbbc]/40 uppercase tracking-widest italic leading-none bg-white/[0.03] px-3 py-1 rounded-md">
+                          <span className="opacity-30">STAKE:</span>
+                          <span className="text-white/60">R${formatCurrency(totalStake)}</span>
+                        </div>
+                        
                         {op.status === OperationStatus.FINISHED || op.status === OperationStatus.CASHOUT ? (
-                          <span className={`text-base font-black italic tracking-tighter ${op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]' : 'text-red-500/60'}`}>
-                            {op.realProfit != null ? `${op.realProfit >= 0 ? '+' : ''} R$ ${formatCurrency(op.realProfit)}` : 'Encerrada'}
+                          <span className={`text-2xl font-black italic tracking-tighter leading-none ${op.realProfit != null && op.realProfit > 0 ? 'text-[#03D791]' : 'text-red-500/60'}`}>
+                            {op.realProfit != null ? `${op.realProfit >= 0 ? '+' : ''} R$ ${formatCurrency(op.realProfit)}` : 'ENCERRADA'}
                           </span>
                         ) : (
-                          <span className="text-base font-black text-[#FFDD65] italic tracking-tighter">
-                            {op.expectedProfit != null ? `${op.expectedProfit >= 0 ? '+' : ''} R$ ${formatCurrency(op.expectedProfit)}` : 'R$ 0,00'}
-                          </span>
+                          <div className="flex flex-col items-end">
+                             <span className="text-2xl font-black text-[#FFDD65] italic tracking-tighter leading-none drop-shadow-[0_0_15px_rgba(255,221,101,0.2)]">
+                              {op.expectedProfit != null ? `+ R$ ${formatCurrency(op.expectedProfit)}` : 'R$ 0,00'}
+                            </span>
+                             <span className="text-[10px] font-black text-[#FFDD65]/40 uppercase tracking-widest italic animate-pulse mt-1">EM CURSO</span>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -454,6 +483,7 @@ function OperationsContent() {
         notifications={notifications}
         onClose={(id) => setNotifications(prev => prev.filter(n => n.operationId !== id))}
         onAction={handlePopupAction}
+        disabled={isFinishModalOpen || isDetailsModalOpen || isMatchDetailsModalOpen}
       />
 
     </div>

@@ -4,7 +4,7 @@ import { formatDateShort, formatTime } from '../lib/utils';
 interface MatchIndicatorProps {
   operation: any;
   className?: string;
-  onMatchClick?: () => void;
+  onMatchClick?: (e: React.MouseEvent) => void;
 }
 
 export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, className = "", onMatchClick }) => {
@@ -36,7 +36,7 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
   const homeShadow = homeWinner ? 'drop-shadow-[0_0_8px_rgba(0,255,136,0.4)]' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]';
   const awayShadow = awayWinner ? 'drop-shadow-[0_0_8px_rgba(0,255,136,0.4)]' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]';
 
-  // INLINE RENDERER (V27)
+  // INLINE RENDERER (V29)
   const renderInlineMatch = (showLiveBadge: boolean) => {
     const minuteStr = (minute !== undefined && minute !== null && minute !== "") ? String(minute) : "";
 
@@ -45,10 +45,10 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
         onClick={(e) => {
           if (onMatchClick) {
             e.stopPropagation();
-            onMatchClick();
+            onMatchClick(e);
           }
         }}
-        className={`flex items-center gap-3 bg-white/[0.04] px-4 py-2.5 rounded-2xl border border-white/10 whitespace-nowrap max-w-full shadow-lg hover:bg-white/[0.08] transition-all ${onMatchClick ? 'cursor-pointer transform hover:scale-[1.02]' : ''} ${className}`}
+        className={`flex items-center gap-3 bg-white/[0.04] px-4 py-1.5 rounded-2xl border border-white/10 whitespace-nowrap max-w-full shadow-lg hover:bg-white/[0.08] transition-all ${onMatchClick ? 'cursor-pointer transform hover:scale-[1.02]' : ''} ${className}`}
       >
         {/* Home Team */}
         <span className={`font-black text-[13px] uppercase tracking-tight truncate max-w-[120px] text-right ${homeWinner ? 'text-[#00ff88]' : 'text-white'}`}>
@@ -90,7 +90,7 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
           <div className="flex items-center gap-2 ml-2">
             {minuteStr !== "" ? (
               <span className="text-[11px] font-black italic text-[#00ff88] animate-pulse">
-                {minuteStr}{minuteStr.includes('+') ? '' : '\''}
+                {minuteStr}{(minuteStr.includes('+') || minuteStr.includes(':')) ? '' : '\''}
               </span>
             ) : null}
             {period && !minuteStr.includes(period) ? (
@@ -129,7 +129,7 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
         onClick={(e) => {
           if (onMatchClick) {
             e.stopPropagation();
-            onMatchClick();
+            onMatchClick(e);
           }
         }}
         className={`flex items-center gap-4 text-xs font-black text-[#b9cbbc] flex-1 hover:bg-white/[0.02] p-2 rounded-xl transition-all ${onMatchClick ? 'cursor-pointer' : ''} ${className}`}

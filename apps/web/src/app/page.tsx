@@ -29,6 +29,7 @@ import { BankSummaryCard } from "@/components/BankSummaryCard";
 import { DepositWithdrawModal } from "@/components/modals/DepositWithdrawModal";
 import { OnboardingModal } from "@/components/modals/OnboardingModal";
 import { PlansModal } from "@/components/modals/PlansModal";
+import { MatchDetailsModal } from "@/components/modals/MatchDetailsModal";
 
 // --- Utility functions and Sub-components moved outside to prevent re-mounting and re-evaluating ---
 
@@ -135,6 +136,8 @@ export default function DashboardPage() {
   const [goalInput, setGoalInput] = useState("");
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isPlansModalOpen, setIsPlansModalOpen] = useState(false);
+  const [isMatchDetailsModalOpen, setIsMatchDetailsModalOpen] = useState(false);
+  const [selectedMatchOp, setSelectedMatchOp] = useState<any>(null);
 
   const updateGoal = useUpdateBankGoal();
 
@@ -592,55 +595,78 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* Mobile: cards compactos com melhor distribuição */}
+        {/* Mobile: cards compactos sincronizados */}
         <div className="block md:hidden divide-y divide-white/5">
           {(Array.isArray(summary.atividadeRecente) ? summary.atividadeRecente : []).map((op: any) => {
+            const totalStake = op.bets?.reduce((sum: number, bet: any) => sum + Number(bet.cost || 0), 0) || 0;
+            const statusStyle = op.status === 'FINISHED' 
+                ? "bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20"
+                : op.status === 'CASHOUT' ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                : op.status === 'VOID' ? "bg-red-500/10 text-red-500 border-red-500/20"
+                : "bg-[#FFDD65]/10 text-[#FFDD65] border-[#FFDD65]/30";
             const statusLabel = op.status === 'FINISHED' ? 'Finalizada' : op.status === 'CASHOUT' ? 'Cashout' : op.status === 'VOID' ? 'Anulada' : 'Pendente';
-            const statusColor = op.status === 'FINISHED'
-              ? (op.realProfit > 0 ? 'text-[#00ff88] bg-[#00ff88]/10 border-[#00ff88]/20' : op.realProfit < 0 ? 'text-red-400 bg-red-500/10 border-red-500/20' : 'text-white/40 bg-white/5 border-white/10')
-              : op.status === 'CASHOUT' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-              : op.status === 'VOID' ? 'text-red-400 bg-red-500/10 border-red-500/20'
-              : 'text-[#FFDD65] bg-[#FFDD65]/10 border-[#FFDD65]/30';
-            const resultColor = op.status === 'FINISHED'
-              ? (op.realProfit > 0 ? 'text-[#00ff88]' : op.realProfit < 0 ? 'text-red-400' : 'text-white/40')
-              : 'text-[#FFDD65]';
 
             return (
-              <Link
-                key={op.id}
-                href={`/operacoes?id=${op.id}`}
-                className="grid grid-cols-[auto_1fr_auto] gap-x-3 px-4 py-4 hover:bg-white/[0.03] active:bg-white/5 transition-all items-center"
-              >
-                {/* Col esquerda: data */}
-                <div className="flex flex-col items-center min-w-[44px]">
-                  <span className="text-[9px] text-white/35 font-black tabular-nums text-center leading-snug">{formatDate(op.createdAt)}</span>
-                </div>
-
-                {/* Col centro: favicons + tipo + descrição */}
-                <div className="flex flex-col items-center gap-1 min-w-0 px-1">
-                  <div className="flex -space-x-1.5">
-                    {(op.bets || []).slice(0, 4).map((bet: any, i: number) => (
-                      <div key={i} className="w-5 h-5 rounded-full border border-black/60 bg-black/60 flex items-center justify-center overflow-hidden" title={bet.account?.bettingHouse?.name}>
-                        <img src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`} alt="" className="w-3 h-3 object-contain" />
+              <div key={op.id} className="p-5 border-b border-white/5 space-y-4">
+                  {/* Header: Date + Status */}
+                  <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Timer size={12} className="text-white/20" />
+                        <span className="text-[10px] font-black text-white/40 tabular-nums uppercase">{formatDate(op.createdAt)}</span>
                       </div>
-                    ))}
+                      <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-lg border-2 tracking-widest ${statusStyle}`}>{statusLabel}</span>
                   </div>
-                  <span className="text-[11px] font-black text-white italic truncate w-full text-center">{op.type.replace('_', ' ')}</span>
-                  {op.description && (
-                    <span className="text-[11px] font-semibold text-white/60 truncate w-full text-center">{op.description}</span>
-                  )}
-                </div>
 
-                {/* Col direita: status → resultado (amarelo se pendente) */}
-                <div className="flex flex-col items-end gap-1 shrink-0">
-                  <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md border ${statusColor}`}>{statusLabel}</span>
-                  <span className={`text-sm font-black italic leading-tight ${resultColor}`}>
-                    {op.status === 'PENDING'
-                      ? (op.expectedProfit != null ? `+R$${formatCurrency(op.expectedProfit)}` : '—')
-                      : (op.realProfit != null ? `${op.realProfit >= 0 ? '+' : '-'}R$${formatCurrency(Math.abs(op.realProfit))}` : '—')}
-                  </span>
-                </div>
-              </Link>
+                  {/* Body: Match Indicator */}
+                  <div className="bg-black/20 rounded-[25px] p-4 border border-white/5 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-3 opacity-10">
+                        <div className="flex -space-x-1.5">
+                          {(op.bets || []).slice(0, 3).map((bet: any, i: number) => (
+                            <img key={i} src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`} className="w-4 h-4 rounded-full border border-black" alt="" />
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col items-center gap-2">
+                        <span className="text-xs font-black text-[#03D791] uppercase italic tracking-[0.2em] bg-[#03D791]/5 px-3 py-0.5 rounded-full border border-[#03D791]/10">
+                          {op.type?.replace('_', ' ')}
+                        </span>
+                        <MatchIndicator 
+                          operation={op} 
+                          className="w-full justify-center scale-105" 
+                          onMatchClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedMatchOp(op);
+                            setIsMatchDetailsModalOpen(true);
+                          }}
+                        />
+                      </div>
+                  </div>
+
+                  {/* Footer: Financial Details */}
+                  <div className="flex items-center justify-between px-2 pt-1">
+                      <div className="flex flex-col">
+                        <span className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">STAKE TOTAL</span>
+                        <span className="text-sm font-black text-white/60 tabular-nums italic">R$ {formatCurrency(totalStake)}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                         <Link href={`/operacoes?id=${op.id}`} className="p-2 bg-white/5 rounded-full text-white/20 hover:text-white transition-all">
+                            <ExternalLink size={14} />
+                         </Link>
+                         <div className="flex flex-col items-end">
+                            <span className="text-[9px] font-black text-[#03D791]/40 uppercase tracking-widest mb-1">RESULTADO</span>
+                            <span className={`text-xl font-black italic tracking-tighter tabular-nums ${
+                              op.status === 'PENDING' ? 'text-[#FFDD65]' : 
+                              (op.realProfit > 0 ? 'text-[#00ff88]' : op.realProfit < 0 ? 'text-red-400' : 'text-white/40')
+                            }`}>
+                              {op.status === 'PENDING'
+                                ? (op.expectedProfit != null ? `+R$${formatCurrency(op.expectedProfit)}` : '—')
+                                : (op.realProfit != null ? `${op.realProfit >= 0 ? '+' : ''}R$${formatCurrency(op.realProfit)}` : '—')}
+                            </span>
+                         </div>
+                      </div>
+                  </div>
+              </div>
             );
           })}
         </div>
@@ -648,76 +674,83 @@ export default function DashboardPage() {
         {/* Desktop: tabela sincronidada com Operações */}
         <div className="hidden md:block">
           {/* Header */}
-          <div className="grid grid-cols-12 px-8 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
+          <div className="grid grid-cols-12 px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
             <div className="col-span-2 flex items-center justify-start">Data / Hora</div>
-            <div className="col-span-1 flex items-center justify-center">Operação</div>
-            <div className="col-span-6 flex items-center justify-center">Descrição</div>
-            <div className="col-span-1 flex items-center justify-end">Status</div>
-            <div className="col-span-2 flex items-center justify-end">Resultado</div>
+            <div className="col-span-2 flex items-center justify-center">Operação</div>
+            <div className="col-span-5 flex items-center justify-center">Jogo</div>
+            <div className="col-span-1 flex items-center justify-center">Status</div>
+            <div className="col-span-2 flex items-center justify-end">Resultado Financeiro</div>
           </div>
 
           <div className="divide-y divide-white/5">
             {(Array.isArray(summary.atividadeRecente) ? summary.atividadeRecente : []).map((op: any) => {
-              const statusStyle = op.status === 'FINISHED' 
+               const totalStake = op.bets?.reduce((sum: number, bet: any) => sum + Number(bet.cost || 0), 0) || 0;
+               const statusStyle = op.status === 'FINISHED' 
                 ? "bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20"
                 : op.status === 'CASHOUT' ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
                 : op.status === 'VOID' ? "bg-red-500/10 text-red-500 border-red-500/20"
                 : "bg-[#FFDD65]/10 text-[#FFDD65] border-[#FFDD65]/30";
-              
               const statusLabel = op.status === 'FINISHED' ? 'Finalizada' : op.status === 'CASHOUT' ? 'Cashout' : op.status === 'VOID' ? 'Anulada' : 'Pendente';
 
               return (
-                <Link
-                  key={op.id}
-                  href={`/operacoes?id=${op.id}`}
-                  className="grid grid-cols-12 px-8 py-6 items-center hover:bg-white/[0.03] transition-all group border-b border-white/[0.02] last:border-0"
-                >
-                  <div className="col-span-2 flex flex-col justify-center items-start">
-                    <span className="text-sm font-black text-white italic tracking-tighter uppercase">{formatDate(op.createdAt)}</span>
-                    <span className="text-[9px] text-[#b9cbbc] font-black uppercase tracking-widest opacity-30">#{op.id.substring(0, 8)}</span>
+                <div key={op.id} className="grid grid-cols-12 px-8 py-3 items-center hover:bg-white/[0.03] transition-all group min-h-[90px]">
+                  <div className="col-span-2 flex flex-col justify-center items-start border-l-2 border-transparent group-hover:border-[#03D791] pl-4 transition-all">
+                    <span className="text-sm font-black text-white italic tracking-tighter uppercase leading-none mb-1">{formatDate(op.createdAt)}</span>
+                    <span className="text-[10px] text-[#b9cbbc]/30 font-black uppercase tracking-widest">#{op.id.substring(0, 8)}</span>
                   </div>
                   
-                  <div className="col-span-1 flex flex-col items-center gap-1">
-                    <div className="flex -space-x-2 mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                  <div className="col-span-2 flex flex-col items-center justify-center gap-2">
+                    <span className="text-[10px] text-[#03D791] font-black uppercase tracking-[0.2em] bg-[#03D791]/5 px-2 py-0.5 rounded border border-[#03D791]/10 italic">
+                        {op.type?.replace('_', ' ')}
+                    </span>
+                    <div className="flex -space-x-1.5">
                       {(op.bets || []).slice(0, 3).map((bet: any, i: number) => (
-                        <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-black/40 flex items-center justify-center overflow-hidden">
-                          <img 
-                            src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`} 
-                            alt="" 
-                            className="w-3.5 h-3.5 object-contain" 
-                          />
+                        <div key={i} className="w-5 h-5 rounded-full border border-black bg-black flex items-center justify-center overflow-hidden">
+                          <img src={`https://www.google.com/s2/favicons?domain=${bet.account?.bettingHouse?.domain || 'bet365.com'}&sz=32`} className="w-3 h-3 object-contain" alt="" />
                         </div>
                       ))}
                     </div>
-                    <span className="text-[9px] text-[#03D791] font-black uppercase tracking-[0.2em] leading-none italic text-center">
-                      {op.type.replace('_', ' ')}
-                    </span>
                   </div>
 
-                  <div className="col-span-6 flex flex-col justify-center items-center gap-1">
-                    <span className="text-[12px] text-white/40 font-black italic tracking-tighter uppercase truncate max-w-full text-center mb-1">
-                      {op.description || "-"}
-                    </span>
-                    <MatchIndicator operation={op} className="opacity-100" />
+                  <div className="col-span-5 flex flex-col justify-center items-center">
+                    <MatchIndicator 
+                      operation={op} 
+                      className="scale-100 opacity-100" 
+                      onMatchClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedMatchOp(op);
+                        setIsMatchDetailsModalOpen(true);
+                      }}
+                    />
+                    {op.description && (
+                      <span className="text-[8px] text-white/20 font-black uppercase tracking-widest truncate max-w-[80%] mt-1">
+                        {op.description}
+                      </span>
+                    )}
                   </div>
 
-                  <div className="col-span-1 flex justify-end items-center">
-                    <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase border tracking-[0.2em] italic transition-all duration-500 ${statusStyle}`}>
+                  <div className="col-span-1 flex justify-center items-center">
+                    <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase border-2 tracking-[0.1em] italic transition-all duration-300 ${statusStyle}`}>
                       {statusLabel}
                     </span>
                   </div>
 
-                  <div className="col-span-2 flex justify-end items-center">
-                    <span className={`text-base font-black italic tracking-tighter ${
-                      op.status === 'PENDING' ? 'text-amber-500' : 
-                      (op.realProfit > 0 ? 'text-[#00ff88]' : op.realProfit < 0 ? 'text-red-500' : 'text-[#e5e2e1]/40')
-                    }`}>
-                      {op.status === 'PENDING'
-                        ? (op.expectedProfit != null ? `+ R$ ${formatCurrency(op.expectedProfit)}` : '—')
-                        : (op.realProfit != null ? `${op.realProfit >= 0 ? '+ ' : '- '} R$ ${formatCurrency(Math.abs(op.realProfit))}` : '—')}
-                    </span>
+                  <div className="col-span-2 flex justify-end items-center pr-4">
+                    <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-1.5 text-[10px] font-black text-[#b9cbbc]/30 uppercase tracking-widest italic leading-none">
+                          <span>STAKE: R${formatCurrency(totalStake)}</span>
+                        </div>
+                        <span className={`text-xl font-black italic tracking-tighter leading-none ${
+                          op.status === 'PENDING' ? 'text-amber-500' : 
+                          (op.realProfit > 0 ? 'text-[#03D791]' : op.realProfit < 0 ? 'text-red-500/60' : 'text-white/20')
+                        }`}>
+                          {op.status === 'PENDING'
+                            ? (op.expectedProfit != null ? `+ R$ ${formatCurrency(op.expectedProfit)}` : '—')
+                            : (op.realProfit != null ? `${op.realProfit >= 0 ? '+ ' : '- '} R$ ${formatCurrency(Math.abs(op.realProfit))}` : '—')}
+                        </span>
+                    </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -876,6 +909,15 @@ export default function DashboardPage() {
       <PlansModal 
         isOpen={isPlansModalOpen}
         onClose={() => setIsPlansModalOpen(false)}
+      />
+
+      <MatchDetailsModal
+        isOpen={isMatchDetailsModalOpen}
+        onClose={() => {
+          setIsMatchDetailsModalOpen(false);
+          setSelectedMatchOp(null);
+        }}
+        operation={selectedMatchOp}
       />
     </div>
   );

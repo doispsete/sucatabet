@@ -172,7 +172,7 @@ export class DashboardService {
       distribuicaoPorResultado, monthlyGoal
     };
 
-    await this.cacheManager.set(cacheKey, result, 60); // Increased to 60s
+    await this.cacheManager.set(cacheKey, result, 10); // Reduced to 10s for better real-time feel
     return result;
   }
 
@@ -335,7 +335,7 @@ export class DashboardService {
         stats: { completed: items.filter(i => i.percentual === 100).length, total: items.length }
       };
 
-      await this.cacheManager.set(cacheKey, result, 60); 
+      await this.cacheManager.set(cacheKey, result, 20); // Reduced to 20s
       return result;
     } catch (error) {
       console.error(`[DashboardService] Erro ao buscar progresso do clube para usuário ${userId}:`, error);
