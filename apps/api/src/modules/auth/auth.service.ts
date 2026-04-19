@@ -127,6 +127,13 @@ export class AuthService {
     }
 
     const payload = { sub: user.userId, email: user.email, role: user.role, plan: dbUser.plan };
+    
+    // Atualizar acesso também no refresh para persistência em sessões longas
+    await this.prisma.user.update({
+      where: { id: user.userId },
+      data: { lastLoginAt: new Date() },
+    });
+
     return {
       access_token: this.jwtService.sign(payload),
     };

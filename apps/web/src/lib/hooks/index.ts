@@ -374,22 +374,28 @@ export function useSofascorePolling(operations: any[]) {
         console.log(`[SofascorePolling] 🚨 CACHE MISS para ${eventId}. Iniciando fetch externo via browser...`);
 
         // PASSO 2: Cache Miss -> Request ao Sofascore (via Browser do Usuário)
-        const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`, {
-          headers: { 'Accept': 'application/json' },
-          referrerPolicy: 'no-referrer'
-        });
+        let event;
+        try {
+          const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`, {
+            headers: { 'Accept': 'application/json' },
+            referrerPolicy: 'no-referrer'
+          });
 
-        if (!response.ok) {
-          console.error(`[SofascorePolling] ❌ ERRO ao buscar evento ${eventId} no Sofascore: Status ${response.status}`);
-          if (response.status === 403) console.error("[SofascorePolling] 🚫 Bloqueio SofaScore detectado (403). Tentando via proxy em breve...");
+          if (!response.ok) {
+            console.error(`[SofascorePolling] ❌ Erro ao buscar evento ${eventId} no Sofascore: Status ${response.status}`);
+            continue;
+          }
+
+          const data = await response.json();
+          event = data?.event;
+        } catch (error) {
+          console.error(`[SofascorePolling] ❌ Erro crítico no fetch direto para ${eventId}:`, error);
           continue;
         }
 
-        const data = await response.json();
-        if (!data?.event) continue;
+        if (!event) continue;
 
-        const event = data.event;
-        console.log(`[SofascorePolling] Dados recebidos para ${eventId}: ${event.homeTeam?.name} ${event.homeScore?.current}x${event.awayScore?.current} ${event.awayTeam?.name}`);
+        console.log(`[SofascorePolling] ✅ Dados recebidos via BROWSER para ${eventId}: ${event.homeTeam?.name} ${event.homeScore?.current}x${event.awayScore?.current} ${event.awayTeam?.name}`);
 
         // Mapeamento conforme especificação V15/V21-V25 (Cálculo Manual)
         const getSimplifiedPeriod = (status: any, time: any, currentPeriodStartTimestamp: number | null, league: string) => {

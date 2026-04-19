@@ -28,7 +28,7 @@ export class SofascoreController {
         sofascoreHomeScore: body.homeScore ?? null,
         sofascoreAwayScore: body.awayScore ?? null,
         sofascorePeriod: body.period || null,
-        sofascoreMinute: body.minute ? Number(body.minute) : null,
+        sofascoreMinute: (body.minute !== undefined && body.minute !== null) ? String(body.minute) : null,
         sofascoreHomeLogo: body.homeLogo || null,
         sofascoreAwayLogo: body.awayLogo || null,
         sofascoreStartTime: body.startTime ? new Date(body.startTime) : null,

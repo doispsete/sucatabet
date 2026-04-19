@@ -57,6 +57,7 @@ export class UsersService {
         plan: true,
         avatarUrl: true,
         approvedAt: true,
+        lastLoginAt: true,
       },
     });
   }

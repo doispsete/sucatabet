@@ -151,7 +151,7 @@ model Operation {
   sofascoreHomeLogo  String?
   sofascoreAwayLogo  String?
   sofascorePeriod    String?
-  sofascoreMinute    Int?
+  sofascoreMinute    String?
 
   @@index([userId])
   @@index([status])

@@ -12,13 +12,13 @@ export const authService = {
 export const dashboardService = {
   getSummary: (params?: { startDate?: string; endDate?: string }) => {
     const query = new URLSearchParams(Object.entries(params || {}).filter(([_, v]) => v != null).map(([k, v]) => [k, String(v)])).toString();
-    return api.get<T.DashboardSummary>(`/dashboard/summary${query ? `?${query}` : ''}`);
+    return api.get<T.DashboardSummary>(`/dashboard/summary${query ? `?${query}` : ''}`, { cache: 'no-store' });
   },
-  getClub: () => api.get<T.DashboardClub>('/dashboard/club'),
+  getClub: () => api.get<T.DashboardClub>('/dashboard/club', { cache: 'no-store' }),
 };
 
 export const usersService = {
-  list: (status?: string) => api.get<T.User[]>(`/users${status ? `?status=${status}` : ''}`),
+  list: (status?: string) => api.get<T.User[]>(`/users${status ? `?status=${status}` : ''}`, { cache: 'no-store' }),
   create: (body: unknown) => api.post<T.User>('/users', body),
   update: (id: string, body: unknown) => api.patch<T.User>(`/users/${id}`, body),
   updateStatus: (id: string, status: string) => api.patch<T.User>(`/users/${id}/status`, { status }),
@@ -54,7 +54,7 @@ export const accountsService = {
 export const operationsService = {
   list: (params?: Record<string, unknown>) => {
     const query = new URLSearchParams(Object.entries(params || {}).filter(([_, v]) => v != null).map(([k, v]) => [k, String(v)])).toString();
-    return api.get<T.PaginatedResponse<T.Operation>>(`/operations?${query}`);
+    return api.get<T.PaginatedResponse<T.Operation>>(`/operations?${query}`, { cache: 'no-store' });
   },
   create: (body: unknown) => api.post<T.Operation>('/operations', body),
   update: (id: string, body: unknown) => api.patch<T.Operation>(`/operations/${id}`, body),
