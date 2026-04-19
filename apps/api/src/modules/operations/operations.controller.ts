@@ -8,14 +8,19 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class OperationsController {
   constructor(private readonly operationsService: OperationsService) {}
   
-  @Get('debug-ping')
-  ping() {
-    return { status: 'ok', message: 'OperationsController is reachable', timestamp: new Date().toISOString() };
-  }
-
-  @Patch(':id/sync-score')
-  syncScore(@Param('id') id: string, @Request() req, @Body() data: any) {
-    return this.operationsService.updateScore(id, req.user.userId, data);
+  @Patch(':id/update-score')
+  @UseGuards(JwtAuthGuard)
+  async updateScore(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() body: any,
+  ) {
+    return this.operationsService.updateScore(
+      id,
+      req.user.userId,
+      req.user.role,
+      body,
+    );
   }
 
   @Get()

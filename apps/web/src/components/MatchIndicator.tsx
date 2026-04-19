@@ -35,10 +35,15 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
     sofascoreMinute: minute,
   } = operation;
 
+  const isFinished = status === 'finished' || 
+    (status === 'inprogress' && 
+     ['ended','after extra time','after penalties']
+     .some(s => (period || '').toLowerCase().includes(s)));
+
   const abbreviate = (name: string | null | undefined) => name ? name.substring(0, 3).toUpperCase() : '???';
 
   // NOT STARTED
-  if (status === 'notstarted' || (!status && !['inprogress', 'finished'].includes(status || ''))) {
+  if (!isFinished && (status === 'notstarted' || (!status && !['inprogress'].includes(status || '')))) {
     const now = new Date();
     const start = startTime ? new Date(startTime) : null;
     const hoursUntilStart = start ? (start.getTime() - now.getTime()) / (1000 * 60 * 60) : null;
@@ -133,22 +138,6 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
 
   // INLINE RENDERER (V27)
   const renderInlineMatch = (showLiveBadge: boolean) => {
-    // Tradução e limpeza robusta de período interna (fallback do componente)
-    const getCleanPeriod = (p: string | null | undefined) => {
-      if (!p) return null;
-      const clean = p.trim().toLowerCase();
-      if (clean.includes('1st') || clean.includes('1º')) return '1º';
-      if (clean.includes('2nd') || clean.includes('2º')) return '2º';
-      if (clean.includes('half')) {
-         if (clean.includes('1')) return '1º';
-         if (clean.includes('2')) return '2º';
-      }
-      if (clean.includes('overtime') || clean.includes('extra') || clean.includes('prorr')) return 'Prorr.';
-      if (clean.includes('penal')) return 'Pen.';
-      return p;
-    };
-
-    const displayPeriod = getCleanPeriod(period);
     const minuteStr = (minute !== undefined && minute !== null && minute !== "") ? String(minute) : "";
 
     return (
@@ -196,20 +185,20 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
                 {minuteStr}{minuteStr.includes('+') ? '' : '\''}
               </span>
             ) : null}
-            {displayPeriod && !minuteStr.includes(displayPeriod) ? (
+            {period && !minuteStr.includes(period) ? (
               <span className="text-[9px] font-black text-[#00ff88] bg-[#00ff88]/10 px-2 py-0.5 rounded border border-[#00ff88]/20 uppercase italic">
-                {displayPeriod}
+                {period}
               </span>
             ) : null}
-            {minuteStr === "" && !displayPeriod && <span className="text-[10px] font-black text-[#00ff88] animate-pulse">LIVE</span>}
+            {minuteStr === "" && !period && <span className="text-[10px] font-black text-[#00ff88] animate-pulse">LIVE</span>}
           </div>
         )}
       </div>
     );
   };
 
+  if (isFinished) return renderInlineMatch(false);
   if (status === 'inprogress') return renderInlineMatch(true);
-  if (status === 'finished') return renderInlineMatch(false);
 
   return null;
 };

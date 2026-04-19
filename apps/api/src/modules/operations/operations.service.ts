@@ -793,10 +793,11 @@ export class OperationsService {
     return updated;
   }
 
-  async updateScore(id: string, userId: string, data: any) {
-    // Verificar que a operação pertence ao usuário
+  async updateScore(id: string, userId: string, role: UserRole, data: any) {
     const op = await this.prisma.operation.findFirst({
-      where: { id, userId },
+      where: role === UserRole.ADMIN
+        ? { id }
+        : { id, userId },
     });
     if (!op) throw new NotFoundException('Operação não encontrada');
 
@@ -807,7 +808,9 @@ export class OperationsService {
         sofascoreHomeScore: data.homeScore ?? null,
         sofascoreAwayScore: data.awayScore ?? null,
         sofascorePeriod: data.period || null,
-        sofascoreMinute: data.minute ? Number(String(data.minute).replace('+','')) : null,
+        sofascoreMinute: data.minute
+          ? Number(String(data.minute).replace('+', '').replace("'", ''))
+          : null,
         sofascoreHomeLogo: data.homeLogo || null,
         sofascoreAwayLogo: data.awayLogo || null,
         sofascoreStartTime: data.startTime ? new Date(data.startTime) : null,

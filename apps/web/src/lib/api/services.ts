@@ -62,7 +62,7 @@ export const operationsService = {
   void: (id: string) => api.patch<T.Operation>(`/operations/${id}/void`),
   delete: (id: string) => api.delete<void>(`/operations/${id}`),
   linkGame: (id: string, sofascoreEventId: string) => api.patch<T.Operation>(`/operations/${id}/link-game`, { sofascoreEventId }),
-  updateScore: (id: string, body: any) => api.patch<T.Operation>(`/operations/${id}/sync-score`, body),
+  updateScore: (id: string, body: any) => api.patch<T.Operation>(`/operations/${id}/update-score`, body),
 };
 
 
