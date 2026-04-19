@@ -121,24 +121,28 @@ export function GameFinishedPopup({ notifications, onClose, onAction, disabled }
             </div>
 
             {/* Match Info Box */}
-            <div className="p-8 bg-black/40 rounded-[35px] border border-white/5 flex flex-col items-center gap-6 shadow-inner">
+            <div className="p-6 md:p-8 bg-black/40 rounded-[35px] border border-white/5 flex flex-col items-center gap-6 shadow-inner">
                <p className="text-[10px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.5em] italic">{current?.league}</p>
                
-               <div className="flex items-center justify-between w-full">
+               <div className="flex items-center justify-between w-full gap-2">
                   <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
-                     <img src={current?.homeLogo} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
-                     <span className="text-[11px] font-black uppercase text-white/60 truncate w-full text-center tracking-tighter">{current?.homeName}</span>
+                     <img src={current?.homeLogo} referrerPolicy="no-referrer" className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl shrink-0" alt="" />
+                     <span className="text-[10px] md:text-[11px] font-black uppercase text-white/60 truncate w-full text-center tracking-tighter">{current?.homeName}</span>
                   </div>
                   
-                  <div className="flex items-center gap-6 px-4">
-                     <span className="text-5xl font-black italic tracking-tighter tabular-nums text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">{current?.homeScore}</span>
-                     <span className="text-2xl font-black text-white/5 italic">×</span>
-                     <span className="text-5xl font-black italic tracking-tighter tabular-nums text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">{current?.awayScore}</span>
+                  <div className="flex items-center gap-2 md:gap-4 shrink-0 px-2">
+                     <span className={`font-black italic tracking-tighter tabular-nums text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] ${String(current?.homeScore).length > 2 ? 'text-4xl md:text-5xl' : 'text-5xl md:text-6xl'}`}>
+                        {current?.homeScore}
+                     </span>
+                     <span className="text-xl md:text-2xl font-black text-white/5 italic">×</span>
+                     <span className={`font-black italic tracking-tighter tabular-nums text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] ${String(current?.awayScore).length > 2 ? 'text-4xl md:text-5xl' : 'text-5xl md:text-6xl'}`}>
+                        {current?.awayScore}
+                     </span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
-                     <img src={current?.awayLogo} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
-                     <span className="text-[11px] font-black uppercase text-white/60 truncate w-full text-center tracking-tighter">{current?.awayName}</span>
+                  <div className="flex flex-col items-center gap-3 flex-1 min-w-0 text-right">
+                     <img src={current?.awayLogo} referrerPolicy="no-referrer" className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl shrink-0" alt="" />
+                     <span className="text-[10px] md:text-[11px] font-black uppercase text-white/60 truncate w-full text-center tracking-tighter">{current?.awayName}</span>
                   </div>
                </div>
             </div>

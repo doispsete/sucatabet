@@ -347,6 +347,7 @@ export function useSofascorePolling(operations: any[]) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isTabVisible = useRef(true);
   const finishedEvents = useRef(new Set<string>());
+  const notifiedFinished = useRef(new Set<string>());
   const previousStatuses = useRef<Record<string, string>>({});
 
   // Filtra operações ativas (pendentes e com ID)
@@ -363,6 +364,8 @@ export function useSofascorePolling(operations: any[]) {
     const uniqueEventIds = Array.from(new Set(activeOps.map(op => op.sofascoreEventId)));
     
     for (const eventId of uniqueEventIds) {
+      if (finishedEvents.current.has(eventId)) continue;
+
       try {
         const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`, {
           headers: { 'Accept': 'application/json' },
@@ -491,8 +494,9 @@ export function useSofascorePolling(operations: any[]) {
             }));
           }
 
-          // Se o jogo acabou E a operação ainda é pendente, notifica o popup
-          if (mappedData.status === 'finished' && op.status === 'PENDING') {
+          // Se o jogo acabou E a operação ainda é pendente, notifica o popup (uma única vez por sessão)
+          if (mappedData.status === 'finished' && op.status === 'PENDING' && !notifiedFinished.current.has(op.id)) {
+            notifiedFinished.current.add(op.id);
             window.dispatchEvent(new CustomEvent('game-finished', {
               detail: {
                 operationId: op.id,
@@ -537,6 +541,7 @@ export function useSofascorePolling(operations: any[]) {
     const intervalTime = hasLive ? 5000 : 60000;
 
     if (activeOps.length > 0) {
+      poll(); // Executa imediatamente ao montar ou mudar ops
       intervalRef.current = setInterval(poll, intervalTime);
     }
 
