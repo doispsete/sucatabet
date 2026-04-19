@@ -262,7 +262,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
               {sofascoreEventId ? (
                 <div className="glass-card p-6 rounded-2xl border border-[#03D791]/40 flex items-center gap-8 w-full shadow-[0_0_30px_rgba(3,215,145,0.05)] bg-white/[0.04]">
                    <div className="flex-1 min-w-0 flex justify-center">
-                      <MatchIndicator operation={sofascoreData || operationToEdit || { sofascoreEventId } as any} className="w-full max-w-2xl" />
+                      <MatchIndicator operation={sofascoreData || operationToEdit || ({ sofascoreEventId } as any)} className="w-full max-w-2xl" />
                    </div>
                    <button 
                     type="button" 

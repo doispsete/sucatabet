@@ -52,20 +52,20 @@ export function GameStartOverlay() {
 
            <div className="flex items-center gap-8 mt-8 bg-black/60 p-8 rounded-[40px] border border-white/10 backdrop-blur-2xl shadow-2xl animate-float">
               <div className="flex flex-col items-center gap-3 w-32">
-                 <img src={activeNotification.homeLogo} className="w-16 h-16 rounded-full border-2 border-[#00ff88]/50 shadow-[0_0_20px_rgba(0,255,136,0.3)]" alt="" />
-                 <span className="text-xs font-black text-white/60 uppercase truncate w-full text-center">{activeNotification.homeName}</span>
+                 <img src={activeNotification?.homeLogo} className="w-16 h-16 rounded-full border-2 border-[#00ff88]/50 shadow-[0_0_20px_rgba(0,255,136,0.3)]" alt="" />
+                 <span className="text-xs font-black text-white/60 uppercase truncate w-full text-center">{activeNotification?.homeName}</span>
               </div>
 
               <div className="text-4xl font-black text-white/5 italic">VS</div>
 
               <div className="flex flex-col items-center gap-3 w-32">
-                 <img src={activeNotification.awayLogo} className="w-16 h-16 rounded-full border-2 border-[#00ff88]/50 shadow-[0_0_20px_rgba(0,255,136,0.3)]" alt="" />
-                 <span className="text-xs font-black text-white/60 uppercase truncate w-full text-center">{activeNotification.awayName}</span>
+                 <img src={activeNotification?.awayLogo} className="w-16 h-16 rounded-full border-2 border-[#00ff88]/50 shadow-[0_0_20px_rgba(0,255,136,0.3)]" alt="" />
+                 <span className="text-xs font-black text-white/60 uppercase truncate w-full text-center">{activeNotification?.awayName}</span>
               </div>
            </div>
 
            <p className="mt-6 text-[10px] font-black text-[#b9cbbc]/30 uppercase tracking-[0.8em] italic">
-              {activeNotification.league}
+              {activeNotification?.league}
            </p>
         </div>
       </div>

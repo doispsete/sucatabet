@@ -20,20 +20,22 @@ interface MatchDetailsModalProps {
 }
 
 export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsModalProps) {
+  if (!isOpen || !operation) return null;
+
   const [incidents, setIncidents] = useState<any[]>([]);
   const [eventDetails, setEventDetails] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const eventId = operation.sofascoreEventId;
-  const homeScore = operation.sofascoreHomeScore;
-  const awayScore = operation.sofascoreAwayScore;
+  const eventId = operation?.sofascoreEventId;
+  const homeScore = operation?.sofascoreHomeScore;
+  const awayScore = operation?.sofascoreAwayScore;
 
   const [isBasketball, setIsBasketball] = useState(false);
 
   useEffect(() => {
     if (isOpen && operation) {
-      const league = (operation.sofascoreLeague || '').toLowerCase();
+      const league = (operation?.sofascoreLeague || '').toLowerCase();
       setIsBasketball(
         league.includes('nba') || 
         league.includes('nbb') ||
@@ -41,7 +43,7 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
         league.includes('b1 league')
       );
     }
-  }, [isOpen, operation.id]);
+  }, [isOpen, operation?.id]);
 
   const fetchData = async () => {
     if (!eventId || !isOpen) return;
@@ -136,29 +138,29 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
       <div className="space-y-8 py-2">
         {/* Header Header */}
         <div className="flex flex-col items-center gap-6 p-8 glass-card rounded-[35px] border-white/5 bg-white/[0.02]">
-           <p className="text-[10px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.5em] italic">{eventDetails?.tournament?.name || operation.sofascoreLeague || 'PARTIDA'}</p>
+           <p className="text-[10px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.5em] italic">{eventDetails?.tournament?.name || operation?.sofascoreLeague || 'PARTIDA'}</p>
            
            <div className="flex items-center justify-between w-full max-w-2xl">
               <div className="flex flex-col items-center gap-3 flex-1">
-                <img src={operation.sofascoreHomeLogo || ''} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
-                <span className="text-xs font-black uppercase tracking-widest text-center text-white/80">{operation.sofascoreHomeName}</span>
+                <img src={operation?.sofascoreHomeLogo || ''} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
+                <span className="text-xs font-black uppercase tracking-widest text-center text-white/80">{operation?.sofascoreHomeName}</span>
               </div>
 
               <div className="flex flex-col items-center gap-2">
                 <div className="flex items-center gap-6">
                    <span className="text-6xl font-black italic tracking-tighter tabular-nums text-white">
-                     {eventDetails?.homeScore?.current ?? operation.sofascoreHomeScore ?? 0}
+                     {eventDetails?.homeScore?.current ?? operation?.sofascoreHomeScore ?? 0}
                    </span>
                    <span className="text-2xl font-black text-white/5 italic">×</span>
                    <span className="text-6xl font-black italic tracking-tighter tabular-nums text-white">
-                     {eventDetails?.awayScore?.current ?? operation.sofascoreAwayScore ?? 0}
+                     {eventDetails?.awayScore?.current ?? operation?.sofascoreAwayScore ?? 0}
                    </span>
                 </div>
                  {(() => {
                    const status = eventDetails?.status;
                    const p = status?.period;
                    const desc = (status?.description || '').toLowerCase();
-                   let headerPeriod = operation.sofascorePeriod;
+                   let headerPeriod = operation?.sofascorePeriod;
                    
                    // Se tivermos detalhes frescos do evento, usamos eles preferencialmente
                    if (isBasketball && p) {
@@ -171,13 +173,13 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                       headerPeriod = desc.includes('1st') ? 'Q1' : desc.includes('2nd') ? 'Q2' : desc.includes('3rd') ? 'Q3' : 'Q4';
                    }
 
-                   const displayPeriod = headerPeriod || operation.sofascorePeriod;
-                   if (!displayPeriod || displayPeriod === 'LIVE' && !operation.sofascoreMinute) return null;
+                   const displayPeriod = headerPeriod || operation?.sofascorePeriod;
+                   if (!displayPeriod || displayPeriod === 'LIVE' && !operation?.sofascoreMinute) return null;
 
                    return (
                     <div className="flex items-center gap-2 px-4 py-1.5 bg-[#03D791]/10 rounded-full border-2 border-[#03D791]/30 shadow-[0_0_15px_rgba(3,215,145,0.2)]">
                       <span className="text-xs font-black text-[#03D791] uppercase italic tracking-[0.2em] animate-pulse">
-                        {displayPeriod} {operation.sofascoreMinute ? `• ${operation.sofascoreMinute}${String(operation.sofascoreMinute).includes(':') ? '' : "'"}` : ''}
+                        {displayPeriod} {operation?.sofascoreMinute ? `• ${operation?.sofascoreMinute}${String(operation?.sofascoreMinute).includes(':') ? '' : "'"}` : ''}
                       </span>
                     </div>
                    );
@@ -185,8 +187,8 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
               </div>
 
               <div className="flex flex-col items-center gap-3 flex-1">
-                <img src={operation.sofascoreAwayLogo || ''} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
-                <span className="text-xs font-black uppercase tracking-widest text-center text-white/50">{operation.sofascoreAwayName}</span>
+                <img src={operation?.sofascoreAwayLogo || ''} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
+                <span className="text-xs font-black uppercase tracking-widest text-center text-white/50">{operation?.sofascoreAwayName}</span>
               </div>
            </div>
         </div>
@@ -390,12 +392,12 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                       <div className="shrink-0 flex items-center gap-3">
                          <div className="flex flex-col items-end mr-1">
                             <span className={`text-[8px] font-black uppercase italic tracking-widest ${(isGoal || inc.isHome) ? 'text-[#03D791]' : 'text-[#b9cbbc]/20'}`}>
-                               {inc.isHome ? (operation.sofascoreHomeName || 'CASA') : (operation.sofascoreAwayName || 'FORA')}
+                               {inc.isHome ? (operation?.sofascoreHomeName || 'CASA') : (operation?.sofascoreAwayName || 'FORA')}
                             </span>
                          </div>
                          <div className="relative">
                             <img 
-                              src={(inc.isHome ? operation.sofascoreHomeLogo : operation.sofascoreAwayLogo) || ''} 
+                              src={(inc.isHome ? operation?.sofascoreHomeLogo : operation?.sofascoreAwayLogo) || ''} 
                               className={`w-8 h-8 rounded-full border-2 bg-black transition-all ${logoBorder}`} 
                               alt="" 
                             />
@@ -418,7 +420,7 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
            </div>
            <div className="flex items-center gap-2">
              <Layout className="w-3 h-3" />
-             <span className="text-[8px] font-black uppercase tracking-widest text-[#b9cbbc]">ID: {operation.id.substring(0,8)}</span>
+             <span className="text-[8px] font-black uppercase tracking-widest text-[#b9cbbc]">ID: {operation?.id?.substring(0,8)}</span>
            </div>
         </div>
       </div>

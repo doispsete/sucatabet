@@ -162,7 +162,7 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
             <div className="flex items-center gap-2 opacity-50 text-[9px] font-black uppercase tracking-[0.2em]">
               <span>{dateStr}</span>
               <span className="w-1 h-1 rounded-full bg-white/20" />
-              <span className="truncate">{operation.sofascoreLeague || 'Campeonato'}</span>
+              <span className="truncate">{operation?.sofascoreLeague || 'Campeonato'}</span>
             </div>
         </div>
       </div>

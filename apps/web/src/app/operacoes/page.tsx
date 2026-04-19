@@ -34,6 +34,7 @@ function OperationsContent() {
   const [status, setStatus] = useState<OperationStatus | 'ALL'>('ALL');
   const [page, setPage] = useState(1);
   const [selectedOperation, setSelectedOperation] = useState<any>(null);
+  const [selectedMatchOp, setSelectedMatchOp] = useState<any>(null);
   const [isFinishModalOpen, setIsFinishModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isMatchDetailsModalOpen, setIsMatchDetailsModalOpen] = useState(false);
@@ -313,7 +314,7 @@ function OperationsContent() {
                             className="w-full justify-center scale-110 py-2" 
                             onMatchClick={(e) => {
                               e.stopPropagation();
-                              setSelectedOperation(op);
+                              setSelectedMatchOp(op);
                               setIsMatchDetailsModalOpen(true);
                             }}
                           />
@@ -380,7 +381,7 @@ function OperationsContent() {
                         className="scale-105 opacity-100 py-1" 
                         onMatchClick={(e) => {
                           e.stopPropagation();
-                          setSelectedOperation(op);
+                          setSelectedMatchOp(op);
                           setIsMatchDetailsModalOpen(true);
                         }}
                       />
@@ -471,13 +472,14 @@ function OperationsContent() {
         operation={selectedOperation}
       />
 
-      {selectedOperation && (
-        <MatchDetailsModal
-          isOpen={isMatchDetailsModalOpen}
-          onClose={() => setIsMatchDetailsModalOpen(false)}
-          operation={selectedOperation}
-        />
-      )}
+      <MatchDetailsModal
+        isOpen={isMatchDetailsModalOpen}
+        onClose={() => {
+          setIsMatchDetailsModalOpen(false);
+          setSelectedMatchOp(null);
+        }}
+        operation={selectedMatchOp}
+      />
 
       <GameFinishedPopup 
         notifications={notifications}

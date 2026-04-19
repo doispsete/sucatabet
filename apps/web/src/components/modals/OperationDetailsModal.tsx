@@ -20,6 +20,7 @@ import { Operation, OperationStatus, OperationResult } from "@/lib/api/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 function MatchDetailCard({ operation, primaryColor }: { operation: Operation; primaryColor: string }) {
+  if (!operation) return null;
   const {
     sofascoreStatus: status,
     sofascoreHomeScore: homeScore,
@@ -205,7 +206,7 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
             <p className="text-[10px] font-black text-[#b9cbbc]/30 uppercase tracking-[0.4em] mb-3 italic">LÓGICA APLICADA</p>
             <div className="flex items-center gap-3">
               <Zap className="w-4 h-4" style={{ color: primaryColor }} />
-              <span className="text-sm font-black text-white italic uppercase tracking-tighter">{getResultLabel(operation.result)}</span>
+              <span className="text-sm font-black text-white italic uppercase tracking-tighter">{getResultLabel(operation?.result)}</span>
             </div>
           </div>
 
@@ -220,23 +221,23 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
               LUCRO LÍQUIDO
             </p>
             <h4
-              style={{ color: Number(operation.realProfit) >= 0 ? primaryColor : undefined }}
-              className={`text-3xl font-black italic tracking-tighter ${Number(operation.realProfit) < 0 ? 'text-red-500' : ''}`}
+              style={{ color: Number(operation?.realProfit) >= 0 ? primaryColor : undefined }}
+              className={`text-3xl font-black italic tracking-tighter ${Number(operation?.realProfit) < 0 ? 'text-red-500' : ''}`}
             >
-              R$ {formatCurrency(operation.realProfit ?? 0)}
+              R$ {formatCurrency(operation?.realProfit ?? 0)}
             </h4>
           </div>
         </div>
  
-         {(operation.sofascoreEventId || operation.description) && (
+         {(operation?.sofascoreEventId || operation?.description) && (
            <div className="px-6 py-4 glass-card rounded-[25px] border-white/5 bg-white/[0.02] flex flex-col gap-6">
-              {operation.description && (
+              {operation?.description && (
                 <div className="space-y-1 text-center">
                   <p className="text-[10px] font-black text-[#b9cbbc]/30 uppercase tracking-[0.4em] mb-1 italic">NOTAS DA OPERAÇÃO</p>
-                  <p className="text-sm font-medium text-white/70 italic leading-relaxed px-4">{operation.description}</p>
+                  <p className="text-sm font-medium text-white/70 italic leading-relaxed px-4">{operation?.description}</p>
                 </div>
               )}
-              {operation.sofascoreEventId && (
+              {operation?.sofascoreEventId && (
                 <div 
                   onClick={() => setMatchDetailsOpen(true)}
                   className="cursor-pointer hover:opacity-80 transition-opacity"
@@ -247,7 +248,7 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
            </div>
          )}
 
-        {operation.sofascoreEventId && (
+        {operation?.sofascoreEventId && (
           <MatchDetailsModal 
             isOpen={matchDetailsOpen}
             onClose={() => setMatchDetailsOpen(false)}
@@ -340,19 +341,19 @@ export function OperationDetailsModal({ isOpen, onClose, operation, primaryColor
         <div className="pt-6 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-6 px-4 opacity-20 group">
           <div className="flex items-center gap-2 text-[9px] font-black text-white uppercase tracking-widest italic">
             <Calendar size={14} style={{ color: primaryColor }} />
-            <span>{formatDate(operation.createdAt)}</span>
+            <span>{formatDate(operation?.createdAt)}</span>
           </div>
           <div className="flex items-center gap-2 text-[9px] font-black text-white uppercase tracking-widest italic">
             <Receipt size={14} style={{ color: primaryColor }} />
-            <span>{getOperationTypeLabel(operation.type)}</span>
+            <span>{getOperationTypeLabel(operation?.type)}</span>
           </div>
           <div className="flex items-center gap-2 text-[9px] font-black text-white uppercase tracking-widest italic">
             <Hash size={14} style={{ color: primaryColor }} />
-            <span>{operation.id.substring(0, 12).toUpperCase()}</span>
+            <span>{operation?.id?.substring(0, 12).toUpperCase()}</span>
           </div>
           <div className="flex items-center justify-end gap-2 text-[9px] font-black text-white uppercase tracking-widest italic">
             <Activity size={14} style={{ color: primaryColor }} />
-            <span>{operation.category}</span>
+            <span>{operation?.category}</span>
           </div>
         </div>
       </div>
