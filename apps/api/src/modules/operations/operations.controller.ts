@@ -7,6 +7,11 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('operations')
 export class OperationsController {
   constructor(private readonly operationsService: OperationsService) {}
+  
+  @Patch(':id/update-score')
+  updateScore(@Param('id') id: string, @Request() req, @Body() data: any) {
+    return this.operationsService.updateScore(id, req.user.userId, data);
+  }
 
   @Get()
   findAll(
@@ -62,10 +67,6 @@ export class OperationsController {
     return this.operationsService.linkGame(id, req.user.userId, req.user.role, body.sofascoreEventId);
   }
 
-  @Patch(':id/update-score')
-  updateScore(@Param('id') id: string, @Request() req, @Body() data: any) {
-    return this.operationsService.updateScore(id, req.user.userId, data);
-  }
 
   @Delete(':id')
   remove(@Param('id') id: string, @Request() req) {

@@ -372,17 +372,26 @@ export function useSofascorePolling(operations: any[]) {
         const event = data?.event;
         if (!event) continue;
 
-        // Cálculos manuais conforme especificação
+        // Cálculos manuais conforme especificação V2.0
         const getSimplifiedPeriod = (ev: any) => {
           const p = ev.status?.period;
-          const description = ev.status?.description?.toLowerCase() || '';
-          const leagueName = ev.tournament?.name?.toLowerCase() || '';
+          const description = (ev.status?.description || '').toLowerCase();
+          const leagueName = (ev.tournament?.name || '').toLowerCase();
           const isBasketball = ['nba','nbb','basket','euroleague','nbl'].some(k => leagueName.includes(k));
 
           let minute: string | null = null;
-          if (ev.currentPeriodStartTimestamp && ev.time?.initial !== undefined) {
+          
+          // Fallback para initial se estiver faltando (V2.0 Fix)
+          let initial = ev.time?.initial;
+          if (initial === undefined) {
+             if (p === 1) initial = 0;
+             else if (p === 2) initial = 2700; // 45min
+             else if (description.includes('halftime')) initial = 2700;
+          }
+
+          if (ev.currentPeriodStartTimestamp && initial !== undefined) {
             const elapsed = Math.floor(Date.now() / 1000) - ev.currentPeriodStartTimestamp;
-            const totalMinutes = Math.floor((ev.time.initial + elapsed) / 60);
+            const totalMinutes = Math.floor((initial + elapsed) / 60);
             
             if (p === 1 && totalMinutes > 45) minute = "45+";
             else if (p === 2 && totalMinutes > 90) minute = "90+";
@@ -407,6 +416,7 @@ export function useSofascorePolling(operations: any[]) {
         };
 
         const { periodLabel, minute } = getSimplifiedPeriod(event);
+        console.log(`[SofascorePolling] Evento ${eventId} (${event.homeTeam?.name} x ${event.awayTeam?.name}): Período=${periodLabel}, Minuto=${minute}`);
 
         const mappedData = {
           status: event.status?.type,
@@ -422,6 +432,7 @@ export function useSofascorePolling(operations: any[]) {
         // Atualiza todas as operações que usam esse eventId
         const opsToUpdate = activeOps.filter(op => op.sofascoreEventId === eventId);
         for (const op of opsToUpdate) {
+          console.log(`[SofascorePolling] Enviando update para operação ${op.id}`);
           await services.operationsService.updateScore(op.id, mappedData);
         }
 
