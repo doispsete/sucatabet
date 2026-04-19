@@ -794,28 +794,24 @@ export class OperationsService {
   }
 
   async updateScore(id: string, userId: string, data: any) {
-    const operation = await this.prisma.operation.findUnique({
-      where: { id },
+    // Verificar que a operação pertence ao usuário
+    const op = await this.prisma.operation.findFirst({
+      where: { id, userId },
     });
-
-    if (!operation || operation.userId !== userId) {
-      throw new ForbiddenException('Acesso negado');
-    }
-
-    const updateData = {
-      sofascoreStatus: String(data.status || 'notstarted'),
-      sofascoreHomeScore: data.homeScore !== null ? Number(data.homeScore) : null,
-      sofascoreAwayScore: data.awayScore !== null ? Number(data.awayScore) : null,
-      sofascorePeriod: data.period !== null ? String(data.period) : null,
-      sofascoreMinute: data.minute !== null ? Number(data.minute) : null,
-      sofascoreHomeLogo: data.homeLogo,
-      sofascoreAwayLogo: data.awayLogo,
-      sofascoreStartTime: data.startTime,
-    };
+    if (!op) throw new NotFoundException('Operação não encontrada');
 
     return this.prisma.operation.update({
       where: { id },
-      data: updateData as any,
+      data: {
+        sofascoreStatus: data.status || null,
+        sofascoreHomeScore: data.homeScore ?? null,
+        sofascoreAwayScore: data.awayScore ?? null,
+        sofascorePeriod: data.period || null,
+        sofascoreMinute: data.minute ? Number(String(data.minute).replace('+','')) : null,
+        sofascoreHomeLogo: data.homeLogo || null,
+        sofascoreAwayLogo: data.awayLogo || null,
+        sofascoreStartTime: data.startTime ? new Date(data.startTime) : null,
+      } as any,
     });
   }
 }

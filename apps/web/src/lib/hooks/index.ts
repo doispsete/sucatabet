@@ -359,58 +359,30 @@ export function useSofascorePolling(operations: any[]) {
 
     // Deduplica por eventId
     const uniqueEventIds = Array.from(new Set(activeOps.map(op => op.sofascoreEventId)));
-    console.log(`[SofascorePolling] Verificando ${uniqueEventIds.length} eventos ativos...`, uniqueEventIds);
-
+    
     for (const eventId of uniqueEventIds) {
       try {
-        // PASSO 1: Verificar Cache no Backend
-        const cacheRes = await services.sofascoreService.getCache(eventId);
-        
-        if (cacheRes.cached) {
-          // console.log(`[SofascorePolling] Cache HIT para ${eventId}. Pulando fetch externo.`);
-          continue; 
-        }
+        const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`, {
+          headers: { 'Accept': 'application/json' },
+          referrerPolicy: 'no-referrer'
+        });
 
-        console.log(`[SofascorePolling] 🚨 CACHE MISS para ${eventId}. Iniciando fetch externo via browser...`);
-
-        // PASSO 2: Cache Miss -> Request ao Sofascore (via Browser do Usuário)
-        let event;
-        try {
-          const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`, {
-            headers: { 'Accept': 'application/json' },
-            referrerPolicy: 'no-referrer'
-          });
-
-          if (!response.ok) {
-            console.error(`[SofascorePolling] ❌ Erro ao buscar evento ${eventId} no Sofascore: Status ${response.status}`);
-            continue;
-          }
-
-          const data = await response.json();
-          event = data?.event;
-        } catch (error) {
-          console.error(`[SofascorePolling] ❌ Erro crítico no fetch direto para ${eventId}:`, error);
-          continue;
-        }
-
+        if (!response.ok) continue;
+        const data = await response.json();
+        const event = data?.event;
         if (!event) continue;
 
-        console.log(`[SofascorePolling] ✅ Dados recebidos via BROWSER para ${eventId}: ${event.homeTeam?.name} ${event.homeScore?.current}x${event.awayScore?.current} ${event.awayTeam?.name}`);
+        // Cálculos manuais conforme especificação
+        const getSimplifiedPeriod = (ev: any) => {
+          const p = ev.status?.period;
+          const description = ev.status?.description?.toLowerCase() || '';
+          const leagueName = ev.tournament?.name?.toLowerCase() || '';
+          const isBasketball = ['nba','nbb','basket','euroleague','nbl'].some(k => leagueName.includes(k));
 
-        // Mapeamento conforme especificação V15/V21-V25 (Cálculo Manual)
-        const getSimplifiedPeriod = (status: any, time: any, currentPeriodStartTimestamp: number | null, league: string) => {
-          if (!status) return { periodLabel: null, minute: null };
-
-          const leagueLower = league?.toLowerCase() || '';
-          const isBasketball = leagueLower.includes('nba') || leagueLower.includes('nbb') || leagueLower.includes('basket') || leagueLower.includes('basketball') || leagueLower.includes('euroleague') || leagueLower.includes('nbl');
-          const p = status.period;
-          const description = status.description || '';
-
-          // Lógica de minuto manual (V25)
           let minute: string | null = null;
-          if (currentPeriodStartTimestamp && time?.initial !== undefined) {
-            const elapsed = Math.floor(Date.now() / 1000) - currentPeriodStartTimestamp;
-            const totalMinutes = Math.floor((time.initial + elapsed) / 60);
+          if (ev.currentPeriodStartTimestamp && ev.time?.initial !== undefined) {
+            const elapsed = Math.floor(Date.now() / 1000) - ev.currentPeriodStartTimestamp;
+            const totalMinutes = Math.floor((ev.time.initial + elapsed) / 60);
             
             if (p === 1 && totalMinutes > 45) minute = "45+";
             else if (p === 2 && totalMinutes > 90) minute = "90+";
@@ -418,35 +390,26 @@ export function useSofascorePolling(operations: any[]) {
           }
 
           let periodLabel: string | null = null;
-          // Traduções PT-BR (V25)
-          if (p === 5 || description.toLowerCase().includes('pen')) periodLabel = "Pen.";
-          else if (isBasketball) {
+          if (isBasketball) {
             if (p >= 1 && p <= 4) periodLabel = `Q${p}`;
             else if (p > 4) periodLabel = "OT";
           } else {
-            // Football / Default
-            if (p === 1) periodLabel = "1º";
+            if (description.includes('pen')) periodLabel = "Pen.";
+            else if (description === 'halftime') periodLabel = "Intervalo";
+            else if (p === 1) periodLabel = "1º";
             else if (p === 2) periodLabel = "2º";
             else if (p === 3) periodLabel = "Prorr.";
             else if (p === 4) periodLabel = "Pen.";
-            else if (description) periodLabel = description;
+            else periodLabel = ev.status?.description || null;
           }
 
           return { periodLabel, minute };
         };
 
-        const { periodLabel, minute } = getSimplifiedPeriod(
-          event.status, 
-          event.time, 
-          event.currentPeriodStartTimestamp || null, 
-          event.tournament?.name || ''
-        );
+        const { periodLabel, minute } = getSimplifiedPeriod(event);
 
         const mappedData = {
-          eventId: String(event.id),
-          status: event.status?.type || 'notstarted',
-          homeTeam: event.homeTeam?.name,
-          awayTeam: event.awayTeam?.name,
+          status: event.status?.type,
           homeScore: event.homeScore?.current ?? null,
           awayScore: event.awayScore?.current ?? null,
           period: periodLabel,
@@ -456,33 +419,33 @@ export function useSofascorePolling(operations: any[]) {
           startTime: new Date(event.startTimestamp * 1000).toISOString()
         };
 
-        // PASSO 3: Alimentar Cache (Backend salva o cache e atualiza o banco)
-        const saveRes = await services.sofascoreService.setCache(eventId, mappedData);
-        console.log(`[SofascorePolling] Cache sincronizado para ${eventId}. Ops afetadas: ${saveRes.updatedOperations}`);
+        // Atualiza todas as operações que usam esse eventId
+        const opsToUpdate = activeOps.filter(op => op.sofascoreEventId === eventId);
+        for (const op of opsToUpdate) {
+          await services.operationsService.updateScore(op.id, mappedData);
+        }
 
-        // Delay entre requisições para evitar rate limit do Sofascore
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Delay de 500ms entre requests ao Sofascore para evitar bloqueio
+        await new Promise(resolve => setTimeout(resolve, 500));
 
       } catch (error) {
-        console.error(`[SofascorePolling] Erro crítico para evento ${eventId}:`, error);
+        console.error(`[SofascorePolling] Erro ao processar evento ${eventId}:`, error);
       }
     }
 
-    // Notifica sistema local para re-buscar dados das operações atualizadas
     window.dispatchEvent(new CustomEvent('refetch-data'));
   };
 
   useEffect(() => {
     const handleVisibilityChange = () => {
       isTabVisible.current = document.visibilityState === 'visible';
-      if (isTabVisible.current) poll(); // Poll imediato ao voltar
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Determina intervalo adaptativo
+    // Intervalo adaptativo
     const hasLive = activeOps.some(op => op.sofascoreStatus === 'inprogress');
-    const intervalTime = hasLive ? 3000 : 60000;
+    const intervalTime = hasLive ? 5000 : 60000;
 
     if (activeOps.length > 0) {
       intervalRef.current = setInterval(poll, intervalTime);

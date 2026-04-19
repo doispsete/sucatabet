@@ -65,10 +65,6 @@ export const operationsService = {
   updateScore: (id: string, body: any) => api.patch<T.Operation>(`/operations/${id}/update-score`, body),
 };
 
-export const sofascoreService = {
-  getCache: (eventId: string) => api.get<any>(`/operations/sofascore-cache/${eventId}?t=${Date.now()}`, { cache: 'no-store' }),
-  setCache: (eventId: string, data: any) => api.post<any>(`/operations/sofascore-cache/${eventId}`, data, { cache: 'no-store' }),
-};
 
 export const freebetsService = {
   list: () => api.get<T.Freebet[]>('/freebets'),

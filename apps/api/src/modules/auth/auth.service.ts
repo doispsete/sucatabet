@@ -105,8 +105,8 @@ export class AuthService {
           name: user.name,
           role: user.role,
           plan: user.plan,
-          avatarUrl: user.avatarUrl,
-          lastLoginAt: now,
+          status: user.status,
+          lastLoginAt: new Date(), // incluir explicitamente
         },
       };
     } catch (error) {
