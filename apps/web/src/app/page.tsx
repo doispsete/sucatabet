@@ -597,7 +597,7 @@ export default function DashboardPage() {
 
         {/* Mobile: cards compactos sincronizados */}
         <div className="block md:hidden divide-y divide-white/5">
-          {(Array.isArray(summary.atividadeRecente) ? summary.atividadeRecente : []).map((op: any) => {
+          {(Array.isArray(summary.atividadeRecente) ? summary.atividadeRecente : []).filter((op: any) => !!op).map((op: any) => {
             const totalStake = op.bets?.reduce((sum: number, bet: any) => sum + Number(bet.cost || 0), 0) || 0;
             const statusStyle = op.status === 'FINISHED' 
                 ? "bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20"
@@ -683,7 +683,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="divide-y divide-white/5">
-            {(Array.isArray(summary.atividadeRecente) ? summary.atividadeRecente : []).map((op: any) => {
+            {(Array.isArray(summary.atividadeRecente) ? summary.atividadeRecente : []).filter((op: any) => !!op).map((op: any) => {
                const totalStake = op.bets?.reduce((sum: number, bet: any) => sum + Number(bet.cost || 0), 0) || 0;
                const statusStyle = op.status === 'FINISHED' 
                 ? "bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20"
