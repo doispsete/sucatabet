@@ -16,7 +16,7 @@ import {
 import { MatchIndicator } from "@/components/MatchIndicator";
 import { MatchDetailsModal } from "@/components/modals/MatchDetailsModal";
 import { GameFinishedPopup, PendingNotification } from "@/components/GameFinishedPopup";
-import { useOperations, useDashboardSummary, useSofascorePolling } from "@/lib/hooks";
+import { useOperations, useDashboardSummary } from "@/lib/hooks";
 import { SkeletonOperationRow, EmptyState, CustomSelect } from "@/components/ui/components";
 import { OperationStatus, OperationType } from "@/lib/api/types";
 import { NewOperationModal } from "@/components/modals/NewOperationModal";
@@ -77,8 +77,6 @@ function OperationsContent() {
     }
   }, [targetId, opsResponse]);
 
-  // Listen for global operation creation to refetch
-
   const getStatusStyle = (status: OperationStatus) => {
     switch (status) {
       case OperationStatus.PENDING:
@@ -122,11 +120,7 @@ function OperationsContent() {
       refetchSummary();
     };
     window.addEventListener('operation-created', handler);
-    window.addEventListener('refetch-data', handler);
-    return () => {
-      window.removeEventListener('operation-created', handler);
-      window.removeEventListener('refetch-data', handler);
-    };
+    return () => window.removeEventListener('operation-created', handler);
   }, [refetch, refetchSummary]);
 
   // Handle game finished events
@@ -312,7 +306,7 @@ function OperationsContent() {
                           </span>
                           <MatchIndicator 
                             operation={op} 
-                            className="w-full justify-center scale-110 py-2" 
+                            className="w-full justify-center py-2" 
                             onMatchClick={(e) => {
                               e.stopPropagation();
                               setSelectedMatchOp(op);

@@ -7,7 +7,8 @@ import {
   Layout, 
   AlertCircle,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  Clock
 } from "lucide-react";
 import { Modal } from "@/components/ui/components";
 import { Operation } from "@/lib/api/types";
@@ -63,7 +64,6 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
       setIncidents(incData.incidents || []);
       setEventDetails(eventData.event || null);
       
-      // Definitively check sport
       if (eventData.event?.tournament?.category?.sport?.slug === 'basketball') {
         setIsBasketball(true);
       } else {
@@ -86,24 +86,23 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
   const filteredIncidents = incidents.filter(inc => {
     const type = inc.incidentType;
     if (isBasketball) {
-      // Basketball incidents vary, let's include major ones
       return ['foul', 'technical', 'scoreChange', 'periodStart', 'periodEnd'].includes(type) || inc.description?.toLowerCase().includes('ponto');
     }
     return ['goal', 'card', 'var', 'penalty'].includes(type);
-  }).reverse(); // Mais recente primeiro
+  }).reverse();
 
   const getIncidentIcon = (inc: any) => {
     switch (inc.incidentType) {
-      case 'goal': return <span className="text-lg">⚽</span>;
+      case 'goal': return <span className="text-base">⚽</span>;
       case 'card': 
         return inc.incidentClass === 'yellow' 
-          ? <div className="w-3 h-4 bg-yellow-400 rounded-sm border border-yellow-600 shadow-[0_0_10px_rgba(250,204,21,0.5)]" />
-          : <div className="w-3 h-4 bg-red-500 rounded-sm border border-red-700 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />;
-      case 'var': return <span className="text-lg">📺</span>;
-      case 'penalty': return <span className="text-lg">🥅</span>;
-      case 'foul': return <AlertCircle className="w-4 h-4 text-amber-500" />;
-      case 'technical': return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case 'scoreChange': return <Trophy className="w-4 h-4 text-[#03D791]" />;
+          ? <div className="w-2.5 h-3.5 bg-yellow-400 rounded-sm border border-yellow-600 shadow-[0_0_8px_rgba(250,204,21,0.4)]" />
+          : <div className="w-2.5 h-3.5 bg-red-500 rounded-sm border border-red-700 shadow-[0_0_8px_rgba(239,68,68,0.4)]" />;
+      case 'var': return <span className="text-base">📺</span>;
+      case 'penalty': return <span className="text-base">🥅</span>;
+      case 'foul': return <AlertCircle className="w-3 h-3 text-amber-500" />;
+      case 'technical': return <AlertCircle className="w-3 h-3 text-red-500" />;
+      case 'scoreChange': return <Trophy className="w-3 h-3 text-[#03D791]" />;
       default: return null;
     }
   };
@@ -135,24 +134,35 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
       title="Detalhes da Partida"
       size="lg"
     >
-      <div className="space-y-8 py-2">
-        {/* Header Header */}
-        <div className="flex flex-col items-center gap-6 p-8 glass-card rounded-[35px] border-white/5 bg-white/[0.02]">
-           <p className="text-[10px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.5em] italic">{eventDetails?.tournament?.name || operation?.sofascoreLeague || 'PARTIDA'}</p>
+      <div className="space-y-6 py-1 max-h-[85vh] overflow-hidden flex flex-col">
+        {/* Header: Scoreboard - Mais Compacto */}
+        <div className="flex flex-col items-center gap-4 p-6 glass-card rounded-[24px] border-white/5 bg-white/[0.01]">
+           <p className="text-[9px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.4em] italic truncate max-w-full">
+             {eventDetails?.tournament?.name || operation?.sofascoreLeague || 'PARTIDA'}
+           </p>
            
-           <div className="flex items-center justify-between w-full max-w-2xl">
-              <div className="flex flex-col items-center gap-3 flex-1">
-                <img src={operation?.sofascoreHomeLogo || ''} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
-                <span className="text-xs font-black uppercase tracking-widest text-center text-white/80">{operation?.sofascoreHomeName}</span>
+           <div className="flex items-center justify-between w-full max-w-xl gap-4">
+              {/* Home Team */}
+              <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
+                <div className="relative">
+                  <img src={operation?.sofascoreHomeLogo || ''} referrerPolicy="no-referrer" className="w-12 h-12 rounded-full border border-white/10 bg-black shadow-xl" alt="" />
+                  {eventDetails?.homeScore?.current > eventDetails?.awayScore?.current && (
+                    <div className="absolute -top-1 -right-1 bg-[#03D791] rounded-full p-0.5 shadow-[0_0_10px_rgba(3,215,145,0.5)]">
+                      <ShieldCheck size={10} className="text-black" />
+                    </div>
+                  )}
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-center text-white/70 truncate w-full">{operation?.sofascoreHomeName}</span>
               </div>
 
+              {/* Score Center */}
               <div className="flex flex-col items-center gap-2">
-                <div className="flex items-center gap-6">
-                   <span className="text-6xl font-black italic tracking-tighter tabular-nums text-white">
+                <div className="flex items-center gap-4">
+                   <span className="text-4xl font-black italic tracking-tighter tabular-nums text-white">
                      {eventDetails?.homeScore?.current ?? operation?.sofascoreHomeScore ?? 0}
                    </span>
-                   <span className="text-2xl font-black text-white/5 italic">×</span>
-                   <span className="text-6xl font-black italic tracking-tighter tabular-nums text-white">
+                   <span className="text-xl font-black text-white/5 italic">×</span>
+                   <span className="text-4xl font-black italic tracking-tighter tabular-nums text-white">
                      {eventDetails?.awayScore?.current ?? operation?.sofascoreAwayScore ?? 0}
                    </span>
                 </div>
@@ -162,7 +172,6 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                    const desc = (status?.description || '').toLowerCase();
                    let headerPeriod = operation?.sofascorePeriod;
                    
-                   // Se tivermos detalhes frescos do evento, usamos eles preferencialmente
                    if (isBasketball && p) {
                      if (p === 1) headerPeriod = 'Q1';
                      else if (p === 2) headerPeriod = 'Q2';
@@ -177,8 +186,8 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                    if (!displayPeriod || displayPeriod === 'LIVE' && !operation?.sofascoreMinute) return null;
 
                    return (
-                    <div className="flex items-center gap-2 px-4 py-1.5 bg-[#03D791]/10 rounded-full border-2 border-[#03D791]/30 shadow-[0_0_15px_rgba(3,215,145,0.2)]">
-                      <span className="text-xs font-black text-[#03D791] uppercase italic tracking-[0.2em] animate-pulse">
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-[#03D791]/10 rounded-full border border-[#03D791]/20">
+                      <span className="text-[9px] font-black text-[#03D791] uppercase italic tracking-widest animate-pulse">
                         {displayPeriod} {operation?.sofascoreMinute ? `• ${operation?.sofascoreMinute}${String(operation?.sofascoreMinute).includes(':') ? '' : "'"}` : ''}
                       </span>
                     </div>
@@ -186,242 +195,183 @@ export function MatchDetailsModal({ isOpen, onClose, operation }: MatchDetailsMo
                  })()}
               </div>
 
-              <div className="flex flex-col items-center gap-3 flex-1">
-                <img src={operation?.sofascoreAwayLogo || ''} referrerPolicy="no-referrer" className="w-16 h-16 rounded-full border-2 border-white/10 bg-black shadow-2xl" alt="" />
-                <span className="text-xs font-black uppercase tracking-widest text-center text-white/50">{operation?.sofascoreAwayName}</span>
+              {/* Away Team */}
+              <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
+                <div className="relative">
+                  <img src={operation?.sofascoreAwayLogo || ''} referrerPolicy="no-referrer" className="w-12 h-12 rounded-full border border-white/10 bg-black shadow-xl" alt="" />
+                  {eventDetails?.awayScore?.current > eventDetails?.homeScore?.current && (
+                    <div className="absolute -top-1 -right-1 bg-[#03D791] rounded-full p-0.5 shadow-[0_0_10px_rgba(3,215,145,0.5)]">
+                      <ShieldCheck size={10} className="text-black" />
+                    </div>
+                  )}
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-center text-white/40 truncate w-full">{operation?.sofascoreAwayName}</span>
               </div>
            </div>
         </div>
 
-        {/* Dynamic Content */}
-        {loading && !eventDetails ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-20">
-            <Timer className="w-10 h-10 animate-spin" />
-            <p className="text-[10px] font-black uppercase tracking-widest">Sincronizando Sofascore...</p>
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4 text-red-500/40">
-            <AlertCircle className="w-10 h-10" />
-            <p className="text-[10px] font-black uppercase tracking-widest">{error}</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Esquerda: Placar por tempo / Quarto */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 px-2">
-                <Layout className="w-4 h-4 text-[#03D791] animate-pulse" />
-                <h3 className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-[0.4em] italic">Resumo do Placar</h3>
-              </div>
-
-              {isBasketball ? (
-                <div className="p-6 glass-card rounded-[35px] border-white/5 bg-white/[0.02]">
-                  <table className="w-full text-center border-collapse">
-                    <thead>
-                      <tr className="border-b border-white/5">
-                        <th className="py-3 text-[9px] font-black text-[#b9cbbc]/30 uppercase tracking-widest text-left">QUARTOS</th>
-                        <th className="py-3 text-[9px] font-black text-white/40">Q1</th>
-                        <th className="py-3 text-[9px] font-black text-white/40">Q2</th>
-                        <th className="py-3 text-[9px] font-black text-white/40">Q3</th>
-                        <th className="py-3 text-[9px] font-black text-white/40">Q4</th>
-                        {eventDetails?.homeScore?.period5 !== undefined && <th className="py-3 text-[9px] font-black text-white/40">OT</th>}
-                        <th className="py-3 text-[9px] font-black text-[#03D791]">TOT</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-xs font-black italic tracking-tighter tabular-nums">
-                      <tr className="border-b border-white/5">
-                        <td className="py-4 text-left text-white/60 truncate max-w-[80px]">{eventDetails?.homeTeam?.name || 'Casa'}</td>
-                        <td className="py-4 text-white/30">{eventDetails?.homeScore?.period1 ?? '-'}</td>
-                        <td className="py-4 text-white/30">{eventDetails?.homeScore?.period2 ?? '-'}</td>
-                        <td className="py-4 text-white/30">{eventDetails?.homeScore?.period3 ?? '-'}</td>
-                        <td className="py-4 text-white/30">{eventDetails?.homeScore?.period4 ?? '-'}</td>
-                        {eventDetails?.homeScore?.period5 !== undefined && <td className="py-4 text-white/30">{eventDetails?.homeScore?.period5}</td>}
-                        <td className="py-4 text-[#03D791] text-lg">{eventDetails?.homeScore?.current ?? 0}</td>
-                      </tr>
-                      <tr className="border-b border-white/5">
-                        <td className="py-4 text-left text-white/60 truncate max-w-[80px]">{eventDetails?.awayTeam?.name || 'Fora'}</td>
-                        <td className="py-4 text-white/30">{eventDetails?.awayScore?.period1 ?? '-'}</td>
-                        <td className="py-4 text-white/30">{eventDetails?.awayScore?.period2 ?? '-'}</td>
-                        <td className="py-4 text-white/30">{eventDetails?.awayScore?.period3 ?? '-'}</td>
-                        <td className="py-4 text-white/30">{eventDetails?.awayScore?.period4 ?? '-'}</td>
-                        {eventDetails?.awayScore?.period5 !== undefined && <td className="py-4 text-white/30">{eventDetails?.awayScore?.period5}</td>}
-                        <td className="py-4 text-[#03D791] text-lg">{eventDetails?.awayScore?.current ?? 0}</td>
-                      </tr>
-                      <tr className="bg-white/[0.02]">
-                        <td className="py-4 text-left px-2">
-                           <span className="text-[9px] font-black text-[#FFDD65]/50 uppercase tracking-widest italic">VANTAGEM</span>
-                        </td>
-                        {[1, 2, 3, 4].map(q => {
-                          const h = eventDetails?.homeScore?.[`period${q}`];
-                          const a = eventDetails?.awayScore?.[`period${q}`];
-                          if (h === undefined || a === undefined) return <td key={q} className="py-4 text-[#FFDD65]/10">-</td>;
-                          const diff = h - a;
-                          if (diff === 0) return <td key={q} className="py-4 text-[#FFDD65]/40 text-[10px]">E</td>;
-                          return (
-                            <td key={q} className="py-4">
-                              <div className="flex flex-col items-center">
-                                <span className={`text-[7px] font-black leading-none mb-0.5 ${diff > 0 ? 'text-[#03D791]' : 'text-[#ff4d4d]'}`}>
-                                  {diff > 0 ? 'CASA' : 'FORA'}
-                                </span>
-                                <span className="text-[11px] font-black text-white tabular-nums">
-                                  +{Math.abs(diff)}
-                                </span>
-                              </div>
-                            </td>
-                          );
-                        })}
-                        {eventDetails?.homeScore?.period5 !== undefined && (
-                          <td className="py-4">
-                            <div className="flex flex-col items-center">
-                              {(() => {
-                                const h = eventDetails.homeScore.period5;
-                                const a = eventDetails.awayScore.period5;
-                                const diff = h - a;
-                                return (
-                                  <>
-                                    <span className={`text-[7px] font-black leading-none mb-0.5 ${diff > 0 ? 'text-[#03D791]' : 'text-[#ff4d4d]'}`}>
-                                      {diff > 0 ? 'CASA' : 'FORA'}
-                                    </span>
-                                    <span className="text-[11px] font-black text-white tabular-nums">+{Math.abs(diff)}</span>
-                                  </>
-                                );
-                              })()}
-                            </div>
-                          </td>
-                        )}
-                        <td className="py-4 bg-[#FFDD65]/10 rounded-r-[20px]">
-                           {(() => {
-                              const h = eventDetails?.homeScore?.current || 0;
-                              const a = eventDetails?.awayScore?.current || 0;
-                              const diff = h - a;
-                              return (
-                                <div className="flex flex-col items-center">
-                                  <span className="text-[8px] font-bold text-[#FFDD65] uppercase leading-none mb-1">{diff > 0 ? 'CASA' : diff < 0 ? 'FORA' : 'EMP'}</span>
-                                  <span className="text-[15px] font-black text-[#FFDD65] drop-shadow-[0_0_10px_rgba(255,221,101,0.3)]">+{Math.abs(diff)}</span>
-                                </div>
-                              );
-                           })()}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  
-                  {/* Maior Vantagem Geral */}
-                  <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between px-2">
-                    <span className="text-[9px] font-black text-[#b9cbbc]/20 uppercase tracking-widest italic">Estatísticas Especiais</span>
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-[#FFDD65]/5 rounded-xl border border-[#FFDD65]/10">
-                      <Trophy className="w-3.5 h-3.5 text-[#FFDD65] animate-bounce-subtle" />
-                      <span className="text-[11px] font-black text-white italic tracking-tight">
-                         Maior Atropelo: <span className="text-[#FFDD65]">+{calculateMaxAdvantage()} PTS</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-8 glass-card rounded-[35px] border-white/5 bg-white/[0.02] space-y-4">
-                   <div className="flex flex-col gap-6">
-                      <div className="flex items-center justify-between text-[11px] font-black italic tracking-tighter">
-                         <span className="text-[#b9cbbc]/40 uppercase tracking-[0.4em] not-italic text-[9px]">1º TEMPO</span>
-                         <span className="text-3xl tabular-nums text-white/80">{eventDetails?.homeScore?.period1 ?? 0} × {eventDetails?.awayScore?.period1 ?? 0}</span>
-                      </div>
-                      <div className="w-full h-px bg-white/5" />
-                      <div className="flex items-center justify-between text-[11px] font-black italic tracking-tighter">
-                         <span className="text-[#b9cbbc]/40 uppercase tracking-[0.4em] not-italic text-[9px]">2º TEMPO</span>
-                         <span className="text-3xl tabular-nums text-white/80">{eventDetails?.homeScore?.period2 ?? 0} × {eventDetails?.awayScore?.period2 ?? 0}</span>
-                      </div>
-                      <div className="w-full h-1 bg-[#03D791]/20 rounded-full mt-4" />
-                      <div className="flex items-center justify-between text-base font-black italic tracking-tighter text-[#03D791]">
-                         <span className="uppercase tracking-[0.4em] not-italic text-[10px] text-[#03D791]/60">PLACAR FINAL</span>
-                         <span className="text-5xl tabular-nums drop-shadow-[0_0_20px_rgba(3,215,145,0.4)]">{eventDetails?.homeScore?.current ?? 0} × {eventDetails?.awayScore?.current ?? 0}</span>
-                      </div>
-                   </div>
-                </div>
-              )}
+        {/* Dynamic Content Area */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
+          {loading && !eventDetails ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3 opacity-20">
+              <Timer className="w-8 h-8 animate-spin" />
+              <p className="text-[9px] font-black uppercase tracking-widest">Sincronizando estatísticas...</p>
             </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3 text-red-500/40">
+              <AlertCircle className="w-8 h-8" />
+              <p className="text-[9px] font-black uppercase tracking-widest">{error}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-4">
+              {/* Left Column: Summary */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1">
+                  <Layout className="w-3.5 h-3.5 text-[#03D791] opacity-50" />
+                  <h3 className="text-[9px] font-black text-[#b9cbbc]/60 uppercase tracking-[0.3em] italic">Resumo do Placar</h3>
+                </div>
 
-            {/* Direita: Incidents */}
-            <div className="space-y-6">
-               <div className="flex items-center gap-3 px-2">
-                <Trophy className="w-4 h-4 text-[#03D791]" />
-                <h3 className="text-[10px] font-black text-[#b9cbbc] uppercase tracking-[0.4em] italic">Eventos Importantes</h3>
-              </div>
-
-              <div className="space-y-4 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
-                {filteredIncidents.length === 0 ? (
-                  <div className="p-12 text-center glass-card rounded-[30px] border-white/5 opacity-20">
-                    <p className="text-[10px] font-black uppercase tracking-widest italic">Aguardando lances reais...</p>
-                  </div>
-                ) : filteredIncidents.map((inc, i) => {
-                  const isGoal = inc.incidentType === 'goal';
-                  const highlightColor = (isGoal || inc.isHome) ? '#03D791' : 'transparent';
-                  const dotColor = (isGoal || inc.isHome) ? 'bg-[#03D791]' : 'bg-white/10';
-                  const logoBorder = (isGoal || inc.isHome) ? 'border-[#03D791] shadow-[0_0_15px_rgba(3,215,145,0.3)]' : 'border-white/10 opacity-40';
-                  
-                  return (
-                    <div 
-                      key={i} 
-                      className={`flex items-center gap-5 p-5 glass-card rounded-[25px] border-white/5 hover:bg-white/[0.04] transition-all group relative overflow-hidden ${isGoal ? 'bg-[#03D791]/[0.02]' : ''}`} 
-                      style={{ borderLeft: (isGoal || inc.isHome) ? `4px solid #03D791` : '1px solid rgba(255,255,255,0.05)' }}
-                    >
-                      {/* Glow Overlay for Goals */}
-                      {isGoal && <div className="absolute inset-0 bg-gradient-to-r from-[#03D791]/5 to-transparent pointer-events-none" />}
-                      
-                      {/* Minute Box */}
-                      <div className="w-10 h-10 flex items-center justify-center shrink-0 tabular-nums text-[12px] font-black text-[#03D791] bg-[#03D791]/5 border border-[#03D791]/20 rounded-xl group-hover:scale-110 transition-transform italic shadow-inner">
-                        {inc.time || '?'}
+                <div className="p-5 glass-card rounded-[24px] border-white/5 bg-white/[0.01]">
+                {isBasketball ? (
+                    <table className="w-full text-center border-collapse">
+                      <thead>
+                        <tr className="border-b border-white/5">
+                          <th className="py-2 text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-widest text-left">QUARTOS</th>
+                          <th className="py-2 text-[8px] font-black text-white/20">Q1</th>
+                          <th className="py-2 text-[8px] font-black text-white/20">Q2</th>
+                          <th className="py-2 text-[8px] font-black text-white/20">Q3</th>
+                          <th className="py-2 text-[8px] font-black text-white/20">Q4</th>
+                          <th className="py-2 text-[8px] font-black text-[#03D791]/60">TOT</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-[11px] font-black italic tracking-tighter tabular-nums">
+                        <tr className="border-b border-white/5">
+                          <td className="py-3 text-left text-white/40 truncate max-w-[70px] uppercase">{operation?.sofascoreHomeName?.split(' ')[0]}</td>
+                          <td className="py-3 text-white/20">{eventDetails?.homeScore?.period1 ?? '-'}</td>
+                          <td className="py-3 text-white/20">{eventDetails?.homeScore?.period2 ?? '-'}</td>
+                          <td className="py-3 text-white/20">{eventDetails?.homeScore?.period3 ?? '-'}</td>
+                          <td className="py-3 text-white/20">{eventDetails?.homeScore?.period4 ?? '-'}</td>
+                          <td className="py-3 text-[#03D791] text-sm">{eventDetails?.homeScore?.current ?? 0}</td>
+                        </tr>
+                        <tr className="border-b border-white/5">
+                          <td className="py-3 text-left text-white/40 truncate max-w-[70px] uppercase">{operation?.sofascoreAwayName?.split(' ')[0]}</td>
+                          <td className="py-3 text-white/20">{eventDetails?.awayScore?.period1 ?? '-'}</td>
+                          <td className="py-3 text-white/20">{eventDetails?.awayScore?.period2 ?? '-'}</td>
+                          <td className="py-3 text-white/20">{eventDetails?.awayScore?.period3 ?? '-'}</td>
+                          <td className="py-3 text-white/20">{eventDetails?.awayScore?.period4 ?? '-'}</td>
+                          <td className="py-3 text-[#03D791] text-sm">{eventDetails?.awayScore?.current ?? 0}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                         <span className="text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.3em]">1º Tempo</span>
+                         <span className="text-xl font-black text-white/60 italic tabular-nums">{eventDetails?.homeScore?.period1 ?? 0} × {eventDetails?.awayScore?.period1 ?? 0}</span>
                       </div>
-                      
-                      <div className="flex-1 min-w-0">
-                         <div className="flex items-center gap-3 mb-1">
-                            {getIncidentIcon(inc)}
-                            <span className="text-[13px] font-black uppercase italic tracking-tighter text-white">
-                              {inc.incidentType === 'goal' ? 'GOL!' : 
-                               inc.incidentType === 'card' ? (inc.incidentClass === 'yellow' ? 'AMARELO' : 'VERMELHO') :
-                               inc.incidentType === 'var' ? 'VAR' :
-                               inc.incidentType === 'penalty' ? 'PÊNALTI' :
-                               inc.incidentType === 'foul' ? 'FALTA' :
-                               inc.incidentType === 'technical' ? 'TÉCNICA' :
-                               inc.incidentType === 'scoreChange' ? 'PONTUOU' :
-                               inc.description || inc.incidentType.toUpperCase()}
-                            </span>
-                         </div>
-                         <p className="text-[11px] font-bold text-[#b9cbbc]/40 truncate group-hover:text-white/60 transition-colors uppercase italic tracking-tight">
-                           {inc.player?.name || inc.description || (inc.isOwnGoal ? 'Gol Contra' : inc.playerName) || 'Lance de Jogo'}
-                         </p>
+                      <div className="h-px bg-white/5" />
+                      <div className="flex items-center justify-between">
+                         <span className="text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-[0.3em]">2º Tempo</span>
+                         <span className="text-xl font-black text-white/60 italic tabular-nums">{eventDetails?.homeScore?.period2 ?? 0} × {eventDetails?.awayScore?.period2 ?? 0}</span>
                       </div>
-
-                      <div className="shrink-0 flex items-center gap-3">
-                         <div className="flex flex-col items-end mr-1">
-                            <span className={`text-[8px] font-black uppercase italic tracking-widest ${(isGoal || inc.isHome) ? 'text-[#03D791]' : 'text-[#b9cbbc]/20'}`}>
-                               {inc.isHome ? (operation?.sofascoreHomeName || 'CASA') : (operation?.sofascoreAwayName || 'FORA')}
-                            </span>
-                         </div>
-                         <div className="relative">
-                            <img 
-                              src={(inc.isHome ? operation?.sofascoreHomeLogo : operation?.sofascoreAwayLogo) || ''} 
-                              className={`w-8 h-8 rounded-full border-2 bg-black transition-all ${logoBorder}`} 
-                              alt="" 
-                            />
-                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-black ${dotColor}`} />
-                         </div>
+                      <div className="pt-2">
+                        <div className="flex items-center justify-between bg-[#03D791]/5 p-3 rounded-xl border border-[#03D791]/10">
+                           <span className="text-[9px] font-black text-[#03D791] uppercase tracking-[0.3em]">Placar Final</span>
+                           <span className="text-3xl font-black text-[#03D791] italic tabular-nums drop-shadow-[0_0_10px_rgba(3,215,145,0.3)]">{eventDetails?.homeScore?.current ?? 0} × {eventDetails?.awayScore?.current ?? 0}</span>
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
+                  )}
+                  
+                  {isBasketball && (
+                    <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                      <span className="text-[8px] font-black text-[#b9cbbc]/20 uppercase tracking-widest italic">Análise Técnica</span>
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-[#FFDD65]/5 rounded-lg border border-[#FFDD65]/10">
+                        <Trophy size={10} className="text-[#FFDD65]" />
+                        <span className="text-[10px] font-black text-white/80 italic">
+                           Vantagem Máx: <span className="text-[#FFDD65]">+{calculateMaxAdvantage()}</span>
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column: Incidents */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1">
+                  <Trophy className="w-3.5 h-3.5 text-[#03D791] opacity-50" />
+                  <h3 className="text-[9px] font-black text-[#b9cbbc]/60 uppercase tracking-[0.3em] italic">Cronologia</h3>
+                </div>
+
+                <div className="space-y-2.5">
+                  {filteredIncidents.length === 0 ? (
+                    <div className="p-10 text-center glass-card rounded-[20px] border-white/5 opacity-10">
+                      <p className="text-[9px] font-black uppercase tracking-widest italic">Sem eventos registrados</p>
+                    </div>
+                  ) : filteredIncidents.map((inc, i) => {
+                    const isGoal = inc.incidentType === 'goal' || inc.incidentType === 'scoreChange';
+                    
+                    // REGRAS DE CORES: Somente GOL fica verde
+                    const itemStyle = isGoal 
+                      ? "bg-[#03D791]/[0.05] border-[#03D791]/20" 
+                      : "bg-white/[0.01] border-white/5 opacity-60 hover:opacity-100";
+                    
+                    const markerColor = isGoal ? "bg-[#03D791]" : "bg-white/10";
+                    const minuteColor = isGoal ? "text-[#03D791]" : "text-white/20";
+
+                    return (
+                      <div 
+                        key={i} 
+                        className={`flex items-center gap-3 p-3 glass-card rounded-[18px] transition-all group relative overflow-hidden ${itemStyle}`}
+                      >
+                        {/* Minute Indicator */}
+                        <div className={`w-8 h-8 flex items-center justify-center shrink-0 tabular-nums text-[11px] font-black border rounded-lg italic shadow-inner ${isGoal ? 'border-[#03D791]/30 bg-[#03D791]/10' : 'border-white/5 bg-white/5'} ${minuteColor}`}>
+                          {inc.time || '0'}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                           <div className="flex items-center gap-2 mb-0.5">
+                              {getIncidentIcon(inc)}
+                              <span className={`text-[11px] font-black uppercase italic tracking-tighter ${isGoal ? 'text-white' : 'text-white/40'}`}>
+                                {inc.incidentType === 'goal' ? 'GOL!' : 
+                                 inc.incidentType === 'card' ? (inc.incidentClass === 'yellow' ? 'AMARELO' : 'VERMELHO') :
+                                 inc.incidentType === 'var' ? 'VAR' :
+                                 inc.incidentType === 'penalty' ? 'PÊNALTI' :
+                                 inc.incidentType === 'foul' ? 'FALTA' :
+                                 inc.incidentType === 'technical' ? 'TÉCNICA' :
+                                 inc.incidentType === 'scoreChange' ? 'PONTUOU' :
+                                 inc.description || inc.incidentType.toUpperCase()}
+                              </span>
+                           </div>
+                           <p className="text-[10px] font-bold text-[#b9cbbc]/30 truncate uppercase italic tracking-tight">
+                             {inc.player?.name || inc.description || (inc.isOwnGoal ? 'Gol Contra' : inc.playerName) || 'Ação de Jogo'}
+                           </p>
+                        </div>
+
+                        <div className="shrink-0 flex items-center gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                           <img 
+                             src={(inc.isHome ? operation?.sofascoreHomeLogo : operation?.sofascoreAwayLogo) || ''} 
+                             className={`w-6 h-6 rounded-full border border-white/10 bg-black`} 
+                             alt="" 
+                           />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
         
-        {/* Footer info */}
-        <div className="pt-6 border-t border-white/5 flex items-center justify-center gap-6 opacity-20">
+        {/* Footer: Diagnostic Info */}
+        <div className="pt-4 border-t border-white/5 flex items-center justify-between px-2 opacity-10">
            <div className="flex items-center gap-2">
-             <div className="w-2 h-2 rounded-full bg-[#03D791] animate-pulse" />
-             <span className="text-[8px] font-black uppercase tracking-widest">Sincronização em tempo real</span>
+             <div className="w-1.5 h-1.5 rounded-full bg-[#03D791] animate-pulse" />
+             <span className="text-[7px] font-black uppercase tracking-[0.3em]">Live Feed Active</span>
            </div>
-           <div className="flex items-center gap-2">
-             <Layout className="w-3 h-3" />
-             <span className="text-[8px] font-black uppercase tracking-widest text-[#b9cbbc]">ID: {operation?.id?.substring(0,8)}</span>
-           </div>
+           <span className="text-[7px] font-black uppercase tracking-[0.3em] font-mono">OP-{operation?.id?.substring(0,8)}</span>
         </div>
       </div>
     </Modal>

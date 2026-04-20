@@ -158,20 +158,6 @@ export default function DashboardPage() {
     }
   }, [summary]);
 
-  // Listen for global operation creation or score updates to refetch
-  useEffect(() => {
-    const handleEvents = () => {
-      refetchSummary();
-      refetchClub();
-    };
-    window.addEventListener('operation-created', handleEvents);
-    window.addEventListener('refetch-data', handleEvents);
-    return () => {
-      window.removeEventListener('operation-created', handleEvents);
-      window.removeEventListener('refetch-data', handleEvents);
-    };
-  }, [refetchSummary, refetchClub]);
-
   // ⚠️ Hooks DEVEM estar antes de qualquer early return (Rules of Hooks)
   const currentPerformance = useMemo(() => {
     if (!summary?.performance?.[perfPeriod]) return [];
@@ -637,7 +623,6 @@ export default function DashboardPage() {
                         </span>
                         <MatchIndicator 
                           operation={op} 
-                          className="w-full justify-center scale-105" 
                           onMatchClick={(e) => {
                             e.stopPropagation();
                             setSelectedMatchOp(op);
@@ -719,7 +704,6 @@ export default function DashboardPage() {
                   <div className="col-span-5 flex flex-col justify-center items-center">
                     <MatchIndicator 
                       operation={op} 
-                      className="scale-100 opacity-100" 
                       onMatchClick={(e) => {
                         e.stopPropagation();
                         setSelectedMatchOp(op);

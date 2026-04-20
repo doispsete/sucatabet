@@ -54,27 +54,27 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
             onMatchClick(e);
           }
         }}
-        className={`flex items-center gap-3 bg-white/[0.04] px-4 py-1.5 rounded-2xl border border-white/10 whitespace-nowrap max-w-full shadow-lg hover:bg-white/[0.08] transition-all ${onMatchClick ? 'cursor-pointer transform hover:scale-[1.02]' : ''} ${className}`}
+        className={`flex items-center gap-2 bg-white/[0.04] px-3 py-1 rounded-xl border border-white/10 whitespace-nowrap max-w-full shadow-lg hover:bg-white/[0.08] transition-all ${onMatchClick ? 'cursor-pointer transform hover:scale-[1.01]' : ''} ${className}`}
       >
         {/* Home Team */}
-        <span className={`font-black text-[13px] uppercase tracking-tight truncate max-w-[120px] text-right ${homeWinner ? 'text-[#00ff88]' : 'text-white'}`}>
+        <span className={`font-black text-[12px] uppercase tracking-tight truncate max-w-[100px] text-right ${homeWinner ? 'text-[#00ff88]' : 'text-white'}`}>
           {homeName}
         </span>
         <img 
           src={homeLogo || ''} 
           referrerPolicy="no-referrer"
           onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
-          className={`w-6 h-6 object-contain shrink-0 border rounded-full p-0.5 bg-black/20 ${homeWinner ? 'border-[#00ff88]' : 'border-white/10'}`} 
+          className={`w-5 h-5 object-contain shrink-0 border rounded-full p-0.5 bg-black/20 ${homeWinner ? 'border-[#00ff88]' : 'border-white/10'}`} 
           alt=""
         />
 
         {/* Score */}
-        <div className="flex items-center gap-2 px-3 py-1 bg-black/60 rounded-xl border border-white/10 font-mono shadow-inner scale-110">
-           <span className={`text-lg font-black italic leading-none ${homeScoreColor} ${homeShadow} tabular-nums`}>
+        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-black/60 rounded-lg border border-white/10 font-mono shadow-inner">
+           <span className={`text-base font-black italic leading-none ${homeScoreColor} ${homeShadow} tabular-nums`}>
              {homeScore ?? 0}
            </span>
-           <span className="text-xs text-white/20 font-black italic">x</span>
-           <span className={`text-lg font-black italic leading-none ${awayScoreColor} ${awayShadow} tabular-nums`}>
+           <span className="text-[10px] text-white/20 font-black italic">x</span>
+           <span className={`text-base font-black italic leading-none ${awayScoreColor} ${awayShadow} tabular-nums`}>
              {awayScore ?? 0}
            </span>
         </div>
@@ -84,10 +84,10 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
           src={awayLogo || ''} 
           referrerPolicy="no-referrer"
           onError={(e) => (e.currentTarget.src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 10%22><text y=%229%22 font-size=%2210%22>⚽</text></svg>')}
-          className={`w-6 h-6 object-contain shrink-0 border rounded-full p-0.5 bg-black/20 ${awayWinner ? 'border-[#00ff88]' : 'border-white/10'}`} 
+          className={`w-5 h-5 object-contain shrink-0 border rounded-full p-0.5 bg-black/20 ${awayWinner ? 'border-[#00ff88]' : 'border-white/10'}`} 
           alt=""
         />
-        <span className={`font-black text-[13px] uppercase tracking-tight truncate max-w-[120px] text-left ${awayWinner ? 'text-[#00ff88]' : 'text-white'}`}>
+        <span className={`font-black text-[12px] uppercase tracking-tight truncate max-w-[100px] text-left ${awayWinner ? 'text-[#00ff88]' : 'text-white'}`}>
           {awayName}
         </span>
 
