@@ -4,7 +4,11 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('access_token')?.value;
   const { pathname } = request.nextUrl;
-  // Simplifica as verificações de rota
+  // Garantia absoluta de que a Landing Page (/) não redireciona
+  if (pathname === '/' || pathname === '/login' || pathname === '/cadastro') {
+    return NextResponse.next();
+  }
+
   const isPublicPage = pathname === '/' || pathname === '/login' || pathname === '/cadastro' || 
                        pathname === '/login/' || pathname === '/cadastro/';
   const isApiRoute = pathname.startsWith('/api');

@@ -155,7 +155,7 @@ function OperationsContent() {
             <div className="w-10 h-[2px] bg-[#03D791] rounded-full shadow-[0_0_15px_rgba(3,215,145,0.5)]" />
             <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-[#03D791] italic">hub de operações</h2>
           </div>
-          <h1 className="text-3xl md:text-7xl font-black text-white tracking-tighter leading-[0.8] italic uppercase">
+          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-[0.8] italic uppercase">
             Fluxo de<br /><span className="text-[#03D791]">Operações</span>
           </h1>
         </div>
@@ -198,7 +198,7 @@ function OperationsContent() {
         <div className="col-span-1 md:col-span-1 lg:col-span-8 glass-card rounded-[32px] md:rounded-[45px] p-6 md:p-10 relative overflow-hidden flex items-center justify-between border-white/5 shadow-3xl group">
           <div className="relative z-10">
             <p className="text-[#b9cbbc] text-[10px] font-black uppercase tracking-[0.5em] mb-4 opacity-30 italic">BANCA TOTAL</p>
-            <h3 className="text-3xl md:text-6xl font-black text-white tracking-tighter italic">
+            <h3 className="text-3xl md:text-5xl font-black text-white tracking-tighter italic">
               R$ {formatCurrency(summary?.bancaTotal ?? 0)}
             </h3>
             <div className="flex items-center gap-3 mt-6">
@@ -213,17 +213,17 @@ function OperationsContent() {
           </div>
         </div>
 
-        <div className="col-span-1 md:col-span-1 lg:col-span-4 glass-card rounded-[32px] md:rounded-[45px] p-6 md:p-10 flex flex-col justify-between border-l-4 border-[#03D791] border-white/5 shadow-3xl bg-[#03D791]/5">
+        <div className="col-span-1 md:col-span-1 lg:col-span-4 glass-card rounded-[32px] md:rounded-[40px] p-6 md:p-8 flex flex-col justify-between border-l-4 border-[#03D791] border-white/5 shadow-3xl bg-[#03D791]/5">
           <div>
             <p className="text-[#b9cbbc] text-[10px] font-black uppercase tracking-[0.4em] mb-4 opacity-30 italic">VALOR EM OPERAÇÃO</p>
-            <h3 className="text-2xl md:text-4xl font-black text-white italic tracking-tighter">
+            <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter">
               R$ {formatCurrency(summary?.emOperacao ?? 0)}
             </h3>
           </div>
-          <div className="mt-10">
+          <div className="mt-8">
             <div className="flex justify-between items-end mb-3">
               <span className="text-[9px] font-black text-[#03D791] uppercase tracking-[0.3em] italic">Saldo DISPONÍVEL</span>
-              <span className="text-[11px] font-black text-[#03D791] italic">R$ {formatCurrency(summary?.disponivel ?? 0)}</span>
+              <span className="text-[10px] font-black text-[#03D791] italic">R$ {formatCurrency(summary?.disponivel ?? 0)}</span>
             </div>
             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
               <div
@@ -238,12 +238,12 @@ function OperationsContent() {
       {/* Operations List Container */}
       <div className="glass-card rounded-[40px] overflow-hidden border-white/5">
         {/* Table Header - somente desktop */}
-        <div className="hidden md:grid grid-cols-12 px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
+        <div className="hidden md:grid grid-cols-12 px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
           <div className="col-span-2 flex items-center justify-start">Data / Hora</div>
           <div className="col-span-2 flex items-center justify-center">Operação</div>
-          <div className="col-span-5 flex items-center justify-center">Descrição do Jogo</div>
+          <div className="col-span-5 flex items-center justify-center text-center">Jogo</div>
           <div className="col-span-1 flex items-center justify-center">Status</div>
-          <div className="col-span-2 flex items-center justify-end">Resultado Financeiro</div>
+          <div className="col-span-2 flex items-center justify-end">R. Financeiro</div>
         </div>
 
         {/* Rows Container */}
@@ -306,7 +306,7 @@ function OperationsContent() {
                           </span>
                           <MatchIndicator 
                             operation={op} 
-                            className="w-full justify-center py-2" 
+                            className="w-full justify-center py-2 scale-110 my-1" 
                             onMatchClick={(e) => {
                               e.stopPropagation();
                               setSelectedMatchOp(op);
@@ -369,11 +369,11 @@ function OperationsContent() {
                         </div>
                     </div>
 
-                    {/* Column 3: Game Section (MatchIndicator) */}
+                    {/* Column 3: Jogo - Coluna Centralizada e com Maior Destaque */}
                     <div className="col-span-5 flex flex-col justify-center items-center">
                        <MatchIndicator 
                         operation={op} 
-                        className="scale-105 opacity-100 py-1" 
+                        className="opacity-100 py-1 scale-110 md:scale-125 transition-transform hover:scale-[1.3]" 
                         onMatchClick={(e) => {
                           e.stopPropagation();
                           setSelectedMatchOp(op);

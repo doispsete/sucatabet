@@ -597,7 +597,14 @@ export default function DashboardPage() {
             const statusLabel = op.status === 'FINISHED' ? 'Finalizada' : op.status === 'CASHOUT' ? 'Cashout' : op.status === 'VOID' ? 'Anulada' : 'Pendente';
 
             return (
-              <div key={op.id} className="p-5 border-b border-white/5 space-y-4">
+              <div 
+                key={op.id} 
+                className="p-5 border-b border-white/5 space-y-4 cursor-pointer hover:bg-white/[0.02] transition-all"
+                onClick={() => {
+                  setSelectedMatchOp(op);
+                  setIsMatchDetailsModalOpen(true);
+                }}
+              >
                   {/* Header: Date + Status */}
                   <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -623,6 +630,7 @@ export default function DashboardPage() {
                         </span>
                         <MatchIndicator 
                           operation={op} 
+                          className="scale-125 my-2"
                           onMatchClick={(e) => {
                             e.stopPropagation();
                             setSelectedMatchOp(op);
@@ -666,7 +674,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-12 px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] text-[#b9cbbc]/40 bg-white/[0.02] border-b border-white/5">
             <div className="col-span-2 flex items-center justify-start">Data / Hora</div>
             <div className="col-span-2 flex items-center justify-center">Operação</div>
-            <div className="col-span-5 flex items-center justify-center">Jogo</div>
+            <div className="col-span-5 flex items-center justify-center text-center">Jogo</div>
             <div className="col-span-1 flex items-center justify-center">Status</div>
             <div className="col-span-2 flex items-center justify-end">Resultado Financeiro</div>
           </div>
@@ -682,7 +690,14 @@ export default function DashboardPage() {
               const statusLabel = op.status === 'FINISHED' ? 'Finalizada' : op.status === 'CASHOUT' ? 'Cashout' : op.status === 'VOID' ? 'Anulada' : 'Pendente';
 
               return (
-                <div key={op.id} className="grid grid-cols-12 px-8 py-3 items-center hover:bg-white/[0.03] transition-all group min-h-[90px]">
+                <div 
+                  key={op.id} 
+                  className="grid grid-cols-12 px-8 py-3 items-center hover:bg-white/[0.03] transition-all group min-h-[90px] cursor-pointer"
+                  onClick={() => {
+                    setSelectedMatchOp(op);
+                    setIsMatchDetailsModalOpen(true);
+                  }}
+                >
                   <div className="col-span-2 flex flex-col justify-center items-start border-l-2 border-transparent group-hover:border-[#03D791] pl-4 transition-all">
                     <span className="text-sm font-black text-white italic tracking-tighter uppercase leading-none mb-1">{formatDate(op.createdAt)}</span>
                     <span className="text-[10px] text-[#b9cbbc]/30 font-black uppercase tracking-widest">#{op.id.substring(0, 8)}</span>
@@ -704,6 +719,7 @@ export default function DashboardPage() {
                   <div className="col-span-5 flex flex-col justify-center items-center">
                     <MatchIndicator 
                       operation={op} 
+                      className="opacity-100 py-1 scale-110 md:scale-125 transition-transform hover:scale-[1.4]" 
                       onMatchClick={(e) => {
                         e.stopPropagation();
                         setSelectedMatchOp(op);
@@ -711,7 +727,7 @@ export default function DashboardPage() {
                       }}
                     />
                     {op.description && (
-                      <span className="text-[8px] text-white/20 font-black uppercase tracking-widest truncate max-w-[80%] mt-1">
+                      <span className="text-[10px] text-white/40 font-black uppercase tracking-widest truncate max-w-[80%] mt-1 italic">
                         {op.description}
                       </span>
                     )}

@@ -266,16 +266,16 @@ export default function BancoPage() {
         </div>
       )}
       
-      <header className="relative py-12 mb-10 overflow-hidden">
+      <header className="relative py-6 mb-8 overflow-hidden">
         
         <div className="relative z-10 flex flex-col">
           <div className="flex items-center gap-3 mb-1">
             <div className="w-8 h-[1px] bg-primary shadow-[0_0_10px_#03D791]" />
-            <span className="text-[10px] font-black tracking-[0.4em] text-primary uppercase italic pl-[0.4em] -translate-x-[1px]">
+            <span className="text-[9px] font-black tracking-[0.4em] text-primary uppercase italic pl-[0.4em] -translate-x-[1px]">
               Centro de Lucros
             </span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter leading-none text-white uppercase">
+          <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter leading-none text-white uppercase">
             Gestão <span className="text-primary">Financeira</span>
           </h1>
           
@@ -291,13 +291,13 @@ export default function BancoPage() {
       {/* Stats Quick View - Sincronizado com Operações (8:4) */}
       <div className={`grid grid-cols-1 lg:grid-cols-12 gap-6 ${!isPro ? 'opacity-20 blur-[2px]' : ''}`}>
         {/* Card Grande (2/3 - 8 Colunas) */}
-        <div className="lg:col-span-8 glass-card p-6 md:p-10 rounded-[32px] md:rounded-[45px] border border-white/5 relative overflow-hidden group shadow-3xl bg-white/[0.02]">
-          <div className="flex justify-between items-start mb-12 relative z-10">
+        <div className="lg:col-span-8 glass-card p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-white/5 relative overflow-hidden group shadow-3xl bg-white/[0.02]">
+          <div className="flex justify-between items-start mb-8 relative z-10">
             <div>
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-4 italic flex items-center justify-center lg:justify-start gap-2 pl-[0.5em] -translate-x-[1px] w-full">
-                <span className="w-8 h-[2px] bg-primary rounded-full" /> PATRIMÔNIO TOTAL
+              <p className="text-[9px] font-black text-primary uppercase tracking-[0.5em] mb-3 italic flex items-center justify-center lg:justify-start gap-2 pl-[0.5em] -translate-x-[1px] w-full">
+                <span className="w-6 h-[2px] bg-primary rounded-full" /> PATRIMÔNIO TOTAL
               </p>
-              <h3 className="text-4xl md:text-7xl font-black text-white italic tracking-tighter leading-none mb-4">
+              <h3 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter leading-none mb-3">
                 R$ {formatCurrency(bankSummary.totalPatrimony)}
               </h3>
               <div className="flex items-center gap-3">
