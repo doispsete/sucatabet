@@ -122,7 +122,11 @@ function OperationsContent() {
       refetchSummary();
     };
     window.addEventListener('operation-created', handler);
-    return () => window.removeEventListener('operation-created', handler);
+    window.addEventListener('refetch-data', handler);
+    return () => {
+      window.removeEventListener('operation-created', handler);
+      window.removeEventListener('refetch-data', handler);
+    };
   }, [refetch, refetchSummary]);
 
   // Handle game finished events

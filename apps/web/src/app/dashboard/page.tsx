@@ -158,14 +158,18 @@ export default function DashboardPage() {
     }
   }, [summary]);
 
-  // Listen for global operation creation to refetch
+  // Listen for global operation creation or score updates to refetch
   useEffect(() => {
-    const handleCreated = () => {
+    const handleEvents = () => {
       refetchSummary();
       refetchClub();
     };
-    window.addEventListener('operation-created', handleCreated);
-    return () => window.removeEventListener('operation-created', handleCreated);
+    window.addEventListener('operation-created', handleEvents);
+    window.addEventListener('refetch-data', handleEvents);
+    return () => {
+      window.removeEventListener('operation-created', handleEvents);
+      window.removeEventListener('refetch-data', handleEvents);
+    };
   }, [refetchSummary, refetchClub]);
 
   // ⚠️ Hooks DEVEM estar antes de qualquer early return (Rules of Hooks)
