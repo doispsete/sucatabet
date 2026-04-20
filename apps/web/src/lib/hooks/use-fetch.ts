@@ -3,8 +3,9 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 export function useFetch<T>(
   fetcher: () => Promise<T>,
   deps: unknown[] = [],
-  options?: { polling?: number }
+  options?: { polling?: number; enabled?: boolean }
 ) {
+  const enabled = options?.enabled !== false;
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,16 +50,20 @@ export function useFetch<T>(
 
   // Initial fetch and dependency-based fetch
   useEffect(() => {
-    fetch(true);
-  }, [serializedDeps, fetch]);
+    if (enabled) {
+      fetch(true);
+    } else {
+      setIsLoading(false);
+    }
+  }, [serializedDeps, fetch, enabled]);
 
   // Polling setup
   useEffect(() => {
-    if (options?.polling) {
+    if (options?.polling && enabled) {
       const interval = setInterval(() => fetch(false), options.polling);
       return () => clearInterval(interval);
     }
-  }, [fetch, options?.polling]);
+  }, [fetch, options?.polling, enabled]);
 
   // Global refetch event listener
   useEffect(() => {

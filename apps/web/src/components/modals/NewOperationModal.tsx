@@ -6,7 +6,7 @@ import { GameSearch } from "@/components/GameSearch";
 import { MatchIndicator } from "@/components/MatchIndicator";
 import { OperationType, Operation } from "@/lib/api/types";
 import { useOperations, useAccounts, useDashboardSummary, useFreebets } from "@/lib/hooks";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatExpiration } from "@/lib/utils";
 import { AddAccountModal } from "./AddAccountModal";
 
 interface NewOperationModalProps {
@@ -206,7 +206,7 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
     // Identifica a conta que foi marcada como benefício
     const benefitAccount = bets.find(b => b.isBenefit)?.accountId;
     
-    return allFreebets
+    return [...allFreebets]
       .filter(fb => {
         // Apenas pendentes/expirando (não usadas/expiradas)
         if (fb.status !== 'PENDENTE' && fb.status !== 'EXPIRANDO') return false;
@@ -214,10 +214,20 @@ export function NewOperationModal({ isOpen, onClose, operationToEdit, initialDat
         if (benefitAccount) return fb.accountId === benefitAccount;
         return true;
       })
-      .map(fb => ({
-        value: fb.id,
-        label: `R$ ${formatCurrency(fb.value)} — ${fb.account?.bettingHouse?.name?.toUpperCase()} (${fb.account?.cpfProfile?.name?.split(' ')[0]})`
-      }));
+      .sort((a, b) => {
+        const nameA = a.account?.bettingHouse?.name || "";
+        const nameB = b.account?.bettingHouse?.name || "";
+        return nameA.localeCompare(nameB, 'pt-BR');
+      })
+      .map(fb => {
+        const expiration = formatExpiration(fb.expiresAt);
+        const house = fb.account?.bettingHouse?.name?.toUpperCase() || "CASA";
+        const user = fb.account?.cpfProfile?.name?.split(' ')[0] || "USER";
+        return {
+          value: fb.id,
+          label: `R$ ${formatCurrency(fb.value)} — ${house} (${user}) [${expiration}]`
+        };
+      });
   }, [allFreebets, type, bets]);
 
   return (

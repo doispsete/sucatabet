@@ -1,5 +1,7 @@
 import React from 'react';
 import { formatDateShort, formatTime } from '../lib/utils';
+import { useAuth } from '../lib/context/auth-context';
+import { ShieldOff } from 'lucide-react';
 
 interface MatchIndicatorProps {
   operation: any;
@@ -8,6 +10,10 @@ interface MatchIndicatorProps {
 }
 
 export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, className = "", onMatchClick }) => {
+  const { user, isAdmin } = useAuth();
+  const plan = user?.plan || 'FREE';
+  const isFree = plan === 'FREE' && !isAdmin;
+
   if (!operation || !operation.sofascoreEventId) return null;
 
   const {
@@ -88,17 +94,26 @@ export const MatchIndicator: React.FC<MatchIndicatorProps> = ({ operation, class
         {/* Live Indicator (only for progress) */}
         {showLiveBadge && (
           <div className="flex items-center gap-2 ml-2">
-            {minuteStr !== "" ? (
-              <span className="text-[11px] font-black italic text-[#00ff88] animate-pulse">
-                {minuteStr}{(minuteStr.includes('+') || minuteStr.includes(':')) ? '' : '\''}
+            {isFree ? (
+              <span className="flex items-center gap-1 text-[9px] font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase italic">
+                <ShieldOff size={10} />
+                Estático
               </span>
-            ) : null}
-            {period && !minuteStr.includes(period) ? (
-              <span className="text-[9px] font-black text-[#00ff88] bg-[#00ff88]/10 px-2 py-0.5 rounded border border-[#00ff88]/20 uppercase italic">
-                {period}
-              </span>
-            ) : null}
-            {minuteStr === "" && !period && <span className="text-[10px] font-black text-[#00ff88] animate-pulse">LIVE</span>}
+            ) : (
+              <>
+                {minuteStr !== "" ? (
+                  <span className="text-[11px] font-black italic text-[#00ff88] animate-pulse">
+                    {minuteStr}{(minuteStr.includes('+') || minuteStr.includes(':')) ? '' : '\''}
+                  </span>
+                ) : null}
+                {period && !minuteStr.includes(period) ? (
+                  <span className="text-[9px] font-black text-[#00ff88] bg-[#00ff88]/10 px-2 py-0.5 rounded border border-[#00ff88]/20 uppercase italic">
+                    {period}
+                  </span>
+                ) : null}
+                {minuteStr === "" && !period && <span className="text-[10px] font-black text-[#00ff88] animate-pulse">LIVE</span>}
+              </>
+            )}
           </div>
         )}
       </div>

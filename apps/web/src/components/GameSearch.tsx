@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Loader2, Calendar, Trophy } from 'lucide-react';
+import { Search, Loader2, Calendar, Trophy, ShieldAlert } from 'lucide-react';
+import { useAuth } from '@/lib/context/auth-context';
 
 interface GameSearchProps {
   onSelect: (game: any) => void;
@@ -7,10 +8,28 @@ interface GameSearchProps {
 }
 
 export const GameSearch: React.FC<GameSearchProps> = ({ onSelect, onClose }) => {
+  const { user, isAdmin } = useAuth();
+  const plan = user?.plan || 'FREE';
+  const isFree = plan === 'FREE' && !isAdmin;
+
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  if (isFree) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-center bg-white/5 rounded-xl border border-dashed border-white/10">
+        <div className="bg-yellow-500/20 text-yellow-500 p-3 rounded-full mb-4">
+          <ShieldAlert size={24} />
+        </div>
+        <h4 className="text-white font-bold mb-1">Sofascore Indisponível</h4>
+        <p className="text-slate-400 text-xs max-w-[280px]">
+          O plano FREE não possui vinculação automática de jogos. Faça upgrade para BASIC ou PRO para usar esta função.
+        </p>
+      </div>
+    );
+  }
 
   const handleSearch = useCallback(async (q: string) => {
     if (q.length < 3) {

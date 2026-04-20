@@ -22,14 +22,14 @@ export class CpfProfilesService {
     // 0. Verificar limites de Plano
     const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { plan: true } });
     const plan = user?.plan || 'FREE';
+    const limit = plan === 'FREE' ? 1 : (plan === 'BASIC' ? 4 : Infinity);
 
-    const currentCpfs = await this.prisma.cpfProfile.count({ where: { userId, deletedAt: null } });
+    const count = await this.prisma.cpfProfile.count({
+      where: { userId, deletedAt: null },
+    });
 
-    if (plan === 'FREE' && currentCpfs >= 1) {
-      throw new ForbiddenException('Plano FREE permite apenas 1 perfil de CPF.');
-    }
-    if (plan === 'BASIC' && currentCpfs >= 3) {
-      throw new ForbiddenException('Plano BÁSICO permite apenas 3 perfis de CPF.');
+    if (count >= limit) {
+      throw new ForbiddenException(`Limite de ${limit} perfis de CPF atingido para o plano ${plan}.`);
     }
 
     try {
@@ -80,7 +80,7 @@ export class CpfProfilesService {
   async findAll(userId: string, role: UserRole, targetUserId?: string) {
     const filterUserId = (role === UserRole.ADMIN && targetUserId) ? targetUserId : userId;
 
-    return this.prisma.cpfProfile.findMany({
+    const profiles = await this.prisma.cpfProfile.findMany({
       where: { userId: filterUserId, deletedAt: null },
       include: {
         accounts: {
@@ -90,7 +90,24 @@ export class CpfProfilesService {
           },
         },
       },
+      orderBy: { id: 'asc' }, // Garantir ordem consistente (o primeiro criado é o "titular")
     });
+
+    // Se for Operador (usuário comum), aplicamos os limites de visualização de acordo com o plano
+    if (role !== UserRole.ADMIN) {
+      const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { plan: true } });
+      const plan = user?.plan || 'FREE';
+      
+      if (plan === 'FREE' && profiles.length > 1) {
+        return [profiles[0]]; // Retorna apenas o primeiro para FREE
+      }
+      
+      if (plan === 'BASIC' && profiles.length > 4) {
+        return profiles.slice(0, 4); // Retorna apenas os 4 primeiros para BASIC
+      }
+    }
+
+    return profiles;
   }
 
   async findOne(id: string, userId: string, role: UserRole) {

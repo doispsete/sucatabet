@@ -24,7 +24,7 @@ export function BottomNav() {
   const items = [
     { label: "Dashboard", href: "/", icon: LayoutDashboard },
     { label: "Operações", href: "/operacoes", icon: Banknote },
-    ...(user.plan === 'PRO' || isAdmin ? [
+    ...(user.plan === 'PRO' || user.plan === 'BASIC' || isAdmin ? [
       { label: "Banco", href: "/banco", icon: Wallet },
     ] : []),
     { label: "Freebets", href: "/freebets", icon: Ticket },

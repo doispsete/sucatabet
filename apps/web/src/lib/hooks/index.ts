@@ -27,11 +27,11 @@ export function useDashboardClub() {
 }
 
 // 2. Operations Hook
-export function useOperations(params?: { status?: string; page?: number; limit?: number; [key: string]: unknown }) {
+export function useOperations(params?: { status?: string; page?: number; limit?: number; enabled?: boolean; [key: string]: unknown }) {
   const { data, isLoading, error, refetch } = useFetch(
     () => services.operationsService.list(params),
-    [params?.status, params?.page, params?.limit, params?.search],
-    { polling: 10000 }
+    [params?.status, params?.page, params?.limit, params?.search, params?.enabled],
+    { polling: 10000, enabled: params?.enabled }
   );
 
   const { mutate: create, isMutating: isCreating, mutationError: createError, clearError: clearCreateError } = useMutation(
@@ -344,6 +344,9 @@ export function useUpdateBankGoal() {
 import { useEffect, useRef } from 'react';
 
 export function useSofascorePolling(operations: any[]) {
+  const { user, isAdmin } = useAuth();
+  const plan = user?.plan || 'FREE';
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isTabVisible = useRef(true);
   const finishedEvents = useRef(new Set<string>());
@@ -358,8 +361,10 @@ export function useSofascorePolling(operations: any[]) {
   );
 
   const poll = async () => {
+    // FREE não tem acesso ao polling
+    if (plan === 'FREE' && !isAdmin) return;
     if (!isTabVisible.current || activeOps.length === 0) return;
-
+    
     // Deduplica por eventId
     const uniqueEventIds = Array.from(new Set(activeOps.map(op => op.sofascoreEventId)));
     
@@ -530,25 +535,41 @@ export function useSofascorePolling(operations: any[]) {
   };
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
+    // Intervalo adaptativo/fixo por plano
+    let intervalTime = 60000; // Default BASIC
+    if (plan === 'PRO' || isAdmin) {
+      const hasLive = activeOps.some(op => op.sofascoreStatus === 'inprogress');
+      intervalTime = hasLive ? 5000 : 60000;
+    } else if (plan === 'FREE') {
+      intervalTime = 0; // Desativado
+    }
+
+    const handleReactivation = () => {
       isTabVisible.current = document.visibilityState === 'visible';
+      if (isTabVisible.current && activeOps.length > 0) {
+        // Força um poll imediato e reseta o ciclo do intervalo
+        poll();
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          if (intervalTime > 0) {
+            intervalRef.current = setInterval(poll, intervalTime);
+          }
+        }
+      }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleReactivation);
+    window.addEventListener('focus', handleReactivation);
 
-    // Intervalo adaptativo
-    const hasLive = activeOps.some(op => op.sofascoreStatus === 'inprogress');
-    const intervalTime = hasLive ? 5000 : 60000;
-
-    if (activeOps.length > 0) {
+    if (activeOps.length > 0 && intervalTime > 0) {
       poll(); // Executa imediatamente ao montar ou mudar ops
       intervalRef.current = setInterval(poll, intervalTime);
     }
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleReactivation);
+      window.removeEventListener('focus', handleReactivation);
     };
   }, [JSON.stringify(activeOps.map(op => ({ id: op.id, status: op.sofascoreStatus })))]);
 }
-

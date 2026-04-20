@@ -189,6 +189,52 @@ export class OperationsService {
   async create(userId: string, createOperationDto: CreateOperationDto) {
     const category = this.getCategory(createOperationDto.type);
 
+    // 0. Verificar limites de Plano FREE
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { plan: true } });
+    const plan = user?.plan || 'FREE';
+
+    if (plan === 'FREE' || plan === 'BASIC') {
+      // a) Limite de operações por mês
+      const limit = plan === 'FREE' ? 30 : 120;
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const monthlyOps = await this.prisma.operation.count({
+        where: {
+          userId,
+          createdAt: { gte: firstDayOfMonth }
+        }
+      });
+
+      if (monthlyOps >= limit) {
+        throw new ForbiddenException(`Limite de ${limit} operações mensais atingido no plano ${plan}. Faça um upgrade para continuar.`);
+      }
+
+      // b) Garantir CPF ÚNICO na mesma operação (Apenas FREE)
+      if (plan === 'FREE') {
+        const accountIds = createOperationDto.bets.map(b => b.accountId);
+        const accounts = await this.prisma.account.findMany({
+          where: { id: { in: accountIds } },
+          select: { cpfProfileId: true }
+        });
+        const uniqueCpfIds = [...new Set(accounts.map(a => a.cpfProfileId))];
+
+        if (uniqueCpfIds.length > 1) {
+          throw new ForbiddenException('Plano FREE não permite o uso de múltiplos CPFs em uma única operação.');
+        }
+
+        // c) Garantir que está usando o CPF "vísivel" (o primeiro criado)
+        const allowedCpf = await this.prisma.cpfProfile.findFirst({
+          where: { userId, deletedAt: null },
+          orderBy: { id: 'asc' },
+          select: { id: true }
+        });
+
+        if (allowedCpf && uniqueCpfIds.length > 0 && uniqueCpfIds[0] !== allowedCpf.id) {
+          throw new ForbiddenException('Você só pode realizar operações com o seu perfil de CPF principal (plano FREE).');
+        }
+      }
+    }
+
     if (createOperationDto.type === OperationType.EXTRACAO) {
       if (!createOperationDto.freebetId) {
         throw new BadRequestException('Operações de extração exigem uma freebet vinculada');

@@ -21,6 +21,7 @@ import { BankModule } from './modules/bank/bank.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { SofascoreModule } from './modules/sofascore/sofascore.module';
+import { SupportModule } from './modules/support/support.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { SofascoreModule } from './modules/sofascore/sofascore.module';
     ExpensesModule,
     StripeModule,
     SofascoreModule,
+    SupportModule,
   ],
   controllers: [AppController],
   providers: [

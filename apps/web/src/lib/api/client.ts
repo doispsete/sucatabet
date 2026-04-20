@@ -56,10 +56,11 @@ async function request<T>(path: string, options: RequestInit & { retries?: numbe
       const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
       const isLoginPath = pathname === '/login' || pathname === '/login/';
       const isRegisterPath = pathname === '/cadastro' || pathname === '/cadastro/';
+      const isLandingPath = pathname === '/';
       const isLogoutPath = path === '/auth/logout';
       const isMePath = path === '/auth/me';
       
-      if (typeof window !== 'undefined' && !isLoginPath && !isRegisterPath && !isLogoutPath && !isMePath) {
+      if (typeof window !== 'undefined' && !isLoginPath && !isRegisterPath && !isLandingPath && !isLogoutPath && !isMePath) {
         document.cookie = 'access_token=; path=/; max-age=0';
         window.location.href = '/login';
       }

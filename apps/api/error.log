@@ -8712,3 +8712,31 @@ Unknown argument `sofascoreEventId`. Available options are marked with ?.
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-execution-context.js:46:28
     at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-proxy.js:9:17
 
+[2026-04-20T01:09:50.368Z] POST /api/support/ticket
+Error: Falha ao enviar ticket para o Telegram
+    at SupportService.sendTicket (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\support\support.service.js:56:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-04-20T01:10:18.851Z] POST /api/support/ticket
+Error: Falha ao enviar ticket para o Telegram
+    at SupportService.sendTicket (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\support\support.service.js:56:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-04-20T01:13:14.549Z] POST /api/support/ticket
+Error: Erro na API do Telegram: 400
+    at SupportService.sendTicket (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\support\support.service.js:73:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[2026-04-20T01:13:23.366Z] POST /api/support/ticket
+Error: Erro na API do Telegram: 400
+    at SupportService.sendTicket (C:\Users\2p7\Desktop\Nova pasta\sucatabet\apps\api\dist\src\modules\support\support.service.js:73:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\2p7\Desktop\Nova pasta\sucatabet\node_modules\@nestjs\core\router\router-proxy.js:9:17
+

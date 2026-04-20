@@ -58,9 +58,6 @@ function OperationsContent() {
     search
   });
 
-  // Polling Sofascore V15 - Shared Cache Implementation
-  useSofascorePolling(opsResponse?.data || []);
-
   // Handle deep linking from dashboard
   useEffect(() => {
     if (targetId && opsResponse?.data) {

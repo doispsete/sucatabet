@@ -18,22 +18,24 @@ export const metadata = {
   description: "Plataforma profissional de gestão de apostas e arbitragem financeira.",
 };
 
+import Script from "next/script";
+
 const STITCH_RESOURCES = (
   <>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NDLP89QDVT" />
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-NDLP89QDVT');
-        `,
-      }}
+    <Script 
+      src="https://www.googletagmanager.com/gtag/js?id=G-NDLP89QDVT" 
+      strategy="afterInteractive" 
     />
+    <Script id="google-analytics" strategy="afterInteractive">
+      {`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-NDLP89QDVT');
+      `}
+    </Script>
   </>
 );
 

@@ -105,3 +105,23 @@ export const formatRelativeDate = (date: Date | string | null): string => {
   
   return formatDate(d);
 };
+
+export const formatExpiration = (date: Date | string | null): string => {
+  if (!date) return '';
+  const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '';
+
+  const now = new Date();
+  const diffInMs = d.getTime() - now.getTime();
+  
+  if (diffInMs < 0) return 'Expirou';
+  
+  const diffInMins = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInMins < 60) return `${diffInMins}m`;
+  if (diffInHours < 24) return `${diffInHours}h`;
+  if (diffInDays === 1) return 'Amanhã';
+  return `${diffInDays} d`;
+};

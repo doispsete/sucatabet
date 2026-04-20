@@ -107,3 +107,8 @@ export const stripeService = {
   createCheckoutSession: (productId: string) => api.post<{url: string}>('/stripe/checkout', { productId }),
   createPortalSession: () => api.post<{url: string}>('/stripe/portal'),
 };
+
+export const supportService = {
+  sendTicket: (body: { name: string; whatsapp: string; reason: string; improvement: string }) => 
+    api.post<{ success: boolean }>('/support/ticket', body),
+};

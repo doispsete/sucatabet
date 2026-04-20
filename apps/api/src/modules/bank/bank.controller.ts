@@ -2,8 +2,12 @@ import { Controller, Get, Post, Patch, Body, UseGuards, Request, Query } from '@
 import { BankService } from './bank.service';
 import { BankDepositDto, BankWithdrawDto } from './dto/bank-action.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { PlanGuard } from '../auth/plan.guard';
+import { Plans } from '../auth/plans.decorator';
+import { UserPlan } from '@prisma/client';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PlanGuard)
+@Plans(UserPlan.BASIC, UserPlan.PRO)
 @Controller('bank')
 export class BankController {
   constructor(private readonly bankService: BankService) {}

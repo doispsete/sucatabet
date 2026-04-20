@@ -6,6 +6,7 @@ import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { DynamicBackground } from "./DynamicBackground";
 import { AnnouncementModal } from "./modals/AnnouncementModal";
+import { GlobalPollingHandler } from "./GlobalPollingHandler";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -38,12 +39,18 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     setIsDrawerOpen(false);
   }, [pathname]);
 
-  const isDashboard = pathname === "/";
+  const isLanding = pathname === "/";
+  const isDashboard = pathname === "/dashboard";
   const isLogin = pathname === "/login";
   const isRegister = pathname === "/cadastro";
 
-  if (isLogin || isRegister) {
-    return <>{children}</>;
+  if (isLogin || isRegister || isLanding) {
+    return (
+      <div className="min-h-screen bg-[#050505]">
+        <GlobalPollingHandler />
+        {children}
+      </div>
+    );
   }
 
   const sidebarWidth = isMobile ? 0 : (isHalf || !isDashboard ? 64 : 220);
@@ -65,6 +72,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         isCollapsed={isHalf || !isDashboard}
       />
 
+      <GlobalPollingHandler />
       <AnnouncementModal />
 
       {/* Mobile Overlay */}
